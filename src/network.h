@@ -20,7 +20,7 @@ class Node{
 
     int _group_id;
 public:
-    ~Node() = default;
+    ~Node() {_connected_nodes.clear();};
     Node(size_t id);
     size_t get_id() const { return  _id;}
     int get_group_id() const { return  _group_id;}
@@ -71,6 +71,9 @@ public:
         ss << "(" << _id_node_a  << "," << _id_node_b << ")";
         return ss.str();
     }
+
+    size_t get_a() const {return _id_node_a;}
+    size_t get_b() const {return _id_node_b;}
 };
 
 std::ostream& operator<<(std::ostream& os, const Link& lnk);
@@ -89,7 +92,18 @@ protected:
     double _total_degree; // total degree of the network
 
 public:
-    virtual ~Network() = default;
+    ~Network(){
+        _nodes.clear();
+        _links.clear();
+    };
+
+    void reset(){
+        _nodes.clear();
+        _links.clear();
+        _total_degree = 0;
+        initialize();
+    }
+
 
     explicit Network(size_t m0=0, size_t m=1);
 
@@ -111,6 +125,10 @@ public:
         ss << _m0 << "_m_" << _m << "-";
         return ss.str();
     }
+
+    std::vector<double> degrees();
+
+    void initialize();
 };
 
 /**

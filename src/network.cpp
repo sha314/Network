@@ -76,12 +76,17 @@ Network::Network(size_t m0, size_t m) {
         _m = m;
     }
 
-    for(size_t i{}; i != m0; ++i){
+    initialize();
+
+}
+
+void Network::initialize() {
+    for(size_t i{}; i != _m0; ++i){
         _nodes.push_back({i}); // add node with id equal to the size of the _nodes
     }
     size_t k{};
-    for(size_t i{}; i != m0; ++i){
-        k = (i+1) % m0;
+    for(size_t i{}; i != _m0; ++i){
+        k = (i+1) % _m0;
         _nodes[i].add_neighbor(k);
         _nodes[k].add_neighbor(i);
         _total_degree += 2;
@@ -135,9 +140,9 @@ void Network::add_node() {
  *
  */
 void Network::view_nodes() {
-    cout << "id:{neighbors,...}" << endl;
+    cout << "id(size):{neighbors,...}" << endl;
     for(size_t i{}; i < _nodes.size(); ++i){
-        cout << _nodes[i].get_id() << ":{";
+        cout << _nodes[i].get_id() << "(" << _nodes[i].degree() << "):{";
         auto neighbors = _nodes[i].get_neighbors();
         for(auto n: neighbors){
             cout << n << ',';
@@ -154,6 +159,17 @@ void Network::view_links() {
     cout << "}" << endl;
 }
 
+vector<double> Network::degrees() {
+    vector<double> degs(_nodes.size());
+
+    for(size_t i{}; i < _nodes.size(); ++i){
+        degs[i] = _nodes[i].degree();
+    }
+//    cout << degs.size() << " : line " << __LINE__ << endl;
+//    cout << "line " << __LINE__ << endl;
+    return degs;
+}
+
 
 /**************************************
  * NetworkBA methods
@@ -168,11 +184,11 @@ void NetworkBA::add_node() {
 
     double tmp{};
     size_t sz = _nodes.size();
-    cout << "probability " << p << endl;
+//    cout << "probability " << p << endl;
     for(size_t i{}; i < sz; ++i){
         tmp +=  _nodes[i].degree() / get_total_degree();
         if(tmp >= p){
-            cout << "selected node " << i << " with " << tmp << endl;
+//            cout << "selected node " << i << " with " << tmp << endl;
             // add node
             _nodes.push_back({sz});
             _nodes[i].add_neighbor(sz);
