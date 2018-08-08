@@ -9,6 +9,7 @@ using  namespace std;
 
 Link::Link(size_t id_a, size_t id_b) {
     if(id_a == id_b){
+        cout << "between " << id_a << " and " << id_b << endl;
         cerr << "Self linking is not allowed : line " << __LINE__ << endl;
     } else{
         _id_node_a = id_a;
@@ -68,8 +69,8 @@ std::ostream& operator<<(std::ostream& os, const Link& lnk){
  * @param m  : number of links new nodes are born with
  */
 Network::Network(size_t m0, size_t m) {
-    if (m0 < m){
-        _m0 = m;
+    if (m0 <= m){
+        _m0 = m + 1;
         _m = m;
     }else{
         _m0 = m0;
@@ -124,15 +125,37 @@ void Network::add_node(size_t with_node) {
 }
 /**
  * Adds node randomly
+ * randomly select m nodes with which new node will be connected
  */
 void Network::add_node() {
     size_t sz = _nodes.size();
-    size_t r = rand() % sz;
     _nodes.push_back({sz}); // add node with id equal to the size of the _nodes
-    _nodes[sz].add_neighbor(r);
-    _nodes[r].add_neighbor(sz);
-    _total_degree += 2; // one link  increases degree by 2.
-    _links.push_back({sz, r});
+
+
+    vector<size_t> m_links(_m), node_indices(sz);
+
+    // list of all existing nodes
+    for(size_t i{}; i < sz; ++i){
+        node_indices[i] = i;
+    }
+    size_t r{};
+
+    // set m_links such that there is no repetition
+    for(size_t j{}; j < _m; ++j){
+        r = rand() % node_indices.size();
+        m_links[j] = node_indices[r];
+        node_indices.erase(node_indices.begin() + r); // so that its not get selected again
+    }
+
+    // setting m links in the netrowk
+    size_t i{};
+    for(size_t k{}; k < _m; ++k){
+        i = m_links[k];
+        _nodes[i].add_neighbor(sz);
+        _nodes[sz].add_neighbor(i);
+        _total_degree += 2; // one link  increases degree by 2.
+        _links.push_back({sz, i});
+    }
 }
 
 
@@ -176,9 +199,10 @@ vector<double> Network::degrees() {
  **************************************/
 
 /**
- * Add nodes preferentially
+ * Add nodes preferentially.
+ * Each node comes with 1 links.
  */
-void NetworkBA::add_node() {
+void NetworkBA::add_node_v0() {
 
     double p = rand() / double(RAND_MAX);
 
@@ -200,6 +224,55 @@ void NetworkBA::add_node() {
     }
 }
 
+/**
+ * Add nodes preferentially.
+ * Each node comes with m links.
+ * m links are selected preferentially with respect to their degree.
+ */
+void NetworkBA::add_node() {
+
+    double p = rand() / double(RAND_MAX);
+
+    double tmp{};
+    size_t sz = _nodes.size();
+    vector<size_t> m_links(_m), node_indices(sz);
+
+    // list of all existing nodes
+    for(size_t i{}; i < sz; ++i){
+        node_indices[i] = i;
+    }
+
+
+    // set m_links such that there is no repetition
+    // selecting m links preferentially
+    for(size_t j{}; j < _m; ++j){
+        p = rand() / double(RAND_MAX);;
+        for(size_t k{}; k < node_indices.size(); ++k) {
+            tmp += _nodes[node_indices[k]].degree() / _total_degree;
+            if(tmp >= p) {
+                m_links[j] = node_indices[k];
+                node_indices.erase(node_indices.begin() + k);
+                break;
+            }
+        }
+    }
+
+    // adding new node
+    _nodes.push_back({sz});
+
+
+    // connecting new node with m preferentially selected links
+    size_t i{};
+    for(size_t k{}; k < _m; ++k){
+        i = m_links[k];
+        _nodes[sz].add_neighbor(i);
+        _nodes[i].add_neighbor(sz);
+
+        _total_degree += 2; // one link  increases degree by 2.
+        _links.push_back({sz, i});
+    }
+}
+
 
 /*************************
  * Percolation on BA network
@@ -207,5 +280,9 @@ void NetworkBA::add_node() {
 NetworkBApercolation::NetworkBApercolation(size_t m0, size_t m, size_t size)
         : NetworkBA(m0, m), _network_size{size}
 {
-
+    size_t i=0;
+    while (i < _network_size){
+        NetworkBA::add_node();
+        ++i;
+    }
 }

@@ -96,7 +96,7 @@ public:
         _nodes.clear();
         _links.clear();
     };
-
+    explicit Network(size_t m0=0, size_t m=1);
     void reset(){
         _nodes.clear();
         _links.clear();
@@ -104,8 +104,9 @@ public:
         initialize();
     }
 
+    size_t get_m0() const { return _m0;}
+    size_t get_m() const { return _m;}
 
-    explicit Network(size_t m0=0, size_t m=1);
 
     size_t number_of_nodes() const  {return _nodes.size();}
     size_t number_of_links() const  {return _links.size();}
@@ -140,6 +141,8 @@ public:
     ~NetworkBA() = default;
     NetworkBA(size_t m0=0, size_t m=1) : Network(m0, m) {};
 
+    [[deprecated("instead use add_node")]]
+    void add_node_v0();
     void add_node();
 
     std::string get_signature() {
@@ -160,6 +163,7 @@ public:
     ~NetworkBApercolation() = default;
     NetworkBApercolation(size_t m0, size_t m, size_t size);
 
+    bool occupy_link();
     std::string get_signature() override {
         std::stringstream ss;
         ss << "netrowk_BA_percolation_m0_";

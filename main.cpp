@@ -14,15 +14,24 @@ void degree_distribution_ba(int argc, char* argv[]){
         return;
     }
 
-    size_t m0 = 3;
+    size_t m = size_t(atoi(argv[1]));
+    size_t network_size = size_t(atoi(argv[2]));
+    size_t ensemble_size = size_t(atoi(argv[3]));
 
-    size_t network_size = size_t(atoi(argv[1]));
-    size_t ensemble_size = size_t(atoi(argv[2]));
     cout << "network size " << network_size << endl;
     cout << "ensemble size " << ensemble_size << endl;
 
-    vector<double> degree(network_size + m0);
-    NetworkBA net(m0);
+    NetworkBA net(m, m);
+    cout << "m0 " << net.get_m0() << ", m " << net.get_m() << endl;
+
+    string filename =  net.get_signature() + "size_" + to_string(network_size) + "-degree" + currentTime() + ".txt";
+    ofstream fout(filename);
+    fout << "{\"m0\":" << net.get_m0()
+         << ",\"m\""<< net.get_m()
+         << ",\"network_size\":" << network_size
+         << ",\"ensemble_size\":" << ensemble_size
+         << "}" << endl;
+
     for(size_t en{}; en < ensemble_size; ++en) {
         auto t0= std::chrono::system_clock::now();
         net.reset();
@@ -39,8 +48,9 @@ void degree_distribution_ba(int argc, char* argv[]){
 
 //        cout << degs.size() << " and  " << degree.size() << endl;
         for (size_t i{}; i < degs.size(); ++i) {
-            degree[i] += degs[i];
+            fout << degs[i] <<',';
         }
+        fout << endl;
 //        cout << "line " << __LINE__ << endl;
         auto t1= std::chrono::system_clock::now();
         std::chrono::duration<double> drtion = t1 - t0;
@@ -49,32 +59,26 @@ void degree_distribution_ba(int argc, char* argv[]){
 
     // normalization
 
-    string filename =  net.get_signature() + "degree" + currentTime() + ".txt";
-    ofstream fout(filename);
-    for (size_t i{}; i < degree.size(); ++i) {
-        degree[i] /= ensemble_size;
-        fout << degree[i] << endl;
-    }
+    fout.close();
+
 }
 
 void run_in_main(int argc, char* argv[]){
-    NetworkBA net(3);
+    NetworkBA net(3, 5);
+
     net.view_nodes();
     net.view_links();
 
-
-    size_t network_size = size_t(atoi(argv[1]));
-
-    cout << net.get_total_degree() << endl;
-
-    for(size_t i{}; i < network_size ; ++i){
+    size_t network_size = 1000;
+    for(size_t i{}; i < network_size; ++i) {
+//        cout << "total degree " << net.get_total_degree() << endl;
         net.add_node();
 //        net.view_nodes();
 //        net.view_links();
     }
-
     net.view_nodes();
-    net.view_links();
+    cout << "total degree " << net.get_total_degree() << endl;
+
 }
 
 
