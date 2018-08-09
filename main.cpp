@@ -1,11 +1,12 @@
 #include <iostream>
 #include <chrono>
 #include "src/util/time_tracking.h"
-#include "src/network.h"
+#include "src/nets/network.h"
 #include <algorithm>
 #include <fstream>
 
 using namespace std;
+
 
 void degree_distribution_ba(int argc, char* argv[]){
 //    size_t m0 = size_t(atoi(argv[1]));
@@ -64,20 +65,25 @@ void degree_distribution_ba(int argc, char* argv[]){
 }
 
 void run_in_main(int argc, char* argv[]){
-    NetworkBA net(3, 5);
+    NetworkBA net(3, 2);
 
     net.view_nodes();
     net.view_links();
+    net.view_preferentially();
 
-    size_t network_size = 1000;
+    size_t network_size = 1000000;
     for(size_t i{}; i < network_size; ++i) {
 //        cout << "total degree " << net.get_total_degree() << endl;
         net.add_node();
+//        net.view_preferentially();
 //        net.view_nodes();
 //        net.view_links();
+//        net.view_preferentially();
     }
-    net.view_nodes();
+//    net.view_nodes();
+//    net.view_links();
     cout << "total degree " << net.get_total_degree() << endl;
+    net.timeElapsed();
 
 }
 
@@ -95,10 +101,10 @@ int main(int argc, char* argv[]) {
     auto t_start = std::chrono::system_clock::now();
 
     time_t seed = time(nullptr);
-    srand(seed);    // seeding
+//    srand(seed);    // seeding
 
-//    run_in_main(argc, argv);
-    degree_distribution_ba(argc, argv);
+    run_in_main(argc, argv);
+//    degree_distribution_ba(argc, argv);
 
     auto t_end= std::chrono::system_clock::now();
     std::chrono::duration<double> drtion = t_end - t_start;

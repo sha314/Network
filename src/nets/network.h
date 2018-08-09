@@ -9,74 +9,9 @@
 #include <vector>
 #include <iostream>
 #include <sstream>
+#include "node.h"
+#include "link.h"
 
-
-/**
- * Node of a network
- */
-class Node{
-    size_t  _id;
-    std::vector<size_t> _connected_nodes;
-
-    int _group_id;
-public:
-    ~Node() {_connected_nodes.clear();};
-    Node(size_t id);
-    size_t get_id() const { return  _id;}
-    int get_group_id() const { return  _group_id;}
-    void set_group_id(int id) {_group_id = id;}
-
-    const std::vector<size_t>& get_neighbors() const {return _connected_nodes;}
-
-    void add_neighbor(Node n);
-    void add_neighbor(size_t n);
-
-    /**
-     * Checked version
-     * less efficient but useful for debugging
-     */
-    void add_neighbor_checked(Node n);
-    void add_neighbor_checked(size_t n);
-
-    /**
-     * Number of links a node have is the degree of that node
-     */
-    double degree() const {return _connected_nodes.size();}
-
-};
-
-
-std::ostream& operator<<(std::ostream& os, const Node& node);
-
-/**
- *
- */
-class Link{
-    //size_t _id;
-    int _group_id{-1}; // will be used for percolation
-    bool _active{false};
-    size_t _id_node_a, _id_node_b;
-public:
-    ~Link() = default;
-    Link(size_t id_a, size_t id_b);
-
-    int get_group_id() const { return  _group_id;}
-    void set_group_id(int id) {_group_id = id;}
-
-    bool is_active() const { return _active;}
-    void activate() {_active = true;}
-
-    std::string to_string() const {
-        std::stringstream ss;
-        ss << "(" << _id_node_a  << "," << _id_node_b << ")";
-        return ss.str();
-    }
-
-    size_t get_a() const {return _id_node_a;}
-    size_t get_b() const {return _id_node_b;}
-};
-
-std::ostream& operator<<(std::ostream& os, const Link& lnk);
 
 /**
  * Network consists of Nodes and Links
@@ -91,13 +26,13 @@ protected:
 
     double _total_degree; // total degree of the network
 
+    // for selecting m links
+    std::vector<size_t> _m_links, _node_indices;
 public:
-    ~Network(){
-        _nodes.clear();
-        _links.clear();
-    };
+    ~Network() = default;
     explicit Network(size_t m0=0, size_t m=1);
-    void reset(){
+
+    virtual void reset(){
         _nodes.clear();
         _links.clear();
         _total_degree = 0;
@@ -136,21 +71,48 @@ public:
  * Barabasi-Albert Network model
  */
 class NetworkBA : public Network{
+    double time{};
 
+    // holds the index of node.
+    // number of degree the nodes have if the number of repetition of that index
+    // helps efficiently selecting nodes preferentially
+    std::vector<size_t> _preferentially;
+
+    // methods
+    [[deprecated("Only able to calculate for m=1")]]
+    void add_node_v0();
+    void add_node_v1();
+    void add_node_v2();
+    void add_node_v3();
+
+    void select_m_links_preferentially_v1(size_t sz) ;
+    void select_m_links_preferentially_v2(size_t sz) ;
+    void select_m_links_preferentially_v3(size_t sz) ;
+
+    void connect_with_m_nodes_v1(size_t sz);
+    void connect_with_m_nodes_v2(size_t sz);
+    void connect_with_m_nodes_v3(size_t sz);
+    void connect_with_m_nodes_v4(size_t sz);
 public:
     ~NetworkBA() = default;
-    NetworkBA(size_t m0=0, size_t m=1) : Network(m0, m) {};
+    NetworkBA(size_t m0=0, size_t m=1) : Network(m0, m) {
 
-    [[deprecated("instead use add_node")]]
-    void add_node_v0();
+        initialize_preferential();
+    }
+
+    void initialize_preferential();
+
+
     void add_node();
-
+    void timeElapsed() {std::cout << time << " sec" << std::endl;}
+    void view_preferentially();
     std::string get_signature() {
         std::stringstream ss;
         ss << "netrowk_BA_m0_";
         ss << _m0 << "_m_" << _m << "-";
         return ss.str();
     }
+
 };
 
 
@@ -159,16 +121,36 @@ public:
  */
 class NetworkBApercolation : public NetworkBA{
     size_t _network_size; // number of nodes on the network
+    size_t _link_count;
+    std::vector<size_t> _link_indices;
+    std::vector<size_t> _randomized_indices;
+    double _number_of_occupied_links{};
+    double _number_of_nodes_in_the_largest_cluster;
+    size_t index_var{};
+    Link *_last_lnk;
+
+    // methods
+    void randomize();
 public:
     ~NetworkBApercolation() = default;
     NetworkBApercolation(size_t m0, size_t m, size_t size);
-
+    void reset(){
+        index_var = 0;
+        _number_of_occupied_links = 0;
+        _number_of_nodes_in_the_largest_cluster = 0;
+        randomize();
+    }
     bool occupy_link();
     std::string get_signature() override {
         std::stringstream ss;
         ss << "netrowk_BA_percolation_m0_";
         ss << _m0 << "_m_" << _m << "_size_" << _network_size << "-";
         return ss.str();
+    }
+
+    void lastLink() {std::cout << (*_last_lnk) << std::endl;}
+    void viewActiveLinks(){
+        // todo
     }
 };
 
