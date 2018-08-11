@@ -846,6 +846,7 @@ bool NetworkBApercolationExplosive::occupy_link() {
 
     return true;
 }
+
 /**
  * For minimizing cluster sizes using sum rule
 
@@ -918,6 +919,82 @@ size_t NetworkBApercolationExplosive::link_for_min_cluster_sum_rule() {
     }
     cout << "selected link " << net.getLink(_randomized_indices[index_randomized_link])
             << " id = " << id1 << " and " << id2 << " sum= " << sum << endl;
+    return index_randomized_link;
+}
+
+
+/**
+ * For minimizing cluster sizes using sum rule
+
+ * @return index of the link in the _randomized_indices for which cluster size become minimum
+ */
+size_t NetworkBApercolationExplosive::link_for_min_cluster_product_rule() {
+    size_t index_randomized_link;
+
+    size_t tmp_lnk_index, index1, index2;
+    int id1, id2;
+    size_t prod{1}, n_nodes;
+    Link tmp_lnk;
+    for(size_t i{}; i < _M; ++i){
+        if(i >= _randomized_indices.size()){
+            cout << "not enough free link : line " << __LINE__ << endl;
+            break;
+        }
+        id1 = -1;
+        id2 = -1;
+        tmp_lnk_index = _randomized_indices[i];
+        tmp_lnk = net.getLink(tmp_lnk_index);
+        if(net.get_node_group_id(tmp_lnk.get_a()) == -1 && net.get_node_group_id(tmp_lnk.get_b()) == -1){
+            // since we are minimizing cluster sizes
+            index_randomized_link = i;
+            cout << "got link " << net.getLink(_randomized_indices[i]) << " id = " << id1 << " and " << id2 << endl;
+            break; // since this is the minimum link case
+        }
+        else if(net.get_node_group_id(tmp_lnk.get_a()) == -1 && net.get_node_group_id(tmp_lnk.get_b()) != -1){
+            id1 = net.get_node_group_id(tmp_lnk.get_b());
+            index1 = _cluster_index_from_id[id1];
+            n_nodes = _cluster[index1].numberOfNodes(); // 1 node would have been multiplied
+            if(prod == 1 || prod > n_nodes) { // since we are minimizing cluster sizes
+                prod = n_nodes;
+                index_randomized_link = i;
+            }
+        }
+        else if(net.get_node_group_id(tmp_lnk.get_a()) != -1 && net.get_node_group_id(tmp_lnk.get_b()) == -1){
+            id1 = net.get_node_group_id(tmp_lnk.get_a());
+            index1 = _cluster_index_from_id[id1];
+            n_nodes = _cluster[index1].numberOfNodes(); // 1 node would have been multiplied
+            if(prod == 1 || prod > n_nodes) { // since we are minimizing cluster sizes
+                prod = n_nodes;
+                index_randomized_link = i;
+            }
+        }
+        else{
+
+            id1 = net.get_node_group_id(tmp_lnk.get_a());
+            id2 = net.get_node_group_id(tmp_lnk.get_b());
+            if(id1 == id2){
+                // if they belong to same cluster. adding new link does not increase cluster size.
+                index1 = _cluster_index_from_id[id1];
+                n_nodes = _cluster[index1].numberOfNodes();
+                cout << "same cluster " << endl;
+            }else {
+                index1 = _cluster_index_from_id[id1];
+                index2 = _cluster_index_from_id[id2];
+                n_nodes = _cluster[index1].numberOfNodes() * _cluster[index2].numberOfNodes(); // product rule
+            }
+            if(prod == 1 || prod > n_nodes) { // since we are minimizing cluster sizes
+                prod = n_nodes;
+                index_randomized_link = i;
+            }
+        }
+        cout << "checking link " << net.getLink(_randomized_indices[i])
+             << " id = " << id1 << " and " << id2 << " sum= " << prod << endl;
+    }
+    if(index_randomized_link >= _randomized_indices.size()){
+        cout << "out of bound : line " << __LINE__ << endl;
+    }
+    cout << "selected link " << net.getLink(_randomized_indices[index_randomized_link])
+         << " id = " << id1 << " and " << id2 << " sum= " << prod << endl;
     return index_randomized_link;
 }
 

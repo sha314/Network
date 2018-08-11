@@ -255,7 +255,8 @@ public:
      * Sum rule and Product rule
      */
     size_t link_for_min_cluster_sum_rule();
-
+    size_t link_for_min_cluster_product_rule();
+    // TODO write function that take a lambda function and executes as it says
 };
 
 #endif //NETWORK_NETWORK_H
