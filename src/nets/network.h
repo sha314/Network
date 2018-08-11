@@ -112,6 +112,7 @@ class NetworkBA : public Network{
     void select_m_links_preferentially_v1(uint sz) ;
     void select_m_links_preferentially_v2(uint sz) ;
     void select_m_links_preferentially_v3(uint sz) ;
+    void select_m_links_preferentially_v4(uint sz) ;
 
     void connect_with_m_nodes_v1(uint sz);
     void connect_with_m_nodes_v2(uint sz);
@@ -163,7 +164,7 @@ protected:
     std::vector<uint> _link_indices;
     std::vector<uint> _randomized_indices;
     double _number_of_occupied_links{};
-    size_t _number_of_nodes_in_the_largest_cluster;
+    size_t _number_of_nodes_in_the_largest_cluster{0};
     size_t index_var{};
     Link _last_lnk;
 
@@ -172,13 +173,14 @@ protected:
     InverseArray<int> _cluster_index_from_id;
 
     // methods
-    void randomize();
-    void initiate(uint m0, uint m, size_t size);
+    void randomize_v0();
+    void randomize_v1();
+    void initiate(size_t m0, size_t m, size_t size);
 public:
     ~NetworkBApercolation() = default;
     NetworkBApercolation() = default;
-    NetworkBApercolation(uint m0, uint m, uint size);
-
+    NetworkBApercolation(size_t m0, size_t m, size_t size);
+    void initialize_network();
 
     void reset(int i=0){
         index_var = 0;
@@ -188,10 +190,11 @@ public:
             // initialize the network again
             initialize_network();
         }
-        randomize();
+        randomize_v1();
         _cluster.clear();
     }
-    bool occupy_link();
+
+    virtual bool occupy_link();
 
     std::string get_signature() {
         std::stringstream ss;
@@ -201,21 +204,30 @@ public:
     }
 
     Link lastLink() const {return _last_lnk;}
-    void viewCluster();
-    void viewClusterExtended();
 
-    void viewActiveLinks(){
-        // todo
-    }
-    double occupationProbability() const { return _number_of_occupied_links / _link_count;}
-    size_t largestClusterSize() const {return _number_of_nodes_in_the_largest_cluster;}
+
+    /***************************************
+     *  cluster management and relabeling
+     */
     void manage_cluster_v0(size_t position);
     void relabel_nodes(Cluster& clster, int id);
 
+    /***************************************
+     * View the network
+     */
     void viewNodes() {net.view_nodes();}
     void viewLinks() {net.view_links();}
+    void viewCluster();
+    void viewClusterExtended();
+    void viewActiveLinks(){
+        // todo
+    }
 
-    void initialize_network();
+    /******************************************
+     * Information about the state of network
+     */
+    double occupationProbability() const { return _number_of_occupied_links / _link_count;}
+    size_t largestClusterSize() const {return _number_of_nodes_in_the_largest_cluster;}
 };
 
 
@@ -223,10 +235,14 @@ public:
  * Explosive percolation on BA network
  */
 class NetworkBApercolationExplosive : public NetworkBApercolation{
+    static const int MAX_M_VALUE = 20;
     uint _M{2}; // number of link to choose for product rule or sum rule
 public:
     ~NetworkBApercolationExplosive() = default;
     NetworkBApercolationExplosive() = default;
+    NetworkBApercolationExplosive(size_t m0, size_t m, size_t size, uint M);
+
+    bool occupy_link();
 
     std::string get_signature() {
         std::stringstream ss;
@@ -234,6 +250,12 @@ public:
         ss << net.get_m0() << "_m_" << net.get_m() << "_size_" << _network_size << "-";
         return ss.str();
     }
+
+    /**
+     * Sum rule and Product rule
+     */
+    size_t link_for_min_cluster_sum_rule();
+
 };
 
 #endif //NETWORK_NETWORK_H

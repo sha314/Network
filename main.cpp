@@ -87,6 +87,7 @@ void run_in_main(int argc, char* argv[]){
 
 }
 
+
 void network_percolation(int argc, char* argv[]){
 
     NetworkBApercolation net(3, 2, 10);
@@ -114,6 +115,27 @@ void network_percolation(int argc, char* argv[]){
     net.viewNodes();
     net.viewLinks();
     net.viewClusterExtended();
+
+}
+
+
+
+void network_percolation_explosive(int argc, char* argv[]){
+
+    NetworkBApercolationExplosive net(3, 2, 10, 3);
+    net.viewNodes();
+    net.viewLinks();
+    net.viewClusterExtended();
+
+    size_t i{};
+    while (net.occupy_link()){
+        cout << " ************* **************** *************" << endl;
+        cout << i << "-th link " << net.lastLink() << endl;
+        cout << "p = " << net.occupationProbability() << endl;
+        cout << "P = " << net.largestClusterSize() << endl;
+        ++i;
+        net.viewClusterExtended();
+    }
 
 }
 
@@ -158,7 +180,8 @@ int main(int argc, char* argv[]) {
 
 //    run_in_main(argc, argv);
 //    degree_distribution_ba(argc, argv);
-      network_percolation(argc, argv);
+//      network_percolation(argc, argv);
+    network_percolation_explosive(argc, argv);
 
     auto t_end= std::chrono::system_clock::now();
     std::chrono::duration<double> drtion = t_end - t_start;

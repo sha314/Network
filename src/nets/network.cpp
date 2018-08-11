@@ -3,6 +3,7 @@
 //
 
 #include <chrono>
+#include <random>
 #include "network.h"
 #include "../util/printer.h"
 
@@ -530,6 +531,34 @@ void NetworkBA::select_m_links_preferentially_v3(uint sz) {
 //    cout << '}' << endl;
 }
 
+void NetworkBA::select_m_links_preferentially_v4(uint sz) {
+    size_t r, index;
+
+    std::random_device rd;  //Will be used to obtain a seed for the random number engine
+    std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
+    std::uniform_int_distribution<size_t> dis(0, _preferentially.size()-1);
+
+    for(size_t j=0; j < _m; ++j){
+        r =  dis(gen);
+        index = _preferentially[r];
+        if(_nodes[index].get_current_group() == sz){
+//            cout << index << " id already selected " << __LINE__ << endl;
+            --j; // to do this step again
+            continue;
+        }
+//        cout << "selecting " << index << endl;
+        _m_links[j] = index;
+        _nodes[index].set_current_group(sz);
+    }
+
+//    cout << "m_links : line " << __LINE__ << endl;
+//    cout << "{";
+//    for(uint i{}; i < _m; ++i){
+//        cout << _m_links[i] << ',';
+//    }
+//    cout << '}' << endl;
+}
+
 /**
  * Initialize the preferentially array.
  */
@@ -560,13 +589,13 @@ void NetworkBA::view_preferentially() {
 /*************************
  * Percolation on BA network
  */
-NetworkBApercolation::NetworkBApercolation(uint m0, uint m, uint size)
+NetworkBApercolation::NetworkBApercolation(size_t m0, size_t m, size_t size)
     : _m0{m0}, _m{m}
 {
     initiate(m0, m, size);
 }
 
-void NetworkBApercolation::initiate(uint m0, uint m, size_t size) {
+void NetworkBApercolation::initiate(size_t m0, size_t m, size_t size) {
     _m0 = m0;
     _m = m;
     _network_size = size;
@@ -578,7 +607,7 @@ void NetworkBApercolation::initiate(uint m0, uint m, size_t size) {
         _link_indices[i] = i;
     }
 //    cout << _link_indices.size() << " : " << _link_indices << endl;
-    randomize();
+    randomize_v1();
 }
 
 void NetworkBApercolation::initialize_network() {
@@ -590,10 +619,12 @@ void NetworkBApercolation::initialize_network() {
     }
 }
 
-void NetworkBApercolation::randomize() {
-    size_t r;
+
+void NetworkBApercolation::randomize_v0() {
+
     _randomized_indices = _link_indices;
-    uint tmp;
+
+    uint tmp, r;
     for(uint i{}; i < _link_count; ++i) {
         r = rand() % _link_count;
         tmp = _randomized_indices[i];
@@ -602,6 +633,22 @@ void NetworkBApercolation::randomize() {
     }
 //    cout << "original " << _link_indices << endl;
 //    cout << "randomized " << _randomized_indices << endl;
+}
+
+/**
+ * Uses Better Random number generator from stdard library
+ */
+void NetworkBApercolation::randomize_v1() {
+
+    _randomized_indices = _link_indices;
+
+    std::random_device rd;
+    std::mt19937 g(rd());
+
+//    cout << "before " << _randomized_indices << endl;
+    std::shuffle(_randomized_indices.begin(), _randomized_indices.end(), g);
+//    cout << "after " << _randomized_indices << endl;
+
 }
 
 bool NetworkBApercolation::occupy_link() {
@@ -756,5 +803,123 @@ void NetworkBApercolation::relabel_nodes(Cluster& clstr, int id) {
         net.set_node_group_id(nds[i],id);
     }
 }
+
+/********************************
+ * Explosive percolation on BA network
+ */
+/**
+ *
+ * @param m0
+ * @param m
+ * @param size
+ * @param M
+ */
+NetworkBApercolationExplosive::NetworkBApercolationExplosive(size_t m0, size_t m, size_t size, uint M)
+        : NetworkBApercolation(m0, m, size)
+{
+    if (M > 2) {
+        if(M > MAX_M_VALUE){
+            cout << "M exceeds maximum allowed value : line " << __LINE__ << endl;
+            _M = MAX_M_VALUE;
+        }
+        _M = M;
+    }
+}
+
+bool NetworkBApercolationExplosive::occupy_link() {
+    if (_number_of_occupied_links >= _link_count){
+        return false;
+    }
+//    cout << index_var << " ==? " << _randomized_indices.size();
+    // select M links and occupy that one which makes the cluster size minimum
+    size_t r = link_for_min_cluster_sum_rule();
+    size_t pos = _randomized_indices[r];
+    _randomized_indices.erase(_randomized_indices.begin() + r); // must erase the used value
+    _last_lnk = net.getLink(pos);
+    net.activateLink(pos); // activating the link
+
+    // occupy that link
+    ++_number_of_occupied_links;
+
+    // cluster management
+    manage_cluster_v0(pos);
+
+    return true;
+}
+/**
+ * For minimizing cluster sizes using sum rule
+
+ * @return index of the link in the _randomized_indices for which cluster size become minimum
+ */
+size_t NetworkBApercolationExplosive::link_for_min_cluster_sum_rule() {
+    size_t index_randomized_link;
+
+    size_t tmp_lnk_index, index1, index2;
+    int id1, id2;
+    size_t sum{}, n_nodes;
+    Link tmp_lnk;
+    for(size_t i{}; i < _M; ++i){
+        if(i >= _randomized_indices.size()){
+            cout << "not enough free link : line " << __LINE__ << endl;
+            break;
+        }
+        id1 = -1;
+        id2 = -1;
+        tmp_lnk_index = _randomized_indices[i];
+        tmp_lnk = net.getLink(tmp_lnk_index);
+        if(net.get_node_group_id(tmp_lnk.get_a()) == -1 && net.get_node_group_id(tmp_lnk.get_b()) == -1){
+             // since we are minimizing cluster sizes
+            index_randomized_link = i;
+            cout << "got link " << net.getLink(_randomized_indices[i]) << " id = " << id1 << " and " << id2 << endl;
+            break; // since this is the minimum link case
+        }
+        else if(net.get_node_group_id(tmp_lnk.get_a()) == -1 && net.get_node_group_id(tmp_lnk.get_b()) != -1){
+            id1 = net.get_node_group_id(tmp_lnk.get_b());
+            index1 = _cluster_index_from_id[id1];
+            n_nodes = _cluster[index1].numberOfNodes() + 1; // 1 node would have been added
+            if(sum == 0 || sum > n_nodes) { // since we are minimizing cluster sizes
+                sum = n_nodes;
+                index_randomized_link = i;
+            }
+        }
+        else if(net.get_node_group_id(tmp_lnk.get_a()) != -1 && net.get_node_group_id(tmp_lnk.get_b()) == -1){
+            id1 = net.get_node_group_id(tmp_lnk.get_a());
+            index1 = _cluster_index_from_id[id1];
+            n_nodes = _cluster[index1].numberOfNodes() + 1; // 1 node would have been added
+            if(sum == 0 || sum > n_nodes) { // since we are minimizing cluster sizes
+                sum = n_nodes;
+                index_randomized_link = i;
+            }
+        }
+        else{
+
+            id1 = net.get_node_group_id(tmp_lnk.get_a());
+            id2 = net.get_node_group_id(tmp_lnk.get_b());
+            if(id1 == id2){
+                // if they belong to same cluster. adding new link does not increase cluster size.
+                index1 = _cluster_index_from_id[id1];
+                n_nodes = _cluster[index1].numberOfNodes();
+                cout << "same cluster " << endl;
+            }else {
+                index1 = _cluster_index_from_id[id1];
+                index2 = _cluster_index_from_id[id2];
+                n_nodes = _cluster[index1].numberOfNodes() + _cluster[index2].numberOfNodes();
+            }
+            if(sum == 0 || sum > n_nodes) { // since we are minimizing cluster sizes
+                sum = n_nodes;
+                index_randomized_link = i;
+            }
+        }
+        cout << "checking link " << net.getLink(_randomized_indices[i])
+             << " id = " << id1 << " and " << id2 << " sum= " << sum << endl;
+    }
+    if(index_randomized_link >= _randomized_indices.size()){
+        cout << "out of bound : line " << __LINE__ << endl;
+    }
+    cout << "selected link " << net.getLink(_randomized_indices[index_randomized_link])
+            << " id = " << id1 << " and " << id2 << " sum= " << sum << endl;
+    return index_randomized_link;
+}
+
 
 
