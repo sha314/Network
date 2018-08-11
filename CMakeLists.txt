@@ -12,6 +12,14 @@ set(SOURCE_FILES
         src/util/printer.h
         src/util/time_tracking.cpp
         src/util/time_tracking.h
-        src/cluster.cpp src/cluster.h src/nets/node.cpp src/nets/node.h src/nets/link.cpp src/nets/link.h)
+        src/cluster.cpp
+        src/cluster.h
+        src/nets/node.cpp
+        src/nets/node.h
+        src/nets/link.cpp
+        src/nets/link.h
+        src/types.h
+        src/ext_libs/inverse_array.h
+        )
 
-add_executable(network ${SOURCE_FILES})
+add_executable(networks ${SOURCE_FILES})

@@ -65,7 +65,7 @@ void degree_distribution_ba(int argc, char* argv[]){
 }
 
 void run_in_main(int argc, char* argv[]){
-    NetworkBA net(3, 2);
+    NetworkBA net(3, 50);
 
     net.view_nodes();
     net.view_links();
@@ -87,6 +87,56 @@ void run_in_main(int argc, char* argv[]){
 
 }
 
+void network_percolation(int argc, char* argv[]){
+
+    NetworkBApercolation net(3, 2, 10);
+    net.viewNodes();
+    net.viewLinks();
+    net.viewClusterExtended();
+    net.reset(1);
+    net.viewNodes();
+    net.viewLinks();
+    net.viewClusterExtended();
+
+    size_t i{};
+    while (net.occupy_link()){
+//        cout << " ************* **************** *************" << endl;
+//        cout << i << "-th link " << net.lastLink() << endl;
+//        cout << "p = " << net.occupationProbability() << endl;
+//        cout << "P = " << net.largestClusterSize() << endl;
+        ++i;
+//        net.viewClusterExtended();
+    }
+    net.viewNodes();
+    net.viewLinks();
+    net.viewClusterExtended();
+    net.reset();
+    net.viewNodes();
+    net.viewLinks();
+    net.viewClusterExtended();
+
+}
+
+void network_percolation_to_file(int argc, char* argv[]){
+    uint m = atoi(argv[1]);
+    uint network_size = atoi(argv[2]);
+    uint ensemble_size = atoi(argv[3]);
+
+    NetworkBApercolation net(3, m, network_size);
+    net.reset();
+    net.viewNodes();
+    net.viewLinks();
+    net.viewCluster();
+    size_t i{};
+    while (net.occupy_link()){
+//        cout << " ************* **************** *************" << endl;
+//        cout << i << "-th link " << net.lastLink() << endl;
+//        cout << "p = " << net.occupationProbability() << endl;
+        ++i;
+        net.viewClusterExtended();
+    }
+
+}
 
 /**
  *
@@ -99,12 +149,16 @@ int main(int argc, char* argv[]) {
     cout << currentTime() << endl;
     cout << "Compiled on " << __DATE__ << "\t at " << __TIME__ << endl;
     auto t_start = std::chrono::system_clock::now();
-
+    if(sizeof(uint) < 4){
+        cout << "size of unsigned int is less than 4 byte : line " <<__LINE__ << endl;
+        return 0;
+    }
     time_t seed = time(nullptr);
 //    srand(seed);    // seeding
 
-    run_in_main(argc, argv);
+//    run_in_main(argc, argv);
 //    degree_distribution_ba(argc, argv);
+      network_percolation(argc, argv);
 
     auto t_end= std::chrono::system_clock::now();
     std::chrono::duration<double> drtion = t_end - t_start;

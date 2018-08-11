@@ -8,7 +8,7 @@
 
 using namespace std;
 
-Link::Link(size_t id_a, size_t id_b) {
+Link::Link(uint id_a, uint id_b) {
     if(id_a == id_b){
         cout << "between " << id_a << " and " << id_b << endl;
         cerr << "Self linking is not allowed : line " << __LINE__ << endl;

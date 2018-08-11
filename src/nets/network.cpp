@@ -4,6 +4,7 @@
 
 #include <chrono>
 #include "network.h"
+#include "../util/printer.h"
 
 using  namespace std;
 
@@ -32,11 +33,11 @@ Network::Network(size_t m0, size_t m) {
 }
 
 void Network::initialize() {
-    for(size_t i{}; i != _m0; ++i){
+    for(uint i{}; i != _m0; ++i){
         _nodes.push_back({i}); // add node with id equal to the size of the _nodes
     }
-    size_t k{};
-    for(size_t i{}; i != _m0; ++i){
+    uint k{};
+    for(uint i{}; i != _m0; ++i){
         k = (i+1) % _m0;
         _nodes[i].add_neighbor(k);
         _nodes[k].add_neighbor(i);
@@ -52,10 +53,10 @@ void Network::initialize() {
  * Add a new node to the network and connect with with_node nodes
  * @param with_node
  */
-void Network::add_node(std::vector<size_t> with_node) {
+void Network::add_node(std::vector<uint> with_node) {
     size_t sz = {_nodes.size()};
     _nodes.push_back({sz}); // add node with id equal to the size of the _nodes
-    for(size_t n: with_node){
+    for(uint n: with_node){
         _nodes[sz].add_neighbor(n);
         _nodes[n].add_neighbor(sz);
         _total_degree += 2; // one link  increases degree by 2.
@@ -63,7 +64,7 @@ void Network::add_node(std::vector<size_t> with_node) {
     }
 }
 
-void Network::add_node(size_t with_node) {
+void Network::add_node(uint with_node) {
     size_t sz = {_nodes.size()};
     _nodes.push_back({sz}); // add node with id equal to the size of the _nodes
     _nodes[sz].add_neighbor(with_node);
@@ -80,25 +81,25 @@ void Network::add_node() {
     _nodes.push_back({sz}); // add node with id equal to the size of the _nodes
 
 
-//    vector<size_t> m_links(_m), node_indices(sz);
+//    vector<uint> m_links(_m), node_indices(sz);
     _node_indices.resize(_nodes.size());
 
     // list of all existing nodes
-    for(size_t i{}; i < sz; ++i){
+    for(uint i{}; i < sz; ++i){
         _node_indices[i] = i;
     }
-    size_t r{};
+    uint r{};
 
     // set m_links such that there is no repetition
-    for(size_t j{}; j < _m; ++j){
+    for(uint j{}; j < _m; ++j){
         r = rand() % _node_indices.size();
         _m_links[j] = _node_indices[r];
         _node_indices.erase(_node_indices.begin() + r); // so that its not get selected again
     }
 
     // setting m links in the netrowk
-    size_t i{};
-    for(size_t k{}; k < _m; ++k){
+    uint i{};
+    for(uint k{}; k < _m; ++k){
         i = _m_links[k];
         _nodes[i].add_neighbor(sz);
         _nodes[sz].add_neighbor(i);
@@ -114,7 +115,7 @@ void Network::add_node() {
  */
 void Network::view_nodes() {
     cout << "id(size):{neighbors,...}" << endl;
-    for(size_t i{}; i < _nodes.size(); ++i){
+    for(uint i{}; i < _nodes.size(); ++i){
         cout << _nodes[i].get_id() << "(" << _nodes[i].degree() << "):{";
         auto neighbors = _nodes[i].get_neighbors();
         for(auto n: neighbors){
@@ -125,8 +126,8 @@ void Network::view_nodes() {
 }
 
 void Network::view_links() {
-    cout << _links.size() << " links {" ;
-    for(size_t i{}; i < _links.size(); ++i){
+    cout << "Total " << _links.size() << " links :{" ;
+    for(uint i{}; i < _links.size(); ++i){
         cout << _links[i] << ',';
     }
     cout << "}" << endl;
@@ -135,7 +136,7 @@ void Network::view_links() {
 vector<double> Network::degrees() {
     vector<double> degs(_nodes.size());
 
-    for(size_t i{}; i < _nodes.size(); ++i){
+    for(uint i{}; i < _nodes.size(); ++i){
         degs[i] = _nodes[i].degree();
     }
 //    cout << degs.size() << " : line " << __LINE__ << endl;
@@ -143,6 +144,74 @@ vector<double> Network::degrees() {
     return degs;
 }
 
+Link Network::getLink(size_t pos) const {
+    if(pos < _links.size())
+        return _links[pos];
+    else {
+        cout << "out of bound : line " << __LINE__ << endl;
+        return {};
+    }
+}
+
+Node Network::getNode(size_t pos) const {
+    if(pos < _nodes.size())
+        return _nodes[pos];
+    else {
+        cout << "out of bound : line " << __LINE__ << endl;
+        exit(-2);
+    }
+}
+
+void Network::set_link_group_id(size_t pos, int id) {
+    if(pos < _links.size()){
+        _links[pos].set_group_id(id);
+    }else{
+        cout << "Out of bound : line " << __LINE__ << endl;
+    }
+}
+
+void Network::set_node_group_id(size_t pos, int id) {
+    if(pos < _nodes.size()){
+        _nodes[pos].set_group_id(id);
+    }else{
+        cout << "Out of bound : line " << __LINE__ << endl;
+    }
+}
+
+int Network::get_link_group_id(size_t pos) {
+    if(pos < _links.size()){
+        return _links[pos].get_group_id();
+    }else{
+        cout << "Out of bound : line " << __LINE__ << endl;
+        return -2;
+    }
+}
+
+int Network::get_node_group_id(size_t pos) {
+    if(pos < _nodes.size()){
+        return _nodes[pos].get_group_id();
+    }else{
+        cout << "Out of bound : line " << __LINE__ << endl;
+        return -2;
+    }
+}
+
+void Network::activateLink(size_t pos) {
+    if(pos < _links.size()){
+        _links[pos].activate();
+    }else{
+        cout << "Out of bound : line " << __LINE__ << endl;
+    }
+}
+
+void Network::activateNode(size_t pos) {
+    if(pos < _nodes.size()){
+        cout << "Not implemented : line " << __LINE__ << endl;
+//        _nodes[pos].activate();
+    }else{
+        cout << "Out of bound : line " << __LINE__ << endl;
+    }
+}
 
 /**************************************
  * NetworkBA methods
@@ -157,9 +226,9 @@ void NetworkBA::add_node_v0() {
     double p = rand() / double(RAND_MAX);
 
     double tmp{};
-    size_t sz = _nodes.size();
+    uint sz = _nodes.size();
 //    cout << "probability " << p << endl;
-    for(size_t i{}; i < sz; ++i){
+    for(uint i{}; i < sz; ++i){
         tmp +=  _nodes[i].degree() / get_total_degree();
         if(tmp >= p){
 //            cout << "selected node " << i << " with " << tmp << endl;
@@ -190,12 +259,12 @@ void NetworkBA::add_node() {
 
 void NetworkBA::add_node_v1() {
 
-    size_t sz = _nodes.size();
+    uint sz = _nodes.size();
 
     _node_indices.resize(sz); // 0.0072 sec when total time is 18.11 sec. 0.0398 % of total time
 
     // list of all existing nodes
-    for(size_t i{}; i < sz; ++i){ // 2.43 sec when total time is 20.32 sec. ~1% of total time
+    for(uint i{}; i < sz; ++i){ // 2.43 sec when total time is 20.32 sec. ~1% of total time
         _node_indices[i] = i;
     }
 
@@ -214,9 +283,9 @@ void NetworkBA::add_node_v1() {
     connect_with_m_nodes_v1(sz);
 }
 
-void NetworkBA::connect_with_m_nodes_v1(size_t sz) {
-    size_t i{};
-    for(size_t k{}; k < _m; ++k){ // 0.058 sec when total time is 19.05 sec. ~0.25 % of total time
+void NetworkBA::connect_with_m_nodes_v1(uint sz) {
+    uint i{};
+    for(uint k{}; k < _m; ++k){ // 0.058 sec when total time is 19.05 sec. ~0.25 % of total time
         i = _m_links[k];
         _nodes[sz].add_neighbor(i);
         _nodes[i].add_neighbor(sz);
@@ -236,12 +305,12 @@ void NetworkBA::connect_with_m_nodes_v1(size_t sz) {
  * selecting m links preferentially.
  * set m_links such that there is no repetition.
  */
-void NetworkBA::select_m_links_preferentially_v1(size_t sz) {
+void NetworkBA::select_m_links_preferentially_v1(uint sz) {
     double p;
     double tmp{};
-    for(size_t j{}; j < _m; ++j){
+    for(uint j{}; j < _m; ++j){
         p = rand() / double(RAND_MAX);
-        for(size_t k{}; k < sz; ++k) {
+        for(uint k{}; k < sz; ++k) {
             tmp += _nodes[_node_indices[k]].degree() / _total_degree;
             if(tmp >= p) {
                 _m_links[j] = _node_indices[k];
@@ -261,7 +330,7 @@ void NetworkBA::select_m_links_preferentially_v1(size_t sz) {
  * Much efficient than add_node_v2() especially for large m
  */
 void NetworkBA::add_node_v2() {
-    size_t sz = _nodes.size();
+    uint sz = _nodes.size();
     auto t0 = chrono::_V2::system_clock::now();
 
     // set m_links such that there is no repetition
@@ -286,8 +355,22 @@ void NetworkBA::add_node_v2() {
  * m links are selected preferentially with respect to their degree.
  * Much efficient than add_node_v3()
  */
+/**
+ * Time statistics
+ * m    Network_size        Total_Time          Memory_required
+ * 1    1000,000            1.45916 sec
+ * 2    1000,000            1.39551 sec
+ * 10   1000,000            5.0823 sec          ~350 MB (run from IDE)
+ * 20   1000,000            7.2886 sec          ~650 MB (run from IDE)
+ * 30   1000,000            13.5757 sec         ~1.1 GB (run from IDE)
+ * 40   1000,000            32.079 sec          ~1.3 GB (run from IDE)
+ * 50	1000,000			18.71 sec 			~1.7 GB (run from terminal directly)
+ * set m_links such that there is no repetition.
+ * selecting m links preferentially.
+ * Much efficient than previous versions
+ */
 void NetworkBA::add_node_v3() {
-    size_t sz = _nodes.size();
+    uint sz = _nodes.size();
     auto t0 = chrono::_V2::system_clock::now();
 
     // set m_links such that there is no repetition
@@ -305,11 +388,11 @@ void NetworkBA::add_node_v3() {
 }
 
 
-void NetworkBA::connect_with_m_nodes_v2(size_t sz) {
-    size_t i{};
-    size_t old_size = _links.size();
+void NetworkBA::connect_with_m_nodes_v2(uint sz) {
+    uint i{};
+    uint old_size = _links.size();
     _links.resize(old_size + _m);
-    for(size_t k{}; k < _m; ++k){ // 0.058 sec when total time is 19.05 sec. ~0.25 % of total time
+    for(uint k{}; k < _m; ++k){ // 0.058 sec when total time is 19.05 sec. ~0.25 % of total time
         i = _m_links[k];
         _nodes[sz].add_neighbor(i);
         _nodes[i].add_neighbor(sz);
@@ -324,11 +407,11 @@ void NetworkBA::connect_with_m_nodes_v2(size_t sz) {
  *
  * @param sz
  */
-void NetworkBA::connect_with_m_nodes_v3(size_t sz) {
+void NetworkBA::connect_with_m_nodes_v3(uint sz) {
     /*
      * updates _preferentially here
      */
-    size_t i{};
+    uint i{};
 
     size_t link_old_size = _links.size();
     _links.resize(link_old_size + _m);
@@ -351,18 +434,18 @@ void NetworkBA::connect_with_m_nodes_v3(size_t sz) {
  *
  * @param sz
  */
-void NetworkBA::connect_with_m_nodes_v4(size_t sz) {
+void NetworkBA::connect_with_m_nodes_v4(uint sz) {
     /*
      * updates _preferentially here
      */
-    size_t i{};
+    uint i{};
 
     size_t prep_size = _preferentially.size();
     _preferentially.resize(prep_size + _m*2);
 
     size_t link_old_size = _links.size();
     _links.resize(link_old_size + _m);
-    for(size_t k{}; k < _m; ++k){ // 0.058 sec when total time is 19.05 sec. ~0.25 % of total time
+    for(uint k{}; k < _m; ++k){ // 0.058 sec when total time is 19.05 sec. ~0.25 % of total time
         i = _m_links[k];
         _nodes[sz].add_neighbor(i);
         _nodes[i].add_neighbor(sz);
@@ -389,12 +472,12 @@ void NetworkBA::connect_with_m_nodes_v4(size_t sz) {
  * set m_links such that there is no repetition.
  * selecting m links preferentially.
  */
-void NetworkBA::select_m_links_preferentially_v2(size_t sz) {
+void NetworkBA::select_m_links_preferentially_v2(uint sz) {
     double p;
     double tmp{};
-    for(size_t j{}; j < _m; ++j){
+    for(uint j{}; j < _m; ++j){
         p = rand() / double(RAND_MAX);
-        for(size_t k{}; k < sz; ++k) {
+        for(uint k{}; k < sz; ++k) {
             tmp += _nodes[k].degree() / _total_degree;
             if(tmp >= p) {
                 if(_nodes[k].get_current_group() == sz){
@@ -417,14 +500,14 @@ void NetworkBA::select_m_links_preferentially_v2(size_t sz) {
  * 2    100,000         0.0505323 sec   0.187127 sec
  * 2    500,000         0.193942 sec    0.714049 sec
  * 2    1000,000        0.456558 sec    1.657095 sec
- * 10   1000,000        8.22383 sec     17.452118 sec       ~600 MB
+ * 10   1000,000        8.22383 sec     17.452118 sec
  * 50   1000,000
  *
  * set m_links such that there is no repetition.
  * selecting m links preferentially.
  * Much efficient than previous versions
  */
-void NetworkBA::select_m_links_preferentially_v3(size_t sz) {
+void NetworkBA::select_m_links_preferentially_v3(uint sz) {
     size_t r, index;
     for(size_t j=0; j < _m; ++j){
         r = rand() % _preferentially.size();
@@ -441,7 +524,7 @@ void NetworkBA::select_m_links_preferentially_v3(size_t sz) {
 
 //    cout << "m_links : line " << __LINE__ << endl;
 //    cout << "{";
-//    for(size_t i{}; i < _m; ++i){
+//    for(uint i{}; i < _m; ++i){
 //        cout << _m_links[i] << ',';
 //    }
 //    cout << '}' << endl;
@@ -456,7 +539,9 @@ void NetworkBA::initialize_preferential() {
         d = _nodes[i].degree();
         sz = _preferentially.size();
         _preferentially.resize(sz + d);
-        for(size_t j{}; j < d; ++j) {
+        for(uint j{}; j < d; ++j) {
+            // _preferentially uses 4 byte to store element.
+            // cannot increase it because ~1,000,000 element will take huge Memory
             _preferentially[sz + j] = i;
         }
     }
@@ -471,48 +556,205 @@ void NetworkBA::view_preferentially() {
     cout << '}' << endl;
 }
 
+
 /*************************
  * Percolation on BA network
  */
-NetworkBApercolation::NetworkBApercolation(size_t m0, size_t m, size_t size)
-        : NetworkBA(m0, m), _network_size{size}
+NetworkBApercolation::NetworkBApercolation(uint m0, uint m, uint size)
+    : _m0{m0}, _m{m}
 {
-    size_t i=0;
-    while (i < _network_size){
-        NetworkBA::add_node();
-        ++i;
-    }
+    initiate(m0, m, size);
+}
 
-    _link_count = _links.size();
+void NetworkBApercolation::initiate(uint m0, uint m, size_t size) {
+    _m0 = m0;
+    _m = m;
+    _network_size = size;
+    initialize_network();
+    _link_count = net.getNumberOfLinks();
     _link_indices.resize(_link_count);
     _randomized_indices.resize(_link_count);
-    for(size_t i{}; i < _link_count; ++i){
+    for(uint i = 0; i < _link_count; ++i){
         _link_indices[i] = i;
     }
-
+//    cout << _link_indices.size() << " : " << _link_indices << endl;
     randomize();
+}
+
+void NetworkBApercolation::initialize_network() {
+    net = NetworkBA(_m0, _m);
+    uint i=0;
+    while (i < _network_size){
+        net.add_node();
+        ++i;
+    }
 }
 
 void NetworkBApercolation::randomize() {
     size_t r;
-    for(size_t i{}; i < _link_count; ++i) {
+    _randomized_indices = _link_indices;
+    uint tmp;
+    for(uint i{}; i < _link_count; ++i) {
         r = rand() % _link_count;
-        _randomized_indices[i] = _link_indices[r];
-        _randomized_indices[r] = _link_indices[i];
+        tmp = _randomized_indices[i];
+        _randomized_indices[i] = _randomized_indices[r];
+        _randomized_indices[r] = tmp;
     }
+//    cout << "original " << _link_indices << endl;
+//    cout << "randomized " << _randomized_indices << endl;
 }
 
 bool NetworkBApercolation::occupy_link() {
-    if (index_var > _link_count){
+    if (index_var >= _link_count){
         return false;
     }
+//    cout << index_var << " ==? " << _randomized_indices.size();
     // select a link randomly
-    _last_lnk = &_links[_randomized_indices[index_var]];
+    size_t last_link_pos_in_randomized = _randomized_indices[index_var];
     ++index_var;
-    _last_lnk->activate(); // activating the link
+    _last_lnk = net.getLink(last_link_pos_in_randomized);
+    net.activateLink(last_link_pos_in_randomized); // activating the link
 
     // occupy that link
+    ++_number_of_occupied_links;
 
     // cluster management
-    return false;
+    manage_cluster_v0(last_link_pos_in_randomized);
+    
+    return true;
 }
+
+/**
+ *
+ * @param pos : radnomized position of the link index
+ */
+void NetworkBApercolation::manage_cluster_v0(size_t pos) {
+    Link lnk = net.getLink(pos);
+    // getting all details
+//    int id = lnk.get_group_id();
+    uint node_a = lnk.get_a();
+    int id_a = net.get_node_group_id(node_a);
+    uint node_b = lnk.get_b();
+    int id_b = net.get_node_group_id(node_b);
+//    cout << "a " << id_a << " and b " << id_b << endl;
+    // if both nodes have id -1. means they are not part of any cluster
+    if(id_a == -1 && id_b == -1){
+//        cout << "################ new cluster ################ : line " <<__LINE__ << endl;
+        size_t  sz = _cluster.size();
+        _cluster.push_back({});
+        _cluster[sz].add_link(lnk);
+        _cluster[sz].add_node(node_a);
+        _cluster[sz].add_node(node_b);
+        _cluster[sz].set_group_id(group_id_count);
+        net.set_node_group_id(node_a, group_id_count);
+        net.set_node_group_id(node_b, group_id_count);
+        net.set_link_group_id(pos, group_id_count); // must set value in the global array. not local
+        _cluster_index_from_id.insert(group_id_count);
+        ++group_id_count;
+        if(_number_of_nodes_in_the_largest_cluster < _cluster[sz].numberOfNodes()){
+            _number_of_nodes_in_the_largest_cluster = _cluster[sz].numberOfNodes();
+        }
+    }else if(id_a != -1 && id_b == -1){
+        // add to id_a
+        size_t index = _cluster_index_from_id[id_a];
+        _cluster[index].add_link(lnk);
+        _cluster[index].add_node(node_b); // since node_a is already in the cluster
+        net.set_node_group_id(node_b, id_a);
+        net.set_link_group_id(pos, id_a);
+        if(_number_of_nodes_in_the_largest_cluster < _cluster[index].numberOfNodes()){
+            _number_of_nodes_in_the_largest_cluster = _cluster[index].numberOfNodes();
+        }
+    }
+    else if(id_a == -1 && id_b != -1){
+        // add to id_b
+        size_t index = _cluster_index_from_id[id_b];
+        _cluster[index].add_link(lnk);
+        _cluster[index].add_node(node_a); // since node_a is already in the cluster
+        net.set_node_group_id(node_a, id_b);
+        net.set_link_group_id(pos, id_b);
+        if(_number_of_nodes_in_the_largest_cluster < _cluster[index].numberOfNodes()){
+            _number_of_nodes_in_the_largest_cluster = _cluster[index].numberOfNodes();
+        }
+    } else if(id_a == id_b){
+        // not -1 but same then just insert the link
+        size_t index = _cluster_index_from_id[id_b];
+        _cluster[index].add_link(lnk);
+        net.set_link_group_id(pos, id_b);
+    }
+    else{
+        /// merge cluster
+        // no need to add nodes to the cluster. they are already there
+        size_t index_a = _cluster_index_from_id[id_a];
+        size_t index_b = _cluster_index_from_id[id_b];
+        // base is the larger cluster (number of nodes in it)
+        size_t size_a = _cluster[index_a].numberOfNodes();
+        size_t size_b = _cluster[index_b].numberOfNodes();
+        if(size_a > size_b){
+            // index_a will survive the process
+            _cluster[index_a].add_link(lnk);
+            net.set_node_group_id(node_b, id_a);
+            net.set_link_group_id(pos, id_a);
+            _cluster[index_a].insert(_cluster[index_b]);
+            // relabeling
+            relabel_nodes(_cluster[index_b], id_a);
+            _cluster.erase(_cluster.begin() + index_b);
+            _cluster_index_from_id.erase(id_b);
+
+        }else{
+            // index_b will survive the process
+            _cluster[index_b].add_link(lnk);
+            net.set_node_group_id(node_a, id_b);
+            net.set_link_group_id(pos, id_b);
+            _cluster[index_b].insert(_cluster[index_a]);
+            relabel_nodes(_cluster[index_a], id_b);
+            _cluster.erase(_cluster.begin() + index_a);
+            _cluster_index_from_id.erase(id_a);
+        }
+        if(_number_of_nodes_in_the_largest_cluster < (size_a + size_b)){
+            _number_of_nodes_in_the_largest_cluster = size_a + size_b;
+        }
+
+    }
+    
+}
+
+void NetworkBApercolation::viewCluster() {
+    for(size_t i{}; i < _cluster.size(); ++i){
+        cout << "cluster[" << i << "] : id " << _cluster[i].get_group_id() << "{" << endl;
+        cout << "  Nodes (" << _cluster[i].numberOfNodes() << "): ";
+        _cluster[i].viewNodes();
+        cout << endl;
+        cout << "  Links (" << _cluster[i].numberOfLinks() << "): ";
+        _cluster[i].viewLinks();
+        cout << endl;
+        cout << "}" << endl;
+    }
+    
+}
+
+void NetworkBApercolation::viewClusterExtended() {
+    for(size_t i{}; i < _cluster.size(); ++i){
+        cout << "cluster[" << i << "] : id " << _cluster[i].get_group_id() << "{" << endl;
+        cout << "  Nodes (" << _cluster[i].numberOfNodes() << "): ";
+        auto nds = _cluster[i].get_nodes();
+        cout << "(index, id)->";
+        for(auto n: nds){
+            cout << "(" << n << "," << net.get_node_group_id(n) << "),";
+        }
+        cout << endl;
+        cout << "  Links (" << _cluster[i].numberOfLinks() << "): ";
+        _cluster[i].viewLinksExtended();
+        cout << endl;
+        cout << "}" << endl;
+    }
+
+}
+
+void NetworkBApercolation::relabel_nodes(Cluster& clstr, int id) {
+    auto nds = clstr.get_nodes();
+    for(size_t i{}; i < nds.size(); ++i){
+        net.set_node_group_id(nds[i],id);
+    }
+}
+
+

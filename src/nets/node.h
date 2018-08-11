@@ -12,40 +12,40 @@
  * Node of a network
  */
 class Node{
-    size_t  _id;
-    std::vector<size_t> _connected_nodes;
+    uint  _id;
+    std::vector<uint> _connected_nodes;
 
-    int _group_id;
+    int _group_id{-1};
 
     // at i-th iteration m nodes are linked.
     // if nodes have same _current_group value that means the node is already selected
-    size_t _current_group{};
+    uint _current_group{};
 public:
     ~Node() {_connected_nodes.clear();};
-    Node(size_t id);
-    size_t get_id() const { return  _id;}
+    Node(uint id);
+    uint get_id() const { return  _id;}
     int get_group_id() const { return  _group_id;}
     void set_group_id(int id) {_group_id = id;}
 
-    size_t get_current_group() const {return _current_group;}
-    void set_current_group(size_t grp) {_current_group = grp;}
+    uint get_current_group() const {return _current_group;}
+    void set_current_group(uint grp) {_current_group = grp;}
 
-    const std::vector<size_t>& get_neighbors() const {return _connected_nodes;}
+    const std::vector<uint>& get_neighbors() const {return _connected_nodes;}
 
     void add_neighbor(Node n);
-    void add_neighbor(size_t n);
+    void add_neighbor(uint n);
 
     /**
      * Checked version
      * less efficient but useful for debugging
      */
     void add_neighbor_checked(Node n);
-    void add_neighbor_checked(size_t n);
+    void add_neighbor_checked(uint n);
 
     /**
      * Number of links a node have is the degree of that node
      */
-    size_t degree() const {return _connected_nodes.size();}
+    uint degree() const {return _connected_nodes.size();}
 
 };
 
