@@ -39,6 +39,8 @@ public:
 
     void viewLinks();
     void viewLinksExtended();
+    bool empty() const {return _links.empty() && _nodes.empty();}
+    void clear() {_links.clear(); _nodes.clear();}
 };
 
 #endif //NETWORK_CLUSTER_H
