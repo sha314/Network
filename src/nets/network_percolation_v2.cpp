@@ -369,6 +369,7 @@ void NetworkBApercolation_v2::reset(int i) {
         // initialize the network again
         initialize_network();
     }
+    _randomized_indices = _link_indices;
     randomize_v1();
     _cluster.clear();
     _network_frame.clear_node_id();
