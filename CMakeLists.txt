@@ -20,6 +20,8 @@ set(SOURCE_FILES
         src/nets/link.h
         src/types.h
         src/ext_libs/inverse_array.h
-        src/nets/network_percolation.cpp)
+        src/nets/network_percolation.cpp
+        src/nets/network_percolation_v2.cpp
+        )
 
 add_executable(networks ${SOURCE_FILES})

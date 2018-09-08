@@ -54,32 +54,36 @@ void Network::initialize() {
  * Add a new node to the network and connect with with_node nodes
  * @param with_node
  */
-void Network::add_node(std::vector<uint> with_node) {
+void Network::add_node(const std::vector<uint>& with_node) {
     size_t sz = {_nodes.size()};
-    _nodes.push_back({sz}); // add node with id equal to the size of the _nodes
+    uint sz2 = uint(sz);
+    _nodes.push_back({sz2}); // add node with id equal to the size of the _nodes
     for(uint n: with_node){
         _nodes[sz].add_neighbor(n);
-        _nodes[n].add_neighbor(sz);
+        _nodes[n].add_neighbor(sz2);
         _total_degree += 2; // one link  increases degree by 2.
-        _links.push_back({sz, n});
+        _links.push_back({sz2, n});
     }
 }
 
 void Network::add_node(uint with_node) {
     size_t sz = {_nodes.size()};
-    _nodes.push_back({sz}); // add node with id equal to the size of the _nodes
+    uint sz2 = uint(sz);
+    _nodes.push_back({sz2}); // add node with id equal to the size of the _nodes
     _nodes[sz].add_neighbor(with_node);
-    _nodes[with_node].add_neighbor(sz);
+    _nodes[with_node].add_neighbor(sz2);
     _total_degree += 2; // one link  increases degree by 2.
-    _links.push_back({sz, with_node});
+    _links.push_back({sz2, with_node});
 }
+
 /**
  * Adds node randomly
  * randomly select m nodes with which new node will be connected
  */
 void Network::add_node() {
     size_t sz = _nodes.size();
-    _nodes.push_back({sz}); // add node with id equal to the size of the _nodes
+    uint sz2 = uint(sz);
+    _nodes.push_back({sz2}); // add node with id equal to the size of the _nodes
 
 
 //    vector<uint> m_links(_m), node_indices(sz);
@@ -102,10 +106,10 @@ void Network::add_node() {
     uint i{};
     for(uint k{}; k < _m; ++k){
         i = _m_links[k];
-        _nodes[i].add_neighbor(sz);
+        _nodes[i].add_neighbor(sz2);
         _nodes[sz].add_neighbor(i);
         _total_degree += 2; // one link  increases degree by 2.
-        _links.push_back({sz, i});
+        _links.push_back({sz2, i});
     }
 
 }
@@ -535,7 +539,7 @@ void NetworkBA::select_m_links_preferentially_v4(uint sz) {
     size_t r, index;
 
     std::random_device rd;  //Will be used to obtain a seed for the random number engine
-    std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
+    std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with _random_device()
     std::uniform_int_distribution<size_t> dis(0, _preferentially.size()-1);
 
     for(size_t j=0; j < _m; ++j){
@@ -600,7 +604,7 @@ void NetworkBA::view_preferentially() {
 //    _m = m;
 //    _network_size = size;
 //    initialize_network();
-//    _link_count = net.getNumberOfLinks();
+//    _link_count = _network_frame.getNumberOfLinks();
 //    _link_indices.resize(_link_count);
 //    _randomized_indices.resize(_link_count);
 //    for(uint i = 0; i < _link_count; ++i){
@@ -611,10 +615,10 @@ void NetworkBA::view_preferentially() {
 //}
 //
 //void NetworkBApercolation::initialize_network() {
-//    net = NetworkBA(_m0, _m);
+//    _network_frame = NetworkBA(_m0, _m);
 //    uint i=0;
 //    while (i < _network_size){
-//        net.add_node();
+//        _network_frame.add_node();
 //        ++i;
 //    }
 //}
@@ -642,8 +646,8 @@ void NetworkBA::view_preferentially() {
 //
 //    _randomized_indices = _link_indices;
 //
-//    std::random_device rd;
-//    std::mt19937 g(rd());
+//    std::random_device _random_device;
+//    std::mt19937 g(_random_device());
 //
 ////    cout << "before " << _randomized_indices << endl;
 //    std::shuffle(_randomized_indices.begin(), _randomized_indices.end(), g);
@@ -659,14 +663,14 @@ void NetworkBA::view_preferentially() {
 //    // select a link randomly
 //    size_t last_link_pos_in_randomized = _randomized_indices[index_var];
 //    ++index_var;
-//    _last_lnk = net.getLink(last_link_pos_in_randomized);
-//    net.activateLink(last_link_pos_in_randomized); // activating the link
+//    _last_lnk = _network_frame.getLink(last_link_pos_in_randomized);
+//    _network_frame.activateLink(last_link_pos_in_randomized); // activating the link
 //
 //    // occupy that link
 //    ++_number_of_occupied_links;
 //
 //    // cluster management
-//    manage_cluster_v0(last_link_pos_in_randomized);
+//    manage_cluster(last_link_pos_in_randomized);
 //
 //    return true;
 //}
@@ -675,14 +679,14 @@ void NetworkBA::view_preferentially() {
 // *
 // * @param pos : radnomized position of the link index
 // */
-//void NetworkBApercolation::manage_cluster_v0(size_t pos) {
-//    Link lnk = net.getLink(pos);
+//void NetworkBApercolation::manage_cluster(size_t pos) {
+//    Link lnk = _network_frame.getLink(pos);
 //    // getting all details
 ////    int id = lnk.get_group_id();
 //    uint node_a = lnk.get_a();
-//    int id_a = net.get_node_group_id(node_a);
+//    int id_a = _network_frame.get_node_group_id(node_a);
 //    uint node_b = lnk.get_b();
-//    int id_b = net.get_node_group_id(node_b);
+//    int id_b = _network_frame.get_node_group_id(node_b);
 ////    cout << "a " << id_a << " and b " << id_b << endl;
 //    // if both nodes have id -1. means they are not part of any cluster
 //    if(id_a == -1 && id_b == -1){
@@ -693,9 +697,9 @@ void NetworkBA::view_preferentially() {
 //        _cluster[sz].add_node(node_a);
 //        _cluster[sz].add_node(node_b);
 //        _cluster[sz].set_group_id(group_id_count);
-//        net.set_node_group_id(node_a, group_id_count);
-//        net.set_node_group_id(node_b, group_id_count);
-//        net.set_link_group_id(pos, group_id_count); // must set value in the global array. not local
+//        _network_frame.set_node_group_id(node_a, group_id_count);
+//        _network_frame.set_node_group_id(node_b, group_id_count);
+//        _network_frame.set_link_group_id(pos, group_id_count); // must set value in the global array. not local
 //        _cluster_index_from_id.insert(group_id_count);
 //        ++group_id_count;
 //        if(_number_of_nodes_in_the_largest_cluster < _cluster[sz].numberOfNodes()){
@@ -706,8 +710,8 @@ void NetworkBA::view_preferentially() {
 //        size_t index = _cluster_index_from_id[id_a];
 //        _cluster[index].add_link(lnk);
 //        _cluster[index].add_node(node_b); // since node_a is already in the cluster
-//        net.set_node_group_id(node_b, id_a);
-//        net.set_link_group_id(pos, id_a);
+//        _network_frame.set_node_group_id(node_b, id_a);
+//        _network_frame.set_link_group_id(pos, id_a);
 //        if(_number_of_nodes_in_the_largest_cluster < _cluster[index].numberOfNodes()){
 //            _number_of_nodes_in_the_largest_cluster = _cluster[index].numberOfNodes();
 //        }
@@ -717,8 +721,8 @@ void NetworkBA::view_preferentially() {
 //        size_t index = _cluster_index_from_id[id_b];
 //        _cluster[index].add_link(lnk);
 //        _cluster[index].add_node(node_a); // since node_a is already in the cluster
-//        net.set_node_group_id(node_a, id_b);
-//        net.set_link_group_id(pos, id_b);
+//        _network_frame.set_node_group_id(node_a, id_b);
+//        _network_frame.set_link_group_id(pos, id_b);
 //        if(_number_of_nodes_in_the_largest_cluster < _cluster[index].numberOfNodes()){
 //            _number_of_nodes_in_the_largest_cluster = _cluster[index].numberOfNodes();
 //        }
@@ -726,7 +730,7 @@ void NetworkBA::view_preferentially() {
 //        // not -1 but same then just insert the link
 //        size_t index = _cluster_index_from_id[id_b];
 //        _cluster[index].add_link(lnk);
-//        net.set_link_group_id(pos, id_b);
+//        _network_frame.set_link_group_id(pos, id_b);
 //    }
 //    else{
 //        /// merge cluster
@@ -739,8 +743,8 @@ void NetworkBA::view_preferentially() {
 //        if(size_a > size_b){
 //            // index_a will survive the process
 //            _cluster[index_a].add_link(lnk);
-//            net.set_node_group_id(node_b, id_a);
-//            net.set_link_group_id(pos, id_a);
+//            _network_frame.set_node_group_id(node_b, id_a);
+//            _network_frame.set_link_group_id(pos, id_a);
 //            _cluster[index_a].insert(_cluster[index_b]);
 //            // relabeling
 //            relabel_nodes(_cluster[index_b], id_a);
@@ -750,8 +754,8 @@ void NetworkBA::view_preferentially() {
 //        }else{
 //            // index_b will survive the process
 //            _cluster[index_b].add_link(lnk);
-//            net.set_node_group_id(node_a, id_b);
-//            net.set_link_group_id(pos, id_b);
+//            _network_frame.set_node_group_id(node_a, id_b);
+//            _network_frame.set_link_group_id(pos, id_b);
 //            _cluster[index_b].insert(_cluster[index_a]);
 //            relabel_nodes(_cluster[index_a], id_b);
 //            _cluster.erase(_cluster.begin() + index_a);
@@ -786,7 +790,7 @@ void NetworkBA::view_preferentially() {
 //        auto nds = _cluster[i].get_nodes();
 //        cout << "(index, id)->";
 //        for(auto n: nds){
-//            cout << "(" << n << "," << net.get_node_group_id(n) << "),";
+//            cout << "(" << n << "," << _network_frame.get_node_group_id(n) << "),";
 //        }
 //        cout << endl;
 //        cout << "  Links (" << _cluster[i].numberOfLinks() << "): ";
@@ -800,7 +804,7 @@ void NetworkBA::view_preferentially() {
 //void NetworkBApercolation::relabel_nodes(Cluster& clstr, int id) {
 //    auto nds = clstr.get_nodes();
 //    for(size_t i{}; i < nds.size(); ++i){
-//        net.set_node_group_id(nds[i],id);
+//        _network_frame.set_node_group_id(nds[i],id);
 //    }
 //}
 //
@@ -835,14 +839,14 @@ void NetworkBA::view_preferentially() {
 //    size_t r = link_for_min_cluster_sum_rule();
 //    size_t pos = _randomized_indices[r];
 //    _randomized_indices.erase(_randomized_indices.begin() + r); // must erase the used value
-//    _last_lnk = net.getLink(pos);
-//    net.activateLink(pos); // activating the link
+//    _last_lnk = _network_frame.getLink(pos);
+//    _network_frame.activateLink(pos); // activating the link
 //
 //    // occupy that link
 //    ++_number_of_occupied_links;
 //
 //    // cluster management
-//    manage_cluster_v0(pos);
+//    manage_cluster(pos);
 //
 //    return true;
 //}
@@ -867,15 +871,15 @@ void NetworkBA::view_preferentially() {
 //        id1 = -1;
 //        id2 = -1;
 //        tmp_lnk_index = _randomized_indices[i];
-//        tmp_lnk = net.getLink(tmp_lnk_index);
-//        if(net.get_node_group_id(tmp_lnk.get_a()) == -1 && net.get_node_group_id(tmp_lnk.get_b()) == -1){
+//        tmp_lnk = _network_frame.getLink(tmp_lnk_index);
+//        if(_network_frame.get_node_group_id(tmp_lnk.get_a()) == -1 && _network_frame.get_node_group_id(tmp_lnk.get_b()) == -1){
 //             // since we are minimizing cluster sizes
 //            index_randomized_link = i;
-//            cout << "got link " << net.getLink(_randomized_indices[i]) << " id = " << id1 << " and " << id2 << endl;
+//            cout << "got link " << _network_frame.getLink(_randomized_indices[i]) << " id = " << id1 << " and " << id2 << endl;
 //            break; // since this is the minimum link case
 //        }
-//        else if(net.get_node_group_id(tmp_lnk.get_a()) == -1 && net.get_node_group_id(tmp_lnk.get_b()) != -1){
-//            id1 = net.get_node_group_id(tmp_lnk.get_b());
+//        else if(_network_frame.get_node_group_id(tmp_lnk.get_a()) == -1 && _network_frame.get_node_group_id(tmp_lnk.get_b()) != -1){
+//            id1 = _network_frame.get_node_group_id(tmp_lnk.get_b());
 //            index1 = _cluster_index_from_id[id1];
 //            n_nodes = _cluster[index1].numberOfNodes() + 1; // 1 node would have been added
 //            if(sum == 0 || sum > n_nodes) { // since we are minimizing cluster sizes
@@ -883,8 +887,8 @@ void NetworkBA::view_preferentially() {
 //                index_randomized_link = i;
 //            }
 //        }
-//        else if(net.get_node_group_id(tmp_lnk.get_a()) != -1 && net.get_node_group_id(tmp_lnk.get_b()) == -1){
-//            id1 = net.get_node_group_id(tmp_lnk.get_a());
+//        else if(_network_frame.get_node_group_id(tmp_lnk.get_a()) != -1 && _network_frame.get_node_group_id(tmp_lnk.get_b()) == -1){
+//            id1 = _network_frame.get_node_group_id(tmp_lnk.get_a());
 //            index1 = _cluster_index_from_id[id1];
 //            n_nodes = _cluster[index1].numberOfNodes() + 1; // 1 node would have been added
 //            if(sum == 0 || sum > n_nodes) { // since we are minimizing cluster sizes
@@ -894,8 +898,8 @@ void NetworkBA::view_preferentially() {
 //        }
 //        else{
 //
-//            id1 = net.get_node_group_id(tmp_lnk.get_a());
-//            id2 = net.get_node_group_id(tmp_lnk.get_b());
+//            id1 = _network_frame.get_node_group_id(tmp_lnk.get_a());
+//            id2 = _network_frame.get_node_group_id(tmp_lnk.get_b());
 //            if(id1 == id2){
 //                // if they belong to same cluster. adding new link does not increase cluster size.
 //                index1 = _cluster_index_from_id[id1];
@@ -911,13 +915,13 @@ void NetworkBA::view_preferentially() {
 //                index_randomized_link = i;
 //            }
 //        }
-//        cout << "checking link " << net.getLink(_randomized_indices[i])
+//        cout << "checking link " << _network_frame.getLink(_randomized_indices[i])
 //             << " id = " << id1 << " and " << id2 << " sum= " << sum << endl;
 //    }
 //    if(index_randomized_link >= _randomized_indices.size()){
 //        cout << "out of bound : line " << __LINE__ << endl;
 //    }
-//    cout << "selected link " << net.getLink(_randomized_indices[index_randomized_link])
+//    cout << "selected link " << _network_frame.getLink(_randomized_indices[index_randomized_link])
 //            << " id = " << id1 << " and " << id2 << " sum= " << sum << endl;
 //    return index_randomized_link;
 //}
@@ -943,15 +947,15 @@ void NetworkBA::view_preferentially() {
 //        id1 = -1;
 //        id2 = -1;
 //        tmp_lnk_index = _randomized_indices[i];
-//        tmp_lnk = net.getLink(tmp_lnk_index);
-//        if(net.get_node_group_id(tmp_lnk.get_a()) == -1 && net.get_node_group_id(tmp_lnk.get_b()) == -1){
+//        tmp_lnk = _network_frame.getLink(tmp_lnk_index);
+//        if(_network_frame.get_node_group_id(tmp_lnk.get_a()) == -1 && _network_frame.get_node_group_id(tmp_lnk.get_b()) == -1){
 //            // since we are minimizing cluster sizes
 //            index_randomized_link = i;
-//            cout << "got link " << net.getLink(_randomized_indices[i]) << " id = " << id1 << " and " << id2 << endl;
+//            cout << "got link " << _network_frame.getLink(_randomized_indices[i]) << " id = " << id1 << " and " << id2 << endl;
 //            break; // since this is the minimum link case
 //        }
-//        else if(net.get_node_group_id(tmp_lnk.get_a()) == -1 && net.get_node_group_id(tmp_lnk.get_b()) != -1){
-//            id1 = net.get_node_group_id(tmp_lnk.get_b());
+//        else if(_network_frame.get_node_group_id(tmp_lnk.get_a()) == -1 && _network_frame.get_node_group_id(tmp_lnk.get_b()) != -1){
+//            id1 = _network_frame.get_node_group_id(tmp_lnk.get_b());
 //            index1 = _cluster_index_from_id[id1];
 //            n_nodes = _cluster[index1].numberOfNodes(); // 1 node would have been multiplied
 //            if(prod == 1 || prod > n_nodes) { // since we are minimizing cluster sizes
@@ -959,8 +963,8 @@ void NetworkBA::view_preferentially() {
 //                index_randomized_link = i;
 //            }
 //        }
-//        else if(net.get_node_group_id(tmp_lnk.get_a()) != -1 && net.get_node_group_id(tmp_lnk.get_b()) == -1){
-//            id1 = net.get_node_group_id(tmp_lnk.get_a());
+//        else if(_network_frame.get_node_group_id(tmp_lnk.get_a()) != -1 && _network_frame.get_node_group_id(tmp_lnk.get_b()) == -1){
+//            id1 = _network_frame.get_node_group_id(tmp_lnk.get_a());
 //            index1 = _cluster_index_from_id[id1];
 //            n_nodes = _cluster[index1].numberOfNodes(); // 1 node would have been multiplied
 //            if(prod == 1 || prod > n_nodes) { // since we are minimizing cluster sizes
@@ -970,8 +974,8 @@ void NetworkBA::view_preferentially() {
 //        }
 //        else{
 //
-//            id1 = net.get_node_group_id(tmp_lnk.get_a());
-//            id2 = net.get_node_group_id(tmp_lnk.get_b());
+//            id1 = _network_frame.get_node_group_id(tmp_lnk.get_a());
+//            id2 = _network_frame.get_node_group_id(tmp_lnk.get_b());
 //            if(id1 == id2){
 //                // if they belong to same cluster. adding new link does not increase cluster size.
 //                index1 = _cluster_index_from_id[id1];
@@ -987,13 +991,13 @@ void NetworkBA::view_preferentially() {
 //                index_randomized_link = i;
 //            }
 //        }
-//        cout << "checking link " << net.getLink(_randomized_indices[i])
+//        cout << "checking link " << _network_frame.getLink(_randomized_indices[i])
 //             << " id = " << id1 << " and " << id2 << " sum= " << prod << endl;
 //    }
 //    if(index_randomized_link >= _randomized_indices.size()){
 //        cout << "out of bound : line " << __LINE__ << endl;
 //    }
-//    cout << "selected link " << net.getLink(_randomized_indices[index_randomized_link])
+//    cout << "selected link " << _network_frame.getLink(_randomized_indices[index_randomized_link])
 //         << " id = " << id1 << " and " << id2 << " sum= " << prod << endl;
 //    return index_randomized_link;
 //}

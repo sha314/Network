@@ -42,7 +42,7 @@ void degree_distribution_ba(int argc, char* argv[]){
         for (size_t i{}; i < network_size; ++i) {
             net.add_node();
         }
-//        net.view_nodes();
+//        _network_frame.view_nodes();
 
 //        cout << "line " << __LINE__ << endl;
 
@@ -66,57 +66,35 @@ void degree_distribution_ba(int argc, char* argv[]){
 
 }
 
-void run_in_main(int argc, char* argv[]){
-    NetworkBA net(3, 50);
-
-    net.view_nodes();
-    net.view_links();
-    net.view_preferentially();
-
-    size_t network_size = 1000000;
-    for(size_t i{}; i < network_size; ++i) {
-//        cout << "total degree " << net.get_total_degree() << endl;
-        net.add_node();
-//        net.view_preferentially();
-//        net.view_nodes();
-//        net.view_links();
-//        net.view_preferentially();
-    }
-//    net.view_nodes();
-//    net.view_links();
-    cout << "total degree " << net.get_total_degree() << endl;
-    net.timeElapsed();
-
-}
 
 
 void network_percolation(int argc, char* argv[]){
 
-    NetworkBApercolation net(3, 2, 10);
-    net.viewNodes();
-    net.viewLinks();
-    net.viewClusterExtended();
-    net.reset(1);
-    net.viewNodes();
-    net.viewLinks();
-    net.viewClusterExtended();
+    NetworkBApercolation_v2 net(3, 2, 100000);
+//    net.viewNodes();
+//    net.viewLinks();
+//    net.viewClusterExtended();
+//    net.reset(1);
+//    net.viewNodes();
+//    net.viewLinks();
+//    net.viewClusterExtended();
 
     size_t i{};
     while (net.occupyLink()){
 //        cout << " ************* **************** *************" << endl;
-//        cout << i << "-th link " << net.lastLink() << endl;
-//        cout << "p = " << net.occupationProbability() << endl;
-//        cout << "P = " << net.largestClusterSize() << endl;
+//        cout << i << "-th link " << _network_frame.lastLink() << endl;
+//        cout << "p = " << _network_frame.occupationProbability() << endl;
+//        cout << "P = " << _network_frame.largestClusterSize() << endl;
         ++i;
-//        net.viewClusterExtended();
+//        _network_frame.viewClusterExtended();
     }
-    net.viewNodes();
-    net.viewLinks();
-    net.viewClusterExtended();
-    net.reset();
-    net.viewNodes();
-    net.viewLinks();
-    net.viewClusterExtended();
+//    net.viewNodes();
+//    net.viewLinks();
+//    net.viewClusterExtended();
+//    net.reset();
+//    net.viewNodes();
+//    net.viewLinks();
+//    net.viewClusterExtended();
 
 }
 
@@ -135,29 +113,29 @@ void explosive_percolation_sum(uint m, uint network_size, uint M, uint ensemble_
         auto t_start= chrono::_V2::system_clock::now();
 
         net.reset();
-//        net.viewNodes();
-//        net.viewLinks();
-//        net.viewClusterExtended();
+//        _network_frame.viewNodes();
+//        _network_frame.viewLinks();
+//        _network_frame.viewClusterExtended();
 
         size_t i{};
         while (net.occupyLink()) {
 //            cout << " ************* **************** *************" << endl;
-//            cout << i << "-th link " << net.lastLink() << endl;
-//            cout << "p = " << net.occupationProbability() << endl;
-//            cout << "P = " << net.largestClusterSize() << endl;
+//            cout << i << "-th link " << _network_frame.lastLink() << endl;
+//            cout << "p = " << _network_frame.occupationProbability() << endl;
+//            cout << "P = " << _network_frame.largestClusterSize() << endl;
             largest_cluster_size[i] += net.largestClusterSize();
             entropy1[i] += net.entropy_v1();
             entropy2[i] += net.entropy_v2();
             net.jump();
-//            cout << net.largestEntropyJump() << " at " << net.largestEntropyJump_pc() << endl;
+//            cout << _network_frame.largestEntropyJump() << " at " << _network_frame.largestEntropyJump_pc() << endl;
 //            cout << entropy1[i] << " ==? " << entropy2[i] << endl;
 
             ++i;
-//            net.viewClusterExtended();
+//            _network_frame.viewClusterExtended();
         }
         entropy_jump[k] = net.largestEntropyJump();
         entropy_jump_pc[k] = net.largestEntropyJump_pc();
-//        cout << net.largestEntropyJump() << " at " << net.largestEntropyJump_pc() << endl;
+//        cout << _network_frame.largestEntropyJump() << " at " << _network_frame.largestEntropyJump_pc() << endl;
         auto t_end= chrono::_V2::system_clock::now();
         chrono::duration<double> drtion = t_end - t_start;
         cout << "iteration " << k << " : time elapsed " << drtion.count() << " sec" << endl;
@@ -252,11 +230,24 @@ void network_percolation_to_file(int argc, char* argv[]){
     size_t i{};
     while (net.occupyLink()){
 //        cout << " ************* **************** *************" << endl;
-//        cout << i << "-th link " << net.lastLink() << endl;
-//        cout << "p = " << net.occupationProbability() << endl;
+//        cout << i << "-th link " << _network_frame.lastLink() << endl;
+//        cout << "p = " << _network_frame.occupationProbability() << endl;
         ++i;
         net.viewClusterExtended();
     }
+
+}
+
+
+void run_in_main(int argc, char* argv[]){
+
+
+    //    degree_distribution_ba(argc, argv);
+      network_percolation(argc, argv);
+//    network_percolation_explosive(argc, argv);
+
+//    cout << "cores " << thread::hardware_concurrency() << endl;
+//    explosive_percolation_sum(3, 5000, 5, 100, 0); // testing only
 
 }
 
@@ -279,13 +270,8 @@ int main(int argc, char* argv[]) {
 //    srand(seed);    // seeding
 
 
-//    run_in_main(argc, argv);
-//    degree_distribution_ba(argc, argv);
-//      network_percolation(argc, argv);
-//    network_percolation_explosive(argc, argv);
+    run_in_main(argc, argv);
 
-//    cout << "cores " << thread::hardware_concurrency() << endl;
-    explosive_percolation_sum(3, 5000, 5, 100, 0); // testing only
 
     auto t_end= std::chrono::system_clock::now();
     std::chrono::duration<double> drtion = t_end - t_start;
