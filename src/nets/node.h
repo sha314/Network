@@ -33,7 +33,7 @@ public:
     const std::vector<uint>& get_neighbors() const {return _connected_nodes;}
 
     void add_neighbor(Node n);
-    void add_neighbor(uint n);
+    void addNeighbor(uint n);
 
     /**
      * Checked version
@@ -45,7 +45,7 @@ public:
     /**
      * Number of links a node have is the degree of that node
      */
-    uint degree() const {return _connected_nodes.size();}
+    uint neighborCount() const {return _connected_nodes.size();}
 
 };
 

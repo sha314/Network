@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 11)
 SET(CMAKE_CXX_FLAGS  "-pthread -fopenmp")
 
 set(SOURCE_FILES
-        main.cpp
+        src/main.cpp
         src/nets/network.cpp
         src/nets/network.h
         src/util/printer.h
@@ -22,6 +22,6 @@ set(SOURCE_FILES
         src/ext_libs/inverse_array.h
         src/nets/network_percolation.cpp
         src/nets/network_percolation_v2.cpp
-        )
+        src/test/network_build.cpp src/test/network_build.h src/test/network_percolation.cpp src/test/network_percolation.h)
 
 add_executable(networks ${SOURCE_FILES})

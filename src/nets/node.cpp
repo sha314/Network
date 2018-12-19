@@ -16,7 +16,7 @@ void Node::add_neighbor(Node n) {
     _connected_nodes.push_back(n.get_id());
 }
 
-void Node::add_neighbor(uint n) {
+void Node::addNeighbor(uint n) {
     _connected_nodes.push_back(n);
 }
 

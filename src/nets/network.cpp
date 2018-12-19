@@ -20,7 +20,7 @@ using  namespace std;
  * @param m0 : number of initial nodes
  * @param m  : number of links new nodes are born with
  */
-Network::Network(size_t m0, size_t m) {
+Network::Network(uint m0, uint m) {
     if (m0 <= m){
         _m0 = m + 1;
         _m = m;
@@ -28,6 +28,13 @@ Network::Network(size_t m0, size_t m) {
         _m0 = m0;
         _m = m;
     }
+    if(_m0 < 3){_m0=3;}
+
+    std::random_device _random_device;
+    unsigned long random_seed  = 1;
+//    random_seed  = _random_device();
+    cout << "Random seed : " << random_seed << endl;
+    _random_generator.seed(random_seed); // seeding
 
     initialize();
 
@@ -38,10 +45,12 @@ void Network::initialize() {
         _nodes.push_back({i}); // add node with id equal to the size of the _nodes
     }
     uint k{};
+    _node_indices.resize(_m0);
     for(uint i{}; i != _m0; ++i){
+        _node_indices[i] = i;
         k = (i+1) % _m0;
-        _nodes[i].add_neighbor(k);
-        _nodes[k].add_neighbor(i);
+        _nodes[i].addNeighbor(k);
+        _nodes[k].addNeighbor(i);
         _total_degree += 2;
         _links.push_back({k, i});
     }
@@ -59,9 +68,9 @@ void Network::add_node(const std::vector<uint>& with_node) {
     uint sz2 = uint(sz);
     _nodes.push_back({sz2}); // add node with id equal to the size of the _nodes
     for(uint n: with_node){
-        _nodes[sz].add_neighbor(n);
-        _nodes[n].add_neighbor(sz2);
-        _total_degree += 2; // one link  increases degree by 2.
+        _nodes[sz].addNeighbor(n);
+        _nodes[n].addNeighbor(sz2);
+        _total_degree += 2; // one link  increases neighborCount by 2.
         _links.push_back({sz2, n});
     }
 }
@@ -70,9 +79,9 @@ void Network::add_node(uint with_node) {
     size_t sz = {_nodes.size()};
     uint sz2 = uint(sz);
     _nodes.push_back({sz2}); // add node with id equal to the size of the _nodes
-    _nodes[sz].add_neighbor(with_node);
-    _nodes[with_node].add_neighbor(sz2);
-    _total_degree += 2; // one link  increases degree by 2.
+    _nodes[sz].addNeighbor(with_node);
+    _nodes[with_node].addNeighbor(sz2);
+    _total_degree += 2; // one link  increases neighborCount by 2.
     _links.push_back({sz2, with_node});
 }
 
@@ -82,13 +91,13 @@ void Network::add_node(uint with_node) {
  */
 void Network::add_node() {
     size_t sz = _nodes.size();
-    uint sz2 = uint(sz);
+    auto sz2 = uint(sz);
     _nodes.push_back({sz2}); // add node with id equal to the size of the _nodes
 
 
 //    vector<uint> m_links(_m), node_indices(sz);
     _node_indices.resize(_nodes.size());
-
+    //std::shuffle(randomized_index.begin(), randomized_index.end(), _random_generator);
     // list of all existing nodes
     for(uint i{}; i < sz; ++i){
         _node_indices[i] = i;
@@ -106,11 +115,38 @@ void Network::add_node() {
     uint i{};
     for(uint k{}; k < _m; ++k){
         i = _m_links[k];
-        _nodes[i].add_neighbor(sz2);
-        _nodes[sz].add_neighbor(i);
-        _total_degree += 2; // one link  increases degree by 2.
+        _nodes[i].addNeighbor(sz2);
+        _nodes[sz].addNeighbor(i);
+        _total_degree += 2; // one link  increases neighborCount by 2.
         _links.push_back({sz2, i});
     }
+
+}
+
+void Network::add_node_v2() {
+    size_t sz = _nodes.size();
+    auto sz2 = uint(sz);
+    _nodes.push_back({sz2}); // add node with id equal to the size of the _nodes
+
+
+    std::shuffle(_node_indices.begin(), _node_indices.end(), _random_generator);
+
+    // set m_links such that there is no repetition
+//    for(uint j{}; j < _m; ++j){
+//        _m_links[j] = _node_indices[j];
+//    }
+
+    // setting m links in the netrowk
+    uint i{};
+    for(uint k{}; k < _m; ++k){
+//        i = _m_links[k];
+        i = _node_indices[k];
+        _nodes[i].addNeighbor(sz2);
+        _nodes[sz].addNeighbor(i);
+        _total_degree += 2; // one link  increases neighborCount by 2.
+        _links.push_back({sz2, i});
+    }
+    _node_indices.push_back(sz2); // getting indices ready for next iteration
 
 }
 
@@ -121,7 +157,7 @@ void Network::add_node() {
 void Network::view_nodes() {
     cout << "id(size):{neighbors,...}" << endl;
     for(uint i{}; i < _nodes.size(); ++i){
-        cout << _nodes[i].get_id() << "(" << _nodes[i].degree() << "):{";
+        cout << _nodes[i].get_id() << "(" << _nodes[i].neighborCount() << "):{";
         auto neighbors = _nodes[i].get_neighbors();
         for(auto n: neighbors){
             cout << n << ',';
@@ -142,7 +178,7 @@ vector<double> Network::degrees() {
     vector<double> degs(_nodes.size());
 
     for(uint i{}; i < _nodes.size(); ++i){
-        degs[i] = _nodes[i].degree();
+        degs[i] = _nodes[i].neighborCount();
     }
 //    cout << degs.size() << " : line " << __LINE__ << endl;
 //    cout << "line " << __LINE__ << endl;
@@ -234,14 +270,14 @@ void NetworkBA::add_node_v0() {
     uint sz = _nodes.size();
 //    cout << "probability " << p << endl;
     for(uint i{}; i < sz; ++i){
-        tmp +=  _nodes[i].degree() / get_total_degree();
+        tmp += _nodes[i].neighborCount() / get_total_degree();
         if(tmp >= p){
 //            cout << "selected node " << i << " with " << tmp << endl;
             // add node
             _nodes.push_back({sz});
-            _nodes[i].add_neighbor(sz);
-            _nodes[sz].add_neighbor(i);
-            _total_degree += 2; // one link  increases degree by 2.
+            _nodes[i].addNeighbor(sz);
+            _nodes[sz].addNeighbor(i);
+            _total_degree += 2; // one link  increases neighborCount by 2.
             _links.push_back({sz, i});
             break;
         }
@@ -292,10 +328,10 @@ void NetworkBA::connect_with_m_nodes_v1(uint sz) {
     uint i{};
     for(uint k{}; k < _m; ++k){ // 0.058 sec when total time is 19.05 sec. ~0.25 % of total time
         i = _m_links[k];
-        _nodes[sz].add_neighbor(i);
-        _nodes[i].add_neighbor(sz);
+        _nodes[sz].addNeighbor(i);
+        _nodes[i].addNeighbor(sz);
 
-        _total_degree += 2; // one link  increases degree by 2.
+        _total_degree += 2; // one link  increases neighborCount by 2.
         _links.push_back({sz, i});
     }
 }
@@ -316,7 +352,7 @@ void NetworkBA::select_m_links_preferentially_v1(uint sz) {
     for(uint j{}; j < _m; ++j){
         p = rand() / double(RAND_MAX);
         for(uint k{}; k < sz; ++k) {
-            tmp += _nodes[_node_indices[k]].degree() / _total_degree;
+            tmp += _nodes[_node_indices[k]].neighborCount() / _total_degree;
             if(tmp >= p) {
                 _m_links[j] = _node_indices[k];
                 _node_indices.erase(_node_indices.begin() + k);
@@ -399,10 +435,10 @@ void NetworkBA::connect_with_m_nodes_v2(uint sz) {
     _links.resize(old_size + _m);
     for(uint k{}; k < _m; ++k){ // 0.058 sec when total time is 19.05 sec. ~0.25 % of total time
         i = _m_links[k];
-        _nodes[sz].add_neighbor(i);
-        _nodes[i].add_neighbor(sz);
+        _nodes[sz].addNeighbor(i);
+        _nodes[i].addNeighbor(sz);
 
-        _total_degree += 2; // one link  increases degree by 2.
+        _total_degree += 2; // one link  increases neighborCount by 2.
         _links[old_size + k] = Link(sz, i);
 //        _links.push_back({sz, i});
     }
@@ -422,10 +458,10 @@ void NetworkBA::connect_with_m_nodes_v3(uint sz) {
     _links.resize(link_old_size + _m);
     for(size_t k{}; k < _m; ++k){ // 0.058 sec when total time is 19.05 sec. ~0.25 % of total time
         i = _m_links[k];
-        _nodes[sz].add_neighbor(i);
-        _nodes[i].add_neighbor(sz);
+        _nodes[sz].addNeighbor(i);
+        _nodes[i].addNeighbor(sz);
 
-        _total_degree += 2; // one link  increases degree by 2.
+        _total_degree += 2; // one link  increases neighborCount by 2.
         _links[link_old_size + k] = Link(sz, i);
 
         _preferentially.push_back(sz);
@@ -452,10 +488,10 @@ void NetworkBA::connect_with_m_nodes_v4(uint sz) {
     _links.resize(link_old_size + _m);
     for(uint k{}; k < _m; ++k){ // 0.058 sec when total time is 19.05 sec. ~0.25 % of total time
         i = _m_links[k];
-        _nodes[sz].add_neighbor(i);
-        _nodes[i].add_neighbor(sz);
+        _nodes[sz].addNeighbor(i);
+        _nodes[i].addNeighbor(sz);
 
-        _total_degree += 2; // one link  increases degree by 2.
+        _total_degree += 2; // one link  increases neighborCount by 2.
         _links[link_old_size + k] = Link(sz, i);
 
         _preferentially[prep_size + k] = sz;
@@ -483,7 +519,7 @@ void NetworkBA::select_m_links_preferentially_v2(uint sz) {
     for(uint j{}; j < _m; ++j){
         p = rand() / double(RAND_MAX);
         for(uint k{}; k < sz; ++k) {
-            tmp += _nodes[k].degree() / _total_degree;
+            tmp += _nodes[k].neighborCount() / _total_degree;
             if(tmp >= p) {
                 if(_nodes[k].get_current_group() == sz){
 //                    cout << "already selected " << __LINE__ << endl;
@@ -569,7 +605,7 @@ void NetworkBA::select_m_links_preferentially_v4(uint sz) {
 void NetworkBA::initialize_preferential() {
     size_t d, sz;
     for(size_t i{}; i < _nodes.size(); ++i) {
-        d = _nodes[i].degree();
+        d = _nodes[i].neighborCount();
         sz = _preferentially.size();
         _preferentially.resize(sz + d);
         for(uint j{}; j < d; ++j) {

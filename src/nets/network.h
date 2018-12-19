@@ -14,6 +14,7 @@
 #include "../cluster.h"
 #include "../ext_libs/inverse_array.h"
 #include <random>
+#include <algorithm>
 
 /**
  * Network consists of Nodes and Links
@@ -24,15 +25,18 @@ protected:
     std::vector<Link> _links;
 
     // m0 is the seed. Initial number of nodes
-    size_t _m0, _m;
+    uint _m0, _m;
 
-    double _total_degree; // total degree of the network
+    double _total_degree; // total neighborCount of the network
 
     // for selecting m links
     std::vector<uint> _m_links, _node_indices;
+
+    // random engine
+    std::mt19937 _random_generator;
 public:
     ~Network() = default;
-    explicit Network(size_t m0=0, size_t m=1);
+    explicit Network(uint m0=0, uint m=1);
 
     virtual void reset(){
         _nodes.clear();
@@ -51,6 +55,7 @@ public:
     void add_node(const std::vector<uint>& with_node);
     void add_node(uint with_node);
     void add_node();
+    void add_node_v2();
 
     double get_total_degree() const { return _total_degree;}
 
@@ -98,7 +103,7 @@ class NetworkBA : public Network{
     double time{};
 
     // holds the index of node.
-    // number of degree the nodes have is the number of repetition of that index
+    // number of neighborCount the nodes have is the number of repetition of that index
     // helps efficiently selecting nodes preferentially
     std::vector<uint> _preferentially;
 
@@ -122,7 +127,8 @@ class NetworkBA : public Network{
 public:
     virtual ~NetworkBA() = default;
     NetworkBA() = default;
-    NetworkBA(size_t m0, size_t m) : Network(m0, m) {
+    NetworkBA(size_t m0, size_t m) {
+        Network(m0, m);
         initialize_preferential();
     }
 

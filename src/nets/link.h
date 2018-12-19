@@ -9,7 +9,7 @@
 #include <sstream>
 
 /**
- *
+ * A like connects two nodes
  */
 class Link{
     //uint _id;
@@ -24,7 +24,7 @@ public:
     int get_group_id() const { return  _group_id;}
     void set_group_id(int id) {_group_id = id;}
 
-    bool is_active() const { return _active;}
+    bool isActive() const { return _active;}
     void activate() {_active = true;}
 
     std::string to_string() const {
