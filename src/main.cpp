@@ -39,8 +39,9 @@ void network_percolation_to_file(int argc, char* argv[]){
 
 void run_in_main(int argc, char* argv[]){
     test_network();
+//    degree_distribution_BA(argc, argv);
 //    network_percolation_to_file(argc, argv);
-    //    degree_distribution_ba(argc, argv);
+    //    degree_distribution_BA(argc, argv);
 //      network_percolation(argc, argv);
 //    network_percolation_explosive(argc, argv);
 
@@ -56,7 +57,7 @@ void run_in_main(int argc, char* argv[]){
  * @return
  */
 int main(int argc, char* argv[]) {
-    std::cout << "Netork" << std::endl;
+    std::cout << "Network" << std::endl;
     cout << currentTime() << endl;
     cout << "Compiled on " << __DATE__ << "\t at " << __TIME__ << endl;
     auto t_start = std::chrono::system_clock::now();
@@ -64,7 +65,7 @@ int main(int argc, char* argv[]) {
         cout << "size of unsigned int is less than 4 byte : line " <<__LINE__ << endl;
         return 0;
     }
-    time_t seed = time(nullptr);
+//    time_t seed = time(nullptr);
 //    srand(seed);    // seeding
 
 

@@ -5,7 +5,7 @@
 
 #include <cmath>
 #include <random>
-#include "network.h"
+#include "../nets/network.h"
 
 using namespace std;
 

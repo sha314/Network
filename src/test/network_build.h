@@ -6,6 +6,6 @@
 #define NETWORK_NETWORK_BUILD_H
 
 void test_network();
-void degree_distribution_ba(int argc, char* argv[]);
+void degree_distribution_BA(int argc, char **argv);
 
 #endif //NETWORK_NETWORK_BUILD_H

@@ -13,21 +13,26 @@
 using namespace std;
 
 void test_network(){
-    Network net(3, 1);
+    NetworkBA net(3, 1);
 
     net.view_nodes();
     net.view_links();
+    size_t i=0;
 
-    net.add_node_v2();
+    while(i < 10) {
+        net.add_node();
+        net.view_nodes();
+        ++i;
+    }
 
     net.view_nodes();
     net.view_links();
 
 }
 
-void degree_distribution_ba(int argc, char* argv[]){
+void degree_distribution_BA(int argc, char **argv) {
 //    size_t m0 = size_t(atoi(argv[1]));
-    if(argc < 1){
+    if (argc < 1) {
         cout << "supply argument " << endl;
         return;
     }
@@ -42,17 +47,17 @@ void degree_distribution_ba(int argc, char* argv[]){
     NetworkBA net(m, m);
     cout << "m0 " << net.get_m0() << ", m " << net.get_m() << endl;
 
-    string filename =  net.get_signature() + "size_" + to_string(network_size)
-                       + "-neighborCount" + currentTime() + ".txt";
+    string filename = net.get_signature() + "size_" + to_string(network_size)
+                      + "-degree" + currentTime() + ".txt";
     ofstream fout(filename);
-    fout << "{\"m0\":" << net.get_m0()
-         << ",\"m\""<< net.get_m()
+    fout << "#{\"m0\":" << net.get_m0()
+         << ",\"m\":" << net.get_m()
          << ",\"network_size\":" << network_size
          << ",\"ensemble_size\":" << ensemble_size
          << "}" << endl;
 
-    for(size_t en{}; en < ensemble_size; ++en) {
-        auto t0= std::chrono::system_clock::now();
+    for (size_t en{}; en < ensemble_size; ++en) {
+        auto t0 = std::chrono::system_clock::now();
         net.reset();
 
         for (size_t i{}; i < network_size; ++i) {
@@ -67,17 +72,16 @@ void degree_distribution_ba(int argc, char* argv[]){
 
 //        cout << degs.size() << " and  " << neighborCount.size() << endl;
         for (size_t i{}; i < degs.size(); ++i) {
-            fout << degs[i] <<',';
+            fout << degs[i] << ',';
         }
         fout << endl;
 //        cout << "line " << __LINE__ << endl;
-        auto t1= std::chrono::system_clock::now();
+        auto t1 = std::chrono::system_clock::now();
         std::chrono::duration<double> drtion = t1 - t0;
         cout << "Iteration " << en << " : time " << drtion.count() << " sec" << endl;
     }
 
     // normalization
-
     fout.close();
 
 }

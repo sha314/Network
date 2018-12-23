@@ -12,16 +12,16 @@ set(SOURCE_FILES
         src/util/printer.h
         src/util/time_tracking.cpp
         src/util/time_tracking.h
-        src/cluster.cpp
-        src/cluster.h
+        src/percolation/cluster.cpp
+        src/percolation/cluster.h
         src/nets/node.cpp
         src/nets/node.h
         src/nets/link.cpp
         src/nets/link.h
         src/types.h
         src/ext_libs/inverse_array.h
-        src/nets/network_percolation.cpp
-        src/nets/network_percolation_v2.cpp
-        src/test/network_build.cpp src/test/network_build.h src/test/network_percolation.cpp src/test/network_percolation.h)
+        src/percolation/network_percolation.cpp
+        src/percolation/network_percolation_v2.cpp
+        src/test/network_build.cpp src/test/network_build.h src/test/network_percolation.cpp src/test/network_percolation.h src/nets/network_MDA.cpp src/nets/network_BA.cpp src/percolation/network_percolation.h)
 
 add_executable(networks ${SOURCE_FILES})
