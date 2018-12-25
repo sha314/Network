@@ -6,6 +6,7 @@
 #include <cmath>
 #include <random>
 #include "../nets/network.h"
+#include "network_percolation.h"
 
 using namespace std;
 
@@ -39,7 +40,7 @@ void NetworkBApercolation::initialize_network() {
     net = NetworkBA(_m0, _m);
     uint i= _m0;
     while (i < _network_size){ // sp that number of nodes is the network size
-        net.add_node();
+        net.addNode();
         ++i;
     }
     cout << "done." << endl;

@@ -105,7 +105,7 @@ public:
     /***************************************
      * View the network
      *************************************/
-    void viewNodes() {net.view_nodes();}
+    void viewNodes() { net.viewNodes();}
     void viewLinks() {net.view_links();}
     void viewCluster();
     void viewClusterExtended();
@@ -211,7 +211,7 @@ public:
     /***************************************
      * View the network
      *************************************/
-    void viewNodes() {_network_frame.view_nodes();}
+    void viewNodes() { _network_frame.viewNodes();}
     void viewLinks() {_network_frame.view_links();}
     void viewCluster();
     void viewClusterExtended();

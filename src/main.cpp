@@ -4,6 +4,7 @@
 #include "nets/network.h"
 #include "test/network_percolation.h"
 #include "test/network_build.h"
+#include "percolation/network_percolation.h"
 #include <algorithm>
 #include <fstream>
 #include <thread>
@@ -38,7 +39,8 @@ void network_percolation_to_file(int argc, char* argv[]){
 
 
 void run_in_main(int argc, char* argv[]){
-    test_network();
+//    test_network_BA();
+    test_network_MDA();
 //    degree_distribution_BA(argc, argv);
 //    network_percolation_to_file(argc, argv);
     //    degree_distribution_BA(argc, argv);

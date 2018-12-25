@@ -16,6 +16,7 @@
 #include <random>
 #include <algorithm>
 #include <chrono>
+#include <unordered_set>
 
 /**********************************
  * Network consists of Nodes and Links
@@ -32,8 +33,9 @@ protected:
     double _total_degree; // total neighborCount of the network
 
     // for selecting m links
-    std::vector<uint> _m_links, _node_indices;
-
+    std::vector<uint> _node_indices;
+//    std::unordered_set<uint> _m_links; // so that repetitionis automatically ignored
+    std::vector<uint> _m_links;
     // random engine
     std::mt19937 _random_generator;
     std::chrono::duration<double> shuffle_time=chrono::duration<double>(0);
@@ -64,7 +66,7 @@ public:
 
     double get_total_degree() const { return _total_degree;}
 
-    void view_nodes();
+    void viewNodes();
     void view_links();
 
     virtual std::string get_signature() {
@@ -143,7 +145,7 @@ public:
 
     void reset();
 
-    void add_node();
+    void addNode();
     void timeElapsed() {std::cout << time << " sec" << std::endl;}
     void view_preferentially();
     std::string get_signature() {
@@ -168,11 +170,22 @@ public:
  *  Randomly choose a node and name it "N1" say
  *  and then connect the new node to the neighbors of the "N1" node
  *  repeate the process
+ *
+ *  m : number of links to connect at each step
+ *  N : network size or number of nodes
+ *  T : time required to construct the network
+ *  m   N       T
+ *  1   1000000 0.632 sec
+ *  2   1000000 0.757 sec
+ *  10  1000000 1.443 sec
  */
 class NetworkMDA : public Network{
 
     void initialize();
+    void add_node_v0();
+    void add_node_v1();
 
+    void connect_with_m_nodes_v0(uint sz);
 public:
     double time{};
 
@@ -183,7 +196,9 @@ public:
     }
 
     // methods
-    void add_node_v0();
+
+    void addNode();
+
 
     void select_m_links_v1(uint sz) ;
 

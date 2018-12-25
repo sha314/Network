@@ -12,21 +12,39 @@
 
 using namespace std;
 
-void test_network(){
+void test_network_BA(){
     NetworkBA net(3, 1);
 
-    net.view_nodes();
+    net.viewNodes();
     net.view_links();
     size_t i=0;
 
     while(i < 10) {
-        net.add_node();
-        net.view_nodes();
+        net.addNode();
+        net.viewNodes();
         ++i;
     }
 
-    net.view_nodes();
+    net.viewNodes();
     net.view_links();
+
+}
+
+void test_network_MDA(){
+    NetworkMDA net(20, 10);
+
+//    net.viewNodes();
+//    net.view_links();
+    size_t i=0;
+
+    while(i < 1000000) {
+        net.addNode();
+//        net.viewNodes();
+        ++i;
+    }
+
+//    net.viewNodes();
+//    net.view_links();
 
 }
 
@@ -61,7 +79,7 @@ void degree_distribution_BA(int argc, char **argv) {
         net.reset();
 
         for (size_t i{}; i < network_size; ++i) {
-            net.add_node();
+            net.addNode();
         }
 //        _network_frame.view_nodes();
 

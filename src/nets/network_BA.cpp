@@ -43,7 +43,7 @@ void NetworkBA::add_node_v0() {
  * m links are selected preferentially with respect to their degree.
  * 17.685811 sec for 100000 nodes
  */
-void NetworkBA::add_node() {
+void NetworkBA::addNode() {
 
 //    add_node_v1();
 //    add_node_v2();

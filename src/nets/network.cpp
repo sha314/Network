@@ -152,7 +152,7 @@ void Network::add_node_v2() {
 /**
  *
  */
-void Network::view_nodes() {
+void Network::viewNodes() {
     cout << "id(size):{neighbors,...}" << endl;
     for(uint i{}; i < _nodes.size(); ++i){
         cout << _nodes[i].get_id() << "(" << _nodes[i].neighborCount() << "):{";

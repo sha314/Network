@@ -5,6 +5,7 @@
 #include "network_percolation.h"
 #include "../nets/network.h"
 #include "../util/time_tracking.h"
+#include "../percolation/network_percolation.h"
 #include <chrono>
 #include <fstream>
 #include <thread>
