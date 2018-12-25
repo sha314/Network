@@ -8,9 +8,6 @@
 using namespace std;
 
 
-Node::Node(uint id) {
-    _id = id;
-}
 
 void Node::add_neighbor(Node n) {
     _connected_nodes.push_back(n.get_id());

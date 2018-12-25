@@ -40,7 +40,8 @@ void network_percolation_to_file(int argc, char* argv[]){
 
 void run_in_main(int argc, char* argv[]){
 //    test_network_BA();
-    test_network_MDA();
+//    test_network_MDA();
+    network_percolation_global();
 //    degree_distribution_BA(argc, argv);
 //    network_percolation_to_file(argc, argv);
     //    degree_distribution_BA(argc, argv);

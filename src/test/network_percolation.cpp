@@ -160,3 +160,22 @@ void network_percolation_explosive(int argc, char* argv[]) {
 
 
 }
+
+
+void network_percolation_global(){
+    NetworkPercolation<NetworkMDA> networkPercolation(3, 1, 10);
+    cout << networkPercolation.get_signature() << endl;
+    networkPercolation.viewNodes();
+    networkPercolation.viewLinks();
+    networkPercolation.viewCluster();
+//    networkPercolation.viewClusterExtended();
+
+    int i=0;
+    while(networkPercolation.occupyLink()){
+        cout << "iteration " << ++i << "****************************" << endl;
+        cout << "last link " << networkPercolation.lastLink() << endl;
+        networkPercolation.viewNodes();
+        networkPercolation.viewClusterExtended();
+    }
+
+}

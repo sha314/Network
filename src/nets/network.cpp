@@ -164,6 +164,23 @@ void Network::viewNodes() {
     }
 }
 
+/**
+ *
+ */
+void Network::viewNodesExtended() {
+    cout << "id(group id, size):{neighbors,...}" << endl;
+    for(uint i{}; i < _nodes.size(); ++i){
+        cout << _nodes[i].get_id()
+             << "(" << _nodes[i].get_group_id()
+             << "," << _nodes[i].neighborCount() << "):{";
+        auto neighbors = _nodes[i].get_neighbors();
+        for(auto n: neighbors){
+            cout << n << ',';
+        }
+        cout <<  "}" << endl;
+    }
+}
+
 void Network::view_links() {
     cout << "Total " << _links.size() << " links :{" ;
     for(uint i{}; i < _links.size(); ++i){

@@ -67,6 +67,7 @@ public:
     double get_total_degree() const { return _total_degree;}
 
     void viewNodes();
+    void viewNodesExtended();
     void view_links();
 
     virtual std::string get_signature() {
@@ -102,6 +103,7 @@ public:
     void activateNode(size_t pos);
 
     void getTime() const {cout << "shuffle time " << shuffle_time.count() << endl;}
+
 };
 
 /****************************************
@@ -148,6 +150,7 @@ public:
     void addNode();
     void timeElapsed() {std::cout << time << " sec" << std::endl;}
     void view_preferentially();
+
     std::string get_signature() {
         std::stringstream ss;
         ss << "netrowk_BA_m0_";
@@ -178,6 +181,7 @@ public:
  *  1   1000000 0.632 sec
  *  2   1000000 0.757 sec
  *  10  1000000 1.443 sec
+ *  50  1000000 4.417 sec
  */
 class NetworkMDA : public Network{
 
@@ -196,6 +200,13 @@ public:
     }
 
     // methods
+
+    std::string get_signature() {
+        std::stringstream ss;
+        ss << "netrowk_MDA_m0_";
+        ss << _m0 << "_m_" << _m << "-";
+        return ss.str();
+    }
 
     void addNode();
 

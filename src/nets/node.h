@@ -12,9 +12,15 @@
  * Node of a network
  */
 class Node{
+    // it is also the index of the node in the list of the node in a network.
+    // makes it easier to access them
     uint  _id;
+
     std::vector<uint> _connected_nodes;
 
+    // group id is also the index of the cluster to which the node belongs.
+    // very useful in percolation. makes it easier to find the cluster index
+    // just from the group id of a node
     int _group_id{-1};
 
     // at i-th iteration m nodes are linked.
@@ -22,7 +28,9 @@ class Node{
     uint _current_group{};
 public:
     ~Node() {_connected_nodes.clear();};
-    Node(uint id);
+    Node(uint id):_id{id}{};
+    Node(uint id, int groupId):_id{id}, _group_id{groupId}{};
+
     uint get_id() const { return  _id;}
     int get_group_id() const { return  _group_id;}
     void set_group_id(int id) {_group_id = id;}

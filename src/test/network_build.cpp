@@ -31,13 +31,13 @@ void test_network_BA(){
 }
 
 void test_network_MDA(){
-    NetworkMDA net(20, 10);
+    NetworkMDA net(10, 5);
 
 //    net.viewNodes();
 //    net.view_links();
     size_t i=0;
 
-    while(i < 1000000) {
+    while(i < 10000) {
         net.addNode();
 //        net.viewNodes();
         ++i;
