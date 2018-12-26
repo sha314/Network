@@ -1,407 +1,38 @@
 //
-// Created by shahnoor on 12/24/18.
+// Created by shahnoor on 12/26/18.
 //
 
-#include "../nets/network.h"
+#ifndef NETWORK_NETWORK_PERCOLATION_REVERSE_H
+#define NETWORK_NETWORK_PERCOLATION_REVERSE_H
+
+
+#include <random>
+#include <iostream>
+#include <chrono>
+#include <algorithm>
+#include "cluster.h"
 #include "../nets/link.h"
 
-#ifndef NETWORK_NETWORK_PERCOLATION_H
-#define NETWORK_NETWORK_PERCOLATION_H
-
-#endif //NETWORK_NETWORK_PERCOLATION_H
-
-
-
 /**
- * Link percolation on Barabasi-Albert Network model
- * make it a template class and the template argument is the NetworkBA or NetworkMDA or NetworkRandom
- */
-class NetworkBApercolation {
-    size_t _m0, _m;
-
-    double log_1_by_size{}; // to make calculations easier
-protected:
-    NetworkBA net;
-    Link _last_lnk;
-    std::vector<Cluster> _cluster;
-    int group_id_count{};
-    InverseArray<int> _cluster_index_from_id;
-
-    size_t _network_size; // number of nodes on the network including m0
-    size_t _link_count;
-    std::vector<uint> _link_indices;
-    std::vector<uint> _randomized_indices;
-    double _number_of_occupied_links{};
-    size_t _number_of_connected_nodes{}; // not isolated
-    size_t _number_of_nodes_in_the_largest_cluster{0};
-
-    double _current_entropy{};
-    double _previous_entropy{};
-    double _largest_jump_entropy{}; // todo
-    double _entropy_jump_pc{};
-//    size_t _last_cluster_size{};
-//    size_t _previous_cluster_size{};
-//    size_t _largest_jump_cluster_size{}; //todo
-
-    double _entropy{};
-    size_t index_var{};
-
-
-    // methods
-    void randomize_v0();
-    void randomize_v1();
-    void initiate(size_t m0, size_t m, size_t size);
-    bool placeLink();
-    size_t selectLink(); // select links randomly
-    bool placeSelectedLink(size_t pos); // place the selected link
-
-public:
-
-
-    virtual ~NetworkBApercolation() = default;
-    NetworkBApercolation() = default;
-    NetworkBApercolation(size_t m0, size_t m, size_t size);
-    void initialize_network();
-
-    void reset(int i=0);
-
-    virtual std::string get_signature() {
-        std::stringstream ss;
-        ss << "netrowk_BA_percolation_m0_";
-        ss << net.get_m0() << "_m_" << net.get_m() << "_size_" << _network_size << "-";
-        return ss.str();
-    }
-
-    /***********************************************
-     * Properties and Informations
-     * Information about the state of network
-     ***********************************************/
-    double occupationProbability() const { return _number_of_occupied_links / _link_count;}
-    size_t largestClusterSize() const {return _number_of_nodes_in_the_largest_cluster;}
-    size_t linkCount() const { return net.number_of_links();}
-    size_t nodeCount() const { return net.number_of_nodes();}
-    Link lastLink() const {return _last_lnk;}
-
-    double entropy_v1();
-    double entropy_v2();
-
-    void subtract_entropy(Link& lnk);
-    void add_entropy(Link& lnk);
-
-    void jump(); // calculates jump of entropy and
-    double largestEntropyJump()const { return _largest_jump_entropy;}
-    double largestEntropyJump_pc()const { return _entropy_jump_pc;} // occupation probability at largest jump of entropy
-
-    virtual bool occupyLink();
-
-
-    /***************************************
-     *  cluster management and relabeling
-     ***********************************/
-    void manageCluster(size_t position);
-    void manage_cluster_v0(size_t position);
-    void relabel_nodes(Cluster& clster, int id);
-
-    /***************************************
-     * View the network
-     *************************************/
-    void viewNodes() { net.viewNodes();}
-    void viewLinks() {net.view_links();}
-    void viewCluster();
-    void viewClusterExtended();
-    void viewActiveLinks(){
-        // todo
-    }
-
-    double logOneBySize() const { return log_1_by_size;}
-
-};
-
-/**
- * Random Link percolation on Barabasi-Albert Network model
- * make it a template class and the template argument is the NetworkBA or NetworkMDA or NetworkRandom
- * paradigm shift: clusters are no longer erased instead just clear them so that each nodes contains
- * cluster id which is the cluster index.
- */
-class NetworkBApercolation_v2 {
-    size_t _m0, _m;
-
-    double log_1_by_size{}; // to make calculations easier
-protected:
-    NetworkBA _network_frame;
-    Link _last_lnk;
-    std::vector<Cluster> _cluster;
-    int group_id_count{};
-
-    size_t _network_size; // number of nodes on the network including m0
-    size_t _link_count;
-    std::vector<uint> _link_indices;
-    std::vector<uint> _randomized_indices;
-    double _number_of_occupied_links{};
-    size_t _number_of_connected_nodes{}; // not isolated
-    size_t _number_of_nodes_in_the_largest_cluster{0};
-
-    double _current_entropy{};
-    double _previous_entropy{};
-    double _largest_jump_entropy{}; // todo
-    double _entropy_jump_pc{};
-//    size_t _last_cluster_size{};
-//    size_t _previous_cluster_size{};
-//    size_t _largest_jump_cluster_size{}; //todo
-
-    double _entropy{};
-    size_t index_var{};
-
-    std::random_device _random_device;
-    std::mt19937 _random_generator;
-
-    // methods
-    void randomize_v1();
-    void initiate(size_t m0, size_t m, size_t size);
-    bool placeLink();
-    size_t selectLink(); // select links randomly
-    bool placeSelectedLink(size_t pos); // place the selected link
-
-public:
-
-    virtual ~NetworkBApercolation_v2() = default;
-    NetworkBApercolation_v2() = default;
-    NetworkBApercolation_v2(size_t m0, size_t m, size_t size);
-    void initialize_network();
-
-    void reset(int i=0);
-
-    virtual std::string get_signature() {
-        std::stringstream ss;
-        ss << "netrowk_BA_percolation_m0_";
-        ss << _network_frame.get_m0() << "_m_" << _network_frame.get_m() << "_size_" << _network_size << "-";
-        return ss.str();
-    }
-
-    /***********************************************
-     * Properties and Informations
-     * Information about the state of network
-     ***********************************************/
-    double occupationProbability() const { return _number_of_occupied_links / _link_count;}
-    size_t largestClusterSize() const {return _number_of_nodes_in_the_largest_cluster;}
-    size_t linkCount() const { return _network_frame.number_of_links();}
-    size_t nodeCount() const { return _network_frame.number_of_nodes();}
-    Link lastLink() const {return _last_lnk;}
-
-    double entropy_v1();
-    double entropy_v2();
-
-    void subtract_entropy(Link& lnk);
-    void add_entropy(Link& lnk);
-
-    void jump(); // calculates jump of entropy and
-    double largestEntropyJump()const { return _largest_jump_entropy;}
-    double largestEntropyJump_pc()const { return _entropy_jump_pc;} // occupation probability at largest jump of entropy
-
-    virtual bool occupyLink();
-
-
-    /***************************************
-     *  cluster management and relabeling
-     ***********************************/
-
-    void manage_cluster(size_t position);
-    void relabel_nodes(Cluster& clster, int id);
-
-    /***************************************
-     * View the network
-     *************************************/
-    void viewNodes() { _network_frame.viewNodes();}
-    void viewLinks() {_network_frame.view_links();}
-    void viewCluster();
-    void viewClusterExtended();
-    void viewActiveLinks(){
-        // todo
-    }
-
-    double logOneBySize() const { return log_1_by_size;}
-
-};
-
-
-/***********************************************************
- * Explosive percolation on BA network
- ***********************************************************/
-class NetworkBApercolationExplosive : public NetworkBApercolation{
-protected:
-    uint _M{2}; // number of link to choose for product rule or sum rule
-public:
-    static const int MAX_M_VALUE = 20;
-
-    ~NetworkBApercolationExplosive() = default;
-    NetworkBApercolationExplosive() = default;
-    NetworkBApercolationExplosive(size_t m0, size_t m, size_t size, uint M);
-
-    bool occupyLink();
-
-    bool placeLink(); // link occupation
-
-    std::string get_signature() {
-        std::stringstream ss;
-        ss << "netrowk_BA_percolation_explosive_m0_";
-        ss << net.get_m0() << "_m_" << net.get_m() << "_size_" << _network_size << "_M_" << _M << '-';
-        return ss.str();
-    }
-
-    /**
-     * Sum rule and Product rule
-     */
-    size_t link_for_min_cluster_sum_rule();
-    size_t link_for_min_cluster_product_rule();
-    // TODO write function that take a lambda function and executes as it says
-    size_t selectLink(char rule);
-};
-
-/**
- * Explosive percolation on BA network
- */
-class NetworkBApercolationExplosiveSum : public NetworkBApercolationExplosive{
-
-public:
-    ~NetworkBApercolationExplosiveSum() = default;
-    NetworkBApercolationExplosiveSum() = default;
-    NetworkBApercolationExplosiveSum(size_t m0, size_t m, size_t size, uint M)
-            : NetworkBApercolationExplosive(m0, m, size, M) {};
-
-    bool placeLink();
-    bool occupyLink();
-
-    std::string get_signature() {
-        std::stringstream ss;
-        ss << "netrowk_BA_percolation_explosive_sum_m0_";
-        ss << net.get_m0() << "_m_" << net.get_m() << "_size_" << _network_size << "_M_" << _M << '-';
-        return ss.str();
-    }
-
-};
-
-/**
- * Explosive percolation on BA network
- */
-class NetworkBApercolationExplosiveProduct: public NetworkBApercolationExplosive{
-
-public:
-    ~NetworkBApercolationExplosiveProduct() = default;
-    NetworkBApercolationExplosiveProduct() = default;
-    NetworkBApercolationExplosiveProduct(size_t m0, size_t m, size_t size, uint M)
-            : NetworkBApercolationExplosive(m0, m, size, M) {};
-
-    bool occupyLink();
-    bool placeLink();
-
-    std::string get_signature() {
-        std::stringstream ss;
-        ss << "netrowk_BA_percolation_explosive_product_m0_";
-        ss << net.get_m0() << "_m_" << net.get_m() << "_size_" << _network_size << "_M_" << _M << '-';
-        return ss.str();
-    }
-
-};
-
-
-/***********************************************************
- * Explosive percolation on BA network
- ***********************************************************/
-class NetworkBApercolationExplosive_v2 : public NetworkBApercolation_v2{
-protected:
-    uint _M{2}; // number of link to choose for product rule or sum rule
-public:
-    static const int MAX_M_VALUE = 20;
-
-    ~NetworkBApercolationExplosive_v2() = default;
-    NetworkBApercolationExplosive_v2() = default;
-    NetworkBApercolationExplosive_v2(size_t m0, size_t m, size_t size, uint M);
-
-    bool occupyLink();
-
-    bool placeLink(); // link occupation
-
-    std::string get_signature() {
-        std::stringstream ss;
-        ss << "netrowk_BA_percolation_explosive_m0_";
-        ss << _network_frame.get_m0() << "_m_" << _network_frame.get_m() << "_size_" << _network_size << "_M_" << _M << '-';
-        return ss.str();
-    }
-
-    /**
-     * Sum rule and Product rule
-     */
-    size_t link_for_min_cluster_sum_rule();
-    size_t link_for_min_cluster_product_rule();
-    // TODO write function that take a lambda function and executes as it says
-    size_t selectLink(char rule);
-};
-
-/**
- * Explosive percolation on BA network
- */
-class NetworkBApercolationExplosiveSum_v2 : public NetworkBApercolationExplosive_v2{
-
-public:
-    ~NetworkBApercolationExplosiveSum_v2() = default;
-    NetworkBApercolationExplosiveSum_v2() = default;
-    NetworkBApercolationExplosiveSum_v2(size_t m0, size_t m, size_t size, uint M)
-            : NetworkBApercolationExplosive_v2(m0, m, size, M) {};
-
-    bool placeLink();
-    bool occupyLink();
-
-    std::string get_signature() {
-        std::stringstream ss;
-        ss << "netrowk_BA_percolation_explosive_sum_m0_";
-        ss << _network_frame.get_m0() << "_m_" << _network_frame.get_m() << "_size_" << _network_size << "_M_" << _M << '-';
-        return ss.str();
-    }
-
-};
-
-/**
- * Explosive percolation on BA network
- */
-class NetworkBApercolationExplosiveProduct_v2: public NetworkBApercolationExplosive_v2{
-
-public:
-    ~NetworkBApercolationExplosiveProduct_v2() = default;
-    NetworkBApercolationExplosiveProduct_v2() = default;
-    NetworkBApercolationExplosiveProduct_v2(size_t m0, size_t m, size_t size, uint M)
-            : NetworkBApercolationExplosive_v2(m0, m, size, M) {};
-
-    bool occupyLink();
-    bool placeLink();
-
-    std::string get_signature() {
-        std::stringstream ss;
-        ss << "netrowk_BA_percolation_explosive_product_m0_";
-        ss << _network_frame.get_m0() << "_m_" << _network_frame.get_m() << "_size_" << _network_size << "_M_" << _M << '-';
-        return ss.str();
-    }
-
-};
-
-
-/**
- * A universal class that can perform random percolation on any network
+ * A universal class that can perform random reverse percolation on any network
  * that is extended from the class "Network"
  *
- * Efficiency:
+ * In reverse percolation we have only one cluster in the begining and
+ * step by step we attempt to break one cluster to many.
+ *
+ * Efficiency
  * Network      m   N           Total Time
  *
- * NetworkBA    1   1000000     2.56 sec
- * NetworkBA    5   1000000     6.914 sec
+ * NetworkBA    1   1000000     -
+ * NetworkBA    5   1000000     -
  *
- * NetworkMDA   1   1000000     1.89 sec
- * NetworkMDA   5   1000000     4.981799 sec
- *
+ * NetworkMDA   1   1000000     -
+ * NetworkMDA   5   1000000     -
  *
  * @tparam NET : type of the network
  */
 template <class NET>
-class NetworkPercolation{
+class NetworkPercolationReverse{
 
     size_t _m0, _m;
     double log_1_by_size{}; // to make calculations easier
@@ -442,9 +73,9 @@ protected:
 
 public:
 
-    virtual ~NetworkPercolation() = default;
-    explicit NetworkPercolation() = default;
-    NetworkPercolation(size_t m0, size_t m, size_t size);
+    virtual ~NetworkPercolationReverse() = default;
+    explicit NetworkPercolationReverse() = default;
+    NetworkPercolationReverse(size_t m0, size_t m, size_t size);
 
     void initialize_network();
 
@@ -513,7 +144,7 @@ public:
  *
  */
 template <class NET>
-NetworkPercolation<NET>::NetworkPercolation(size_t m0, size_t m, size_t size)
+NetworkPercolationReverse<NET>::NetworkPercolationReverse(size_t m0, size_t m, size_t size)
 {
     _m0 = m0;
     _m = m;
@@ -533,8 +164,8 @@ NetworkPercolation<NET>::NetworkPercolation(size_t m0, size_t m, size_t size)
 }
 
 template <class NET>
-void NetworkPercolation<NET>::initialize_for_percolation() {
-    auto t0 = chrono::system_clock::now();
+void NetworkPercolationReverse<NET>::initialize_for_percolation() {
+    auto t0 = std::chrono::system_clock::now();
     _link_count = _network_frame.getNumberOfLinks();
     _link_indices.resize(_link_count);
     _randomized_indices.resize(_link_count);
@@ -546,27 +177,35 @@ void NetworkPercolation<NET>::initialize_for_percolation() {
     // each node is a cluster of it's own size
     _cluster.resize(nodeCount());
     for(uint i{}; i < _cluster.size(); ++i){
-        _cluster[i].add_node({i});
-        _network_frame.set_node_group_id(i, i);
+        // in reverse percolation all nodes are initially in the same cluster
+        // the first cluster
+        _cluster[0].add_node({i});
+        _network_frame.set_node_group_id(i, 0); // all node will point to the same cluster
         _cluster[i].set_group_id(i);
     }
-    auto t1 = chrono::system_clock::now();
-    cout << "Initialization for percolation time " << chrono::duration<double>(t1-t0).count() << endl;
+    // and all of the links sould be in the first cluster
+    _cluster[0].add_links(_network_frame.getLinks());
+    auto t1 = std::chrono::system_clock::now();
+    std::cout << "Initialization for percolation time "
+              << std::chrono::duration<double>(t1-t0).count()
+              << std::endl;
 }
 
 template <class NET>
-void NetworkPercolation<NET>::initialize_network() {
-    cout << "Initializing Network ... " << std::flush;
-    auto t0 = chrono::system_clock::now();
+void NetworkPercolationReverse<NET>::initialize_network() {
+    std::cout << "Initializing Network ... " << std::flush;
+    auto t0 = std::chrono::system_clock::now();
     _network_frame = NET(_m0, _m);
     uint i= _m0;
     while (i < _network_size){ // sp that number of nodes is the network size
         _network_frame.addNode();
         ++i;
     }
-    auto t1 = chrono::system_clock::now();
-    cout << "done." << endl;
-    cout << "Network initialization time " << chrono::duration<double>(t1-t0).count() << endl;
+    auto t1 = std::chrono::system_clock::now();
+    std::cout << "done." << std::endl;
+    std::cout << "Network initialization time "
+              << std::chrono::duration<double>(t1-t0).count()
+              << std::endl;
 }
 
 
@@ -574,7 +213,7 @@ void NetworkPercolation<NET>::initialize_network() {
  * Uses Better Random number generator from standard library
  */
 template <class NET>
-void NetworkPercolation<NET>::randomize_v1() {
+void NetworkPercolationReverse<NET>::randomize_v1() {
 
 //    cout << "before " << _randomized_indices << endl;
     std::shuffle(_randomized_indices.begin(), _randomized_indices.end(), _random_generator);
@@ -583,7 +222,7 @@ void NetworkPercolation<NET>::randomize_v1() {
 }
 
 template <class NET>
-bool NetworkPercolation<NET>::occupyLink(){
+bool NetworkPercolationReverse<NET>::occupyLink(){
 //    return placeLink(); // added 2018.12.25
     size_t pos  = selectLink();  // 2018.12.25
 
@@ -593,7 +232,7 @@ bool NetworkPercolation<NET>::occupyLink(){
 }
 
 template <class NET>
-bool NetworkPercolation<NET>::placeLink() {
+bool NetworkPercolationReverse<NET>::placeLink() {
     if (_number_of_occupied_links >= _link_count){
         return false;
     }
@@ -616,7 +255,7 @@ bool NetworkPercolation<NET>::placeLink() {
 }
 
 template <class NET>
-void NetworkPercolation<NET>::manageCluster(size_t position) {
+void NetworkPercolationReverse<NET>::manageCluster(size_t position) {
 //    manage_cluster_v0(position);
     manage_cluster_v1(position);
 }
@@ -626,7 +265,7 @@ void NetworkPercolation<NET>::manageCluster(size_t position) {
  * @param pos : radnomized position of the link index
  */
 template <class NET>
-void NetworkPercolation<NET>::manage_cluster_v0(size_t pos) {
+void NetworkPercolationReverse<NET>::manage_cluster_v0(size_t pos) {
     Link lnk = _network_frame.getLink(pos);
     // getting all details
 //    int id = lnk.get_group_id();
@@ -727,7 +366,7 @@ void NetworkPercolation<NET>::manage_cluster_v0(size_t pos) {
  * @param pos : radnomized position of the link index
  */
 template <class NET>
-void NetworkPercolation<NET>::manage_cluster_v1(size_t pos) {
+void NetworkPercolationReverse<NET>::manage_cluster_v1(size_t pos) {
     Link lnk = _network_frame.getLink(pos);
     // getting all details
 //    int id = lnk.get_group_id();
@@ -738,7 +377,8 @@ void NetworkPercolation<NET>::manage_cluster_v1(size_t pos) {
 //    cout << "a " << id_a << " and b " << id_b << endl;
     // if both nodes have id -1. means they are not part of any cluster
     if(id_a == -1 || id_b == -1){
-        cout << "manage_cluster_v1 requires all nodes to be part of a cluster : line " <<__LINE__ << endl;
+        std::cout << "manage_cluster_v1 requires all nodes "
+                "to be part of a cluster : line " <<__LINE__ << std::endl;
 
     } else if(id_a == id_b){
         // no new nodes
@@ -783,47 +423,48 @@ void NetworkPercolation<NET>::manage_cluster_v1(size_t pos) {
 }
 
 template <class NET>
-void NetworkPercolation<NET>::viewCluster() {
+void NetworkPercolationReverse<NET>::viewCluster() {
     for(size_t i{}; i < _cluster.size(); ++i){
         if(_cluster[i].empty()){
             continue;
         }
-        cout << "cluster[" << i << "] : id " << _cluster[i].get_group_id() << "{" << endl;
-        cout << "  Nodes (" << _cluster[i].numberOfNodes() << "): ";
+        std::cout << "cluster[" << i << "] : id " << _cluster[i].get_group_id() << "{"
+                  << std::endl;
+        std::cout << "  Nodes (" << _cluster[i].numberOfNodes() << "): ";
         _cluster[i].viewNodes();
-        cout << endl;
-        cout << "  Links (" << _cluster[i].numberOfLinks() << "): ";
+        std::cout << std::endl;
+        std::cout << "  Links (" << _cluster[i].numberOfLinks() << "): ";
         _cluster[i].viewLinks();
-        cout << endl;
-        cout << "}" << endl;
+        std::cout << std::endl;
+        std::cout << "}" << std::endl;
     }
 
 }
 
 template <class NET>
-void NetworkPercolation<NET>::viewClusterExtended() {
+void NetworkPercolationReverse<NET>::viewClusterExtended() {
     for(size_t i{}; i < _cluster.size(); ++i){
         if(_cluster[i].empty()){
             continue;
         }
-        cout << "cluster[" << i << "] : id " << _cluster[i].get_group_id() << "{" << endl;
-        cout << "  Nodes (" << _cluster[i].numberOfNodes() << "): ";
+        std::cout << "cluster[" << i << "] : id " << _cluster[i].get_group_id() << "{" << std::endl;
+        std::cout << "  Nodes (" << _cluster[i].numberOfNodes() << "): ";
         auto nds = _cluster[i].get_nodes();
-        cout << "(index, id)->";
+        std::cout << "(index, id)->";
         for(auto n: nds){
-            cout << "(" << n << "," << _network_frame.get_node_group_id(n) << "),";
+            std::cout << "(" << n << "," << _network_frame.get_node_group_id(n) << "),";
         }
-        cout << endl;
-        cout << "  Links (" << _cluster[i].numberOfLinks() << "): ";
+        std::cout << std::endl;
+        std::cout << "  Links (" << _cluster[i].numberOfLinks() << "): ";
         _cluster[i].viewLinksExtended();
-        cout << endl;
-        cout << "}" << endl;
+        std::cout << std::endl;
+        std::cout << "}" << std::endl;
     }
 
 }
 
 template <class NET>
-void NetworkPercolation<NET>::relabel_nodes(Cluster& clstr, int id) {
+void NetworkPercolationReverse<NET>::relabel_nodes(Cluster& clstr, int id) {
     auto nds = clstr.get_nodes();
     for(size_t i{}; i < nds.size(); ++i){
         _network_frame.set_node_group_id(nds[i],id);
@@ -837,7 +478,7 @@ void NetworkPercolation<NET>::relabel_nodes(Cluster& clstr, int id) {
  * @return
  */
 template <class NET>
-double NetworkPercolation<NET>::entropy_v1() {
+double NetworkPercolationReverse<NET>::entropy_v1() {
     size_t count{}, n;
     double mu{}, H{};
     for(size_t i{}; i < _cluster.size(); ++i){
@@ -847,7 +488,8 @@ double NetworkPercolation<NET>::entropy_v1() {
         H += mu * std::log(mu); // shanon entropy
     }
     if(_network_size != _network_frame.number_of_nodes()){
-        cout << "_network_size != _network_frame.number_of_nodes() ; line " << __LINE__ << endl;
+        std::cout << "_network_size != _network_frame.number_of_nodes() ; line "
+                  << __LINE__ << std::endl;
     }
     size_t remaining = _network_size - count;
     H += remaining * logOneBySize() / double(_network_size); // for the clusters of size one
@@ -856,7 +498,7 @@ double NetworkPercolation<NET>::entropy_v1() {
 }
 
 template <class NET>
-double NetworkPercolation<NET>::entropy_v2() {
+double NetworkPercolationReverse<NET>::entropy_v2() {
     size_t isolated_node = _network_size - _number_of_connected_nodes;
 //    double lg = std::log(1.0 / _network_size);
 //    cout << logOneBySize() << endl;
@@ -870,7 +512,7 @@ double NetworkPercolation<NET>::entropy_v2() {
  * @param lnk
  */
 template <class NET>
-void NetworkPercolation<NET>::subtract_entropy(Link &lnk) {
+void NetworkPercolationReverse<NET>::subtract_entropy(Link &lnk) {
     size_t a = lnk.get_a();
     size_t b = lnk.get_b();
     size_t n{};
@@ -905,7 +547,7 @@ void NetworkPercolation<NET>::subtract_entropy(Link &lnk) {
 }
 
 template <class NET>
-void NetworkPercolation<NET>::add_entropy(Link &lnk) {
+void NetworkPercolationReverse<NET>::add_entropy(Link &lnk) {
     size_t a = lnk.get_a();
     size_t b = lnk.get_b();
     size_t n{};
@@ -923,7 +565,7 @@ void NetworkPercolation<NET>::add_entropy(Link &lnk) {
  * @return
  */
 template <class NET>
-size_t NetworkPercolation<NET>::selectLink() {
+size_t NetworkPercolationReverse<NET>::selectLink() {
     if(index_var >= _link_count){
         return _link_count + 1; // so that program chashes or stops
     }
@@ -939,7 +581,7 @@ size_t NetworkPercolation<NET>::selectLink() {
  * @return
  */
 template <class NET>
-bool NetworkPercolation<NET>::occupySelectedLink(size_t pos) {
+bool NetworkPercolationReverse<NET>::occupySelectedLink(size_t pos) {
     if(pos >= _link_count){
 //        cout << "pos > link_count : line " << __LINE__ << endl;
         return false;
@@ -959,7 +601,7 @@ bool NetworkPercolation<NET>::occupySelectedLink(size_t pos) {
 }
 
 template <class NET>
-void NetworkPercolation<NET>::reset(int i) {
+void NetworkPercolationReverse<NET>::reset(int i) {
     index_var = 0;
     _number_of_occupied_links = 0;
     _number_of_connected_nodes = 0;
@@ -986,7 +628,7 @@ void NetworkPercolation<NET>::reset(int i) {
  * Must be called after entropy is calculated each time. If not then this function will not work.
  */
 template <class NET>
-void NetworkPercolation<NET>::jump() {
+void NetworkPercolationReverse<NET>::jump() {
     double delta_H{};
     if(_number_of_occupied_links == 1){
         _previous_entropy = _current_entropy;
@@ -1012,6 +654,9 @@ void NetworkPercolation<NET>::jump() {
  * @tparam NET : type of the network
  */
 //template <class NET>
-//class NetworkPercolationExplosive: public NetworkPercolation{
+//class NetworkPercolationReverseExplosive: public NetworkPercolationReverse{
 //
 //};
+
+
+#endif //NETWORK_NETWORK_PERCOLATION_REVERSE_H

@@ -17,4 +17,6 @@ void network_percolation_explosive(int argc, char* argv[]);
 
 void network_percolation_global();
 
+void network_percolationReverse_global();
+
 #endif //NETWORK_NETWORK_PERCOLATION_H

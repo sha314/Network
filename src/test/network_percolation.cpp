@@ -6,6 +6,7 @@
 #include "../nets/network.h"
 #include "../util/time_tracking.h"
 #include "../percolation/network_percolation.h"
+#include "../percolation/network_percolation_reverse.h"
 #include <chrono>
 #include <fstream>
 #include <thread>
@@ -161,9 +162,35 @@ void network_percolation_explosive(int argc, char* argv[]) {
 
 }
 
-
+/*
+ * m0=3
+ * m=1
+ * N=100000
+ * BA took 0.22 sec
+ * MDA took 2.42 sec  ???
+ *
+ */
 void network_percolation_global(){
-    NetworkPercolation<NetworkMDA> networkPercolation(3, 1, 10);
+    NetworkPercolation<NetworkMDA> networkPercolation(10, 1, 1000000);
+    cout << networkPercolation.get_signature() << endl;
+//    networkPercolation.viewNodes();
+//    networkPercolation.viewLinks();
+//    networkPercolation.viewCluster();
+//    networkPercolation.viewClusterExtended();
+
+    int i=0;
+    while(networkPercolation.occupyLink()){
+//        cout << "iteration " << ++i << "****************************" << endl;
+//        cout << "last link " << networkPercolation.lastLink() << endl;
+//        networkPercolation.viewNodes();
+//        networkPercolation.viewClusterExtended();
+    }
+    cout << "time " << networkPercolation.time() << " sec" << endl;
+
+}
+
+void network_percolationReverse_global(){
+    NetworkPercolationReverse<NetworkBA> networkPercolation(3, 1, 10);
     cout << networkPercolation.get_signature() << endl;
     networkPercolation.viewNodes();
     networkPercolation.viewLinks();
@@ -171,11 +198,12 @@ void network_percolation_global(){
 //    networkPercolation.viewClusterExtended();
 
     int i=0;
-    while(networkPercolation.occupyLink()){
-        cout << "iteration " << ++i << "****************************" << endl;
-        cout << "last link " << networkPercolation.lastLink() << endl;
-        networkPercolation.viewNodes();
-        networkPercolation.viewClusterExtended();
-    }
+//    while(networkPercolation.occupyLink()){
+//        cout << "iteration " << ++i << "****************************" << endl;
+//        cout << "last link " << networkPercolation.lastLink() << endl;
+//        networkPercolation.viewNodes();
+//        networkPercolation.viewClusterExtended();
+//    }
+    cout << "time " << networkPercolation.time() << " sec" << endl;
 
 }

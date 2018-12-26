@@ -93,6 +93,8 @@ public:
 
     Link getLink(size_t pos) const;
     Node getNode(size_t pos) const;
+    std::vector<Node> getNodes() const {return _nodes;}
+    std::vector<Link> getLinks() const {return _links;}
 
     void set_link_group_id(size_t pos, int id);
     void set_node_group_id(size_t pos, int id);

@@ -22,6 +22,6 @@ set(SOURCE_FILES
         src/ext_libs/inverse_array.h
         src/percolation/network_percolation.cpp
         src/percolation/network_percolation_v2.cpp
-        src/test/network_build.cpp src/test/network_build.h src/test/network_percolation.cpp src/test/network_percolation.h src/nets/network_MDA.cpp src/nets/network_BA.cpp src/percolation/network_percolation.h)
+        src/test/network_build.cpp src/test/network_build.h src/test/network_percolation.cpp src/test/network_percolation.h src/nets/network_MDA.cpp src/nets/network_BA.cpp src/percolation/network_percolation.h src/percolation/network_percolation_reverse.cpp src/percolation/network_percolation_reverse.h src/percolation/percolation.h)
 
 add_executable(networks ${SOURCE_FILES})
