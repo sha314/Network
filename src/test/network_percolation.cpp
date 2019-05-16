@@ -16,23 +16,25 @@ using namespace std;
 
 void network_percolation(int argc, char* argv[]){
 
-    NetworkBApercolation_v2 net(3, 2, 100000);
-//    net.viewNodes();
-//    net.viewLinks();
-//    net.viewClusterExtended();
-//    net.reset(1);
-//    net.viewNodes();
-//    net.viewLinks();
-//    net.viewClusterExtended();
+    NetworkBApercolation_v2 net(3, 2, 10);
+    net.viewNodes();
+    net.viewLinks();
+    net.viewClusterExtended();
+    net.reset(1);
+    net.viewNodes();
+    net.viewLinks();
+    net.viewClusterExtended();
 
     size_t i{};
     while (net.occupyLink()){
-//        cout << " ************* **************** *************" << endl;
-//        cout << i << "-th link " << _network_frame.lastLink() << endl;
-//        cout << "p = " << _network_frame.occupationProbability() << endl;
-//        cout << "P = " << _network_frame.largestClusterSize() << endl;
+        cout << " ************* **************** *************" << endl;
+        cout << i << "-th link " << net.lastLink() << endl;
+        cout << "occupationProbability = " << net.occupationProbability() << endl;
+        cout << "largestClusterSize = " << net.largestClusterSize() << endl;
+        cout << "is self jump = " << net.isSelfClusterJump() << endl;
         ++i;
-//        _network_frame.viewClusterExtended();
+//        net.viewClusterExtended();
+        net.viewCluster();
     }
 //    net.viewNodes();
 //    net.viewLinks();
@@ -98,7 +100,7 @@ void  explosive_percolation_sum(uint m, uint network_size, uint M, uint ensemble
          << ",\"number_of_nodes\":" << net.nodeCount()
          << ",\"M\":" << M << ",\"ensemble_size\":" << ensemble_size << "}";
 
-    fout << ss.str() << endl;
+    fout << "#" << ss.str() << endl;
     fout << "#n = number of occupied links" << endl;
     fout << "#t = n / N" << endl;
     fout << "#cluster size = number of nodes in the cluster" << endl;
@@ -198,12 +200,12 @@ void network_percolationReverse_global(){
 //    networkPercolation.viewClusterExtended();
 
     int i=0;
-//    while(networkPercolation.occupyLink()){
+    while(networkPercolation.occupyLink()){
 //        cout << "iteration " << ++i << "****************************" << endl;
 //        cout << "last link " << networkPercolation.lastLink() << endl;
 //        networkPercolation.viewNodes();
 //        networkPercolation.viewClusterExtended();
-//    }
+    }
     cout << "time " << networkPercolation.time() << " sec" << endl;
 
 }

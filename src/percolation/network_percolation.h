@@ -120,8 +120,9 @@ public:
 /**
  * Random Link percolation on Barabasi-Albert Network model
  * make it a template class and the template argument is the NetworkBA or NetworkMDA or NetworkRandom
+ *
  * paradigm shift: clusters are no longer erased instead just clear them so that each nodes contains
- * cluster id which is the cluster index.
+ * cluster id which is the cluster index. Therefore, InverseArray class is not needed here.
  */
 class NetworkBApercolation_v2 {
     size_t _m0, _m;
@@ -140,6 +141,8 @@ protected:
     double _number_of_occupied_links{};
     size_t _number_of_connected_nodes{}; // not isolated
     size_t _number_of_nodes_in_the_largest_cluster{0};
+    int _last_largest_cluster_id{0};
+    bool _self_cluster_jump{false};
 
     double _current_entropy{};
     double _previous_entropy{};
@@ -204,8 +207,9 @@ public:
     /***************************************
      *  cluster management and relabeling
      ***********************************/
-
-    void manage_cluster(size_t position);
+    void manageCluster(size_t position);
+    void manage_cluster_v0(size_t position);
+    void manage_cluster_v1(size_t position);
     void relabel_nodes(Cluster& clster, int id);
 
     /***************************************
@@ -221,6 +225,9 @@ public:
 
     double logOneBySize() const { return log_1_by_size;}
 
+    void track_cluster();
+    void track_cluster_v2();
+    bool isSelfClusterJump() {return _self_cluster_jump;}
 };
 
 
@@ -431,7 +438,7 @@ protected:
     double _entropy{};
     size_t index_var{};
 
-    std::mt19937 _random_generator;
+    std::mt19937 _random; // random generator
 
     // methods
     void randomize_v1();
@@ -526,7 +533,7 @@ NetworkPercolation<NET>::NetworkPercolation(size_t m0, size_t m, size_t size)
     std::cerr << "automatic seeding is turned off" << std::endl;
 //    std::random_device _random_device;
 //    auto seed = _random_device();
-    _random_generator.seed(seed);
+    _random.seed(seed);
     //    cout << _link_indices.size() << " : " << _link_indices << endl;
     randomize_v1();
     log_1_by_size = std::log(1.0 / _network_size);
@@ -577,7 +584,7 @@ template <class NET>
 void NetworkPercolation<NET>::randomize_v1() {
 
 //    cout << "before " << _randomized_indices << endl;
-    std::shuffle(_randomized_indices.begin(), _randomized_indices.end(), _random_generator);
+    std::shuffle(_randomized_indices.begin(), _randomized_indices.end(), _random);
 //    cout << "after " << _randomized_indices << endl;
 
 }
@@ -808,7 +815,7 @@ void NetworkPercolation<NET>::viewClusterExtended() {
         }
         cout << "cluster[" << i << "] : id " << _cluster[i].get_group_id() << "{" << endl;
         cout << "  Nodes (" << _cluster[i].numberOfNodes() << "): ";
-        auto nds = _cluster[i].get_nodes();
+        auto nds = _cluster[i].getNodes();
         cout << "(index, id)->";
         for(auto n: nds){
             cout << "(" << n << "," << _network_frame.get_node_group_id(n) << "),";
@@ -824,7 +831,7 @@ void NetworkPercolation<NET>::viewClusterExtended() {
 
 template <class NET>
 void NetworkPercolation<NET>::relabel_nodes(Cluster& clstr, int id) {
-    auto nds = clstr.get_nodes();
+    auto nds = clstr.getNodes();
     for(size_t i{}; i < nds.size(); ++i){
         _network_frame.set_node_group_id(nds[i],id);
     }
@@ -1004,14 +1011,3 @@ void NetworkPercolation<NET>::jump() {
 
 
 
-/**
- * A universal class that can perform explosive percolation on any network
- * that is extended from the class "Network"
- *
- * Instruction for using sum rule or product rule is provided using constructor argument
- * @tparam NET : type of the network
- */
-//template <class NET>
-//class NetworkPercolationExplosive: public NetworkPercolation{
-//
-//};

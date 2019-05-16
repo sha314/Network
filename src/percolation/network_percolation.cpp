@@ -222,7 +222,7 @@ void NetworkBApercolation::viewClusterExtended() {
     for(size_t i{}; i < _cluster.size(); ++i){
         cout << "cluster[" << i << "] : id " << _cluster[i].get_group_id() << "{" << endl;
         cout << "  Nodes (" << _cluster[i].numberOfNodes() << "): ";
-        auto nds = _cluster[i].get_nodes();
+        auto nds = _cluster[i].getNodes();
         cout << "(index, id)->";
         for(auto n: nds){
             cout << "(" << n << "," << net.get_node_group_id(n) << "),";
@@ -237,7 +237,7 @@ void NetworkBApercolation::viewClusterExtended() {
 }
 
 void NetworkBApercolation::relabel_nodes(Cluster& clstr, int id) {
-    auto nds = clstr.get_nodes();
+    auto nds = clstr.getNodes();
     for(size_t i{}; i < nds.size(); ++i){
         net.set_node_group_id(nds[i],id);
     }
@@ -357,7 +357,7 @@ bool NetworkBApercolation::placeSelectedLink(size_t pos) {
 
     // cluster management
     subtract_entropy(_last_lnk);
-    manage_cluster_v0(pos);
+    manageCluster(pos);
     add_entropy(_last_lnk);
 
     return true;

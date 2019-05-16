@@ -30,7 +30,17 @@ public:
 
     void insert(const Cluster& clstr);
 
-    const std::vector<uint>& get_nodes() const { return _nodes;}
+    const std::vector<uint>& getNodes() const { return _nodes;}
+    const std::vector<Link>& getLinks() const { return _links;}
+
+    // pass in the random number and get the desired node or link
+    uint getNodeRandomly(size_t r) const {return _nodes[r % _nodes.size()];}
+    Link getLinkRandomly(size_t r) const {return _links[r % _links.size()];}
+
+    uint getNodeRandomlyAndRemove(size_t r) ;
+    Link getLinkRandomlyAndRemove(size_t r) ;
+
+
     size_t numberOfNodes() const { return _nodes.size();}
     size_t numberOfLinks() const { return _links.size();}
 

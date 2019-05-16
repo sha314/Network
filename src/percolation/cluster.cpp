@@ -61,4 +61,26 @@ void Cluster::insert(const Cluster &clstr) {
     _links.insert(_links.end(), clstr._links.begin(), clstr._links.end());
 }
 
+uint Cluster::getNodeRandomlyAndRemove(size_t r)  {
+    if(_nodes.empty()){
+        cerr << "empty node list " << __LINE__ << endl;
+        return 0;
+    }
+    size_t x = r % _nodes.size();
+    auto n = _nodes[x];
+    _nodes.erase(_nodes.begin() + x);
+    return n;
+}
+
+Link Cluster::getLinkRandomlyAndRemove(size_t r)  {
+    if(_links.empty()){
+        cerr << "empty node list " << __LINE__ << endl;
+        return Link();
+    }
+    size_t x = r % _links.size();
+    auto n = _links[x];
+    _links.erase(_links.begin() + x);
+    return n;
+}
+
 

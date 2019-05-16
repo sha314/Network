@@ -20,6 +20,10 @@
  * In reverse percolation we have only one cluster in the begining and
  * step by step we attempt to break one cluster to many.
  *
+ * Instead of choosing a link randomly, first choose a cluster which contains at least one link
+ * then among those links choose one link. This way we will know where that link is exactly so
+ * that we can remove it.
+ *
  * Efficiency
  * Network      m   N           Total Time
  *
@@ -33,7 +37,8 @@
  */
 template <class NET>
 class NetworkPercolationReverse{
-
+    // list of clusters with at least one link
+    std::vector<uint> _cluster_with_links;
     size_t _m0, _m;
     double log_1_by_size{}; // to make calculations easier
     double time_elapsed{0}; // only for debugging purposes
@@ -185,6 +190,7 @@ void NetworkPercolationReverse<NET>::initialize_for_percolation() {
     }
     // and all of the links sould be in the first cluster
     _cluster[0].add_links(_network_frame.getLinks());
+    _cluster_with_links.push_back(0); // initially the first cluster contains all the links
     auto t1 = std::chrono::system_clock::now();
     std::cout << "Initialization for percolation time "
               << std::chrono::duration<double>(t1-t0).count()
@@ -220,7 +226,13 @@ void NetworkPercolationReverse<NET>::randomize_v1() {
 //    cout << "after " << _randomized_indices << endl;
 
 }
-
+/**
+ * Instead of choosing a link randomly, first choose a cluster which contains at least one link
+ * then among those links choose one link. This way we will know where that link is exactly so
+ * that we can remove it.
+ * @tparam NET
+ * @return
+ */
 template <class NET>
 bool NetworkPercolationReverse<NET>::occupyLink(){
 //    return placeLink(); // added 2018.12.25
@@ -449,7 +461,7 @@ void NetworkPercolationReverse<NET>::viewClusterExtended() {
         }
         std::cout << "cluster[" << i << "] : id " << _cluster[i].get_group_id() << "{" << std::endl;
         std::cout << "  Nodes (" << _cluster[i].numberOfNodes() << "): ";
-        auto nds = _cluster[i].get_nodes();
+        auto nds = _cluster[i].getNodes();
         std::cout << "(index, id)->";
         for(auto n: nds){
             std::cout << "(" << n << "," << _network_frame.get_node_group_id(n) << "),";
@@ -465,7 +477,7 @@ void NetworkPercolationReverse<NET>::viewClusterExtended() {
 
 template <class NET>
 void NetworkPercolationReverse<NET>::relabel_nodes(Cluster& clstr, int id) {
-    auto nds = clstr.get_nodes();
+    auto nds = clstr.getNodes();
     for(size_t i{}; i < nds.size(); ++i){
         _network_frame.set_node_group_id(nds[i],id);
     }
@@ -561,7 +573,9 @@ void NetworkPercolationReverse<NET>::add_entropy(Link &lnk) {
 }
 
 /**
- * Selects a link randomly
+ * First select a cluster with at least one link.
+ * Then choose one of the link in that cluster and save the location.
+ *
  * @return
  */
 template <class NET>
@@ -569,10 +583,11 @@ size_t NetworkPercolationReverse<NET>::selectLink() {
     if(index_var >= _link_count){
         return _link_count + 1; // so that program chashes or stops
     }
-    // select a link randomly
-    size_t pos = _randomized_indices[index_var];
-    ++index_var;
-    return pos;
+    size_t sz = _cluster_with_links.size();
+    size_t clstr_index = _random_generator() % sz;
+    Link lnks = _cluster[clstr_index].getLinkRandomlyAndRemove(_random_generator());
+
+    return 0;
 }
 
 /**

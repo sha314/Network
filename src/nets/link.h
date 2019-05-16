@@ -9,6 +9,30 @@
 #include <sstream>
 
 /**
+ * Index of a link consists of two node ids
+ */
+class LinkIndex{
+    uint node_a;
+    uint node_b;
+public:
+    LinkIndex(uint a, uint b): node_a{a}, node_b{b} {
+        if(node_a == node_b) {
+            std::cout << "between " << node_a << " and " << node_b << std::endl;
+            std::cerr << "Self linking is not allowed : line " << __LINE__ << std::endl;
+        }
+    }
+    std::string to_string() const {
+        std::stringstream ss;
+        ss << "(" << node_a  << "," << node_b << ")";
+        return ss.str();
+    }
+
+    uint get_a() const {return node_a;}
+    uint get_b() const {return node_b;}
+};
+
+
+/**
  * A like connects two nodes
  */
 class Link{
@@ -38,5 +62,6 @@ public:
 };
 
 std::ostream& operator<<(std::ostream& os, const Link& lnk);
+std::ostream& operator<<(std::ostream& os, const LinkIndex& lnk);
 
 #endif //NETWORK_LINK_H

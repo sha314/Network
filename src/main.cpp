@@ -37,16 +37,27 @@ void network_percolation_to_file(int argc, char* argv[]){
 
 }
 
-
+/**
+ * N : network size
+ * m :
+ * M :
+ * @param argc
+ * @param argv
+ */
 void run_in_main(int argc, char* argv[]){
+    vector<string> arguments{"N","m","M"};
+    cout << "Arguments " << endl;
+    for(int i{1}; i < argc; ++i){
+        cout << arguments[i-1] << " : " << argv[i] << endl;
+    }
 //    test_network_BA();
 //    test_network_MDA();
 //    network_percolation_global();
-    network_percolationReverse_global();
+//    network_percolationReverse_global();
 //    degree_distribution_BA(argc, argv);
 //    network_percolation_to_file(argc, argv);
     //    degree_distribution_BA(argc, argv);
-//      network_percolation(argc, argv);
+      network_percolation(argc, argv);
 //    network_percolation_explosive(argc, argv);
 
 //    cout << "cores " << thread::hardware_concurrency() << endl;

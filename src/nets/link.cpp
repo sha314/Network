@@ -23,3 +23,7 @@ Link::Link(uint id_a, uint id_b) {
 std::ostream& operator<<(std::ostream& os, const Link& lnk){
     return os << lnk.to_string();
 }
+
+std::ostream& operator<<(std::ostream& os, const LinkIndex& lnk){
+    return os << lnk.to_string();
+}

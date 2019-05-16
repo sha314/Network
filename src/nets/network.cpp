@@ -351,7 +351,7 @@ void Network::activateNode(size_t pos) {
 //    ++_number_of_occupied_links;
 //
 //    // cluster management
-//    manage_cluster(last_link_pos_in_randomized);
+//    manage_cluster_v0(last_link_pos_in_randomized);
 //
 //    return true;
 //}
@@ -360,7 +360,7 @@ void Network::activateNode(size_t pos) {
 // *
 // * @param pos : radnomized position of the link index
 // */
-//void NetworkBApercolation::manage_cluster(size_t pos) {
+//void NetworkBApercolation::manage_cluster_v0(size_t pos) {
 //    Link lnk = _network_frame.getLink(pos);
 //    // getting all details
 ////    int id = lnk.get_group_id();
@@ -527,7 +527,7 @@ void Network::activateNode(size_t pos) {
 //    ++_number_of_occupied_links;
 //
 //    // cluster management
-//    manage_cluster(pos);
+//    manage_cluster_v0(pos);
 //
 //    return true;
 //}

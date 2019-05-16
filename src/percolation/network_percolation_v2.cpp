@@ -18,7 +18,7 @@ NetworkBApercolation_v2::NetworkBApercolation_v2(size_t m0, size_t m, size_t siz
 {
     initiate(m0, m, size);
     size_t seed = 0;
-    cerr << "automatic seeding is turned off" << endl;
+    cerr << "automatic seeding is turned off : line " << __LINE__ << endl;
 //    auto seed = _random_device();
     _random_generator.seed(seed);
     //    cout << _link_indices.size() << " : " << _link_indices << endl;
@@ -88,17 +88,22 @@ bool NetworkBApercolation_v2::placeLink() {
 
     // cluster management
     subtract_entropy(_last_lnk);
-    manage_cluster(last_link_pos_in_randomized);
+    manage_cluster_v0(last_link_pos_in_randomized);
     add_entropy(_last_lnk);
 
     return true;
+}
+
+void NetworkBApercolation_v2::manageCluster(size_t position) {
+//    manage_cluster_v0(position);
+    manage_cluster_v1(position);
 }
 
 /**
  *
  * @param pos : radnomized position of the link index
  */
-void NetworkBApercolation_v2::manage_cluster(size_t pos) {
+void NetworkBApercolation_v2::manage_cluster_v0(size_t pos) {
     Link lnk = _network_frame.getLink(pos);
     // getting all details
 //    int id = lnk.get_group_id();
@@ -190,6 +195,91 @@ void NetworkBApercolation_v2::manage_cluster(size_t pos) {
 
 }
 
+/**
+ * largest cluster is managed after this particular method ends.
+ * @param pos : radnomized position of the link index
+ */
+void NetworkBApercolation_v2::manage_cluster_v1(size_t pos) { // TODO : to be edited
+    Link lnk = _network_frame.getLink(pos);
+    // getting all details
+//    int id = lnk.get_group_id();
+    uint node_a = lnk.get_a();
+    int id_a = _network_frame.get_node_group_id(node_a);
+    uint node_b = lnk.get_b();
+    int id_b = _network_frame.get_node_group_id(node_b);
+//    cout << "a " << id_a << " and b " << id_b << endl;
+    // if both nodes have id -1. means they are not part of any cluster
+    if(id_a == -1 && id_b == -1){
+//        cout << "################ new cluster ################ : line " <<__LINE__ << endl;
+        size_t  sz = _cluster.size();
+        _cluster.push_back({});
+        _cluster[sz].add_link(lnk);
+        _cluster[sz].add_node(node_a);
+        _cluster[sz].add_node(node_b);
+        _cluster[sz].set_group_id(group_id_count);
+        _number_of_connected_nodes += 2; // 2 node is connected here
+        _network_frame.set_node_group_id(node_a, group_id_count);
+        _network_frame.set_node_group_id(node_b, group_id_count);
+        _network_frame.set_link_group_id(pos, group_id_count); // must set value in the global array. not local
+        ++group_id_count;
+
+    }else if(id_a != -1 && id_b == -1){
+        // add to id_a
+        size_t index = size_t(id_a);
+        _cluster[index].add_link(lnk);
+        _cluster[index].add_node(node_b); // since node_a is already in the cluster
+        _number_of_connected_nodes += 1; // 1 node is connected here
+        _network_frame.set_node_group_id(node_b, id_a);
+        _network_frame.set_link_group_id(pos, id_a);
+
+    }
+    else if(id_a == -1 && id_b != -1){
+        // add to id_b
+        size_t index = size_t(id_b);
+        _cluster[index].add_link(lnk);
+        _cluster[index].add_node(node_a); // since node_a is already in the cluster
+        _number_of_connected_nodes += 1; // 1 node is connected here
+        _network_frame.set_node_group_id(node_a, id_b);
+        _network_frame.set_link_group_id(pos, id_b);
+
+    } else if(id_a == id_b){
+        // no new nodes
+        // not -1 but same then just insert the link since both nodes already belong to same cluster
+        size_t index = size_t(id_b);
+        _cluster[index].add_link(lnk);
+        _network_frame.set_link_group_id(pos, id_b);
+    }
+    else{
+        /// merge cluster
+        // no need to add nodes to the cluster. they are already there
+        size_t index_a = size_t(id_a);
+        size_t index_b = size_t(id_b);
+        // base is the larger cluster (number of nodes in it)
+        size_t size_a = _cluster[index_a].numberOfNodes();
+        size_t size_b = _cluster[index_b].numberOfNodes();
+        if(size_a > size_b){
+            // index_a will survive the process
+            _cluster[index_a].add_link(lnk);
+            _network_frame.set_node_group_id(node_b, id_a);
+            _network_frame.set_link_group_id(pos, id_a);
+            _cluster[index_a].insert(_cluster[index_b]);
+            // relabeling
+            relabel_nodes(_cluster[index_b], id_a);
+            _cluster[index_b].clear();
+
+        }else{
+            // index_b will survive the process
+            _cluster[index_b].add_link(lnk);
+            _network_frame.set_node_group_id(node_a, id_b);
+            _network_frame.set_link_group_id(pos, id_b);
+            _cluster[index_b].insert(_cluster[index_a]);
+            relabel_nodes(_cluster[index_a], id_b);
+            _cluster[index_a].clear();
+
+        }
+    }
+}
+
 void NetworkBApercolation_v2::viewCluster() {
     for(size_t i{}; i < _cluster.size(); ++i){
         if(_cluster[i].empty()){
@@ -214,13 +304,14 @@ void NetworkBApercolation_v2::viewClusterExtended() {
         }
         cout << "cluster[" << i << "] : id " << _cluster[i].get_group_id() << "{" << endl;
         cout << "  Nodes (" << _cluster[i].numberOfNodes() << "): ";
-        auto nds = _cluster[i].get_nodes();
+        auto nds = _cluster[i].getNodes();
         cout << "(index, id)->";
         for(auto n: nds){
             cout << "(" << n << "," << _network_frame.get_node_group_id(n) << "),";
         }
         cout << endl;
         cout << "  Links (" << _cluster[i].numberOfLinks() << "): ";
+//        _cluster[i].viewLinks();
         _cluster[i].viewLinksExtended();
         cout << endl;
         cout << "}" << endl;
@@ -229,7 +320,7 @@ void NetworkBApercolation_v2::viewClusterExtended() {
 }
 
 void NetworkBApercolation_v2::relabel_nodes(Cluster& clstr, int id) {
-    auto nds = clstr.get_nodes();
+    auto nds = clstr.getNodes();
     for(size_t i{}; i < nds.size(); ++i){
         _network_frame.set_node_group_id(nds[i],id);
     }
@@ -323,7 +414,7 @@ void NetworkBApercolation_v2::add_entropy(Link &lnk) {
  */
 size_t NetworkBApercolation_v2::selectLink() {
     if(index_var >= _link_count){
-        return _link_count + 1; // so that program chashes or stops
+        return _link_count + 1; // so that program crashes or stops
     }
     // select a link randomly
     size_t pos = _randomized_indices[index_var];
@@ -349,13 +440,15 @@ bool NetworkBApercolation_v2::placeSelectedLink(size_t pos) {
 
     // cluster management
     subtract_entropy(_last_lnk);
-    manage_cluster(pos);
+    manageCluster(pos);
     add_entropy(_last_lnk);
+    track_cluster_v2();
 
     return true;
 }
 
 void NetworkBApercolation_v2::reset(int i) {
+    cout << "reset NetworkBApercolation_v2: line " <<__LINE__ << endl;
     index_var = 0;
     _number_of_occupied_links = 0;
     _number_of_connected_nodes = 0;
@@ -395,6 +488,50 @@ void NetworkBApercolation_v2::jump() {
     }
 
 }
+/**
+ * For tracking largest cluster and
+ * if the largest cluster is the unchanged from previous step, i.e.,
+ * the new largest cluster is the old largest cluster
+ */
+void NetworkBApercolation_v2::track_cluster() {
+    size_t a = _last_lnk.get_a();
+    int a_index = _network_frame.get_node_group_id(a);
+    if(a_index < 0){
+        cerr << "why? : line " << __LINE__ << endl;
+        a_index = _network_frame.get_node_group_id(_last_lnk.get_b());
+    }
+    size_t sz = _cluster[a_index].numberOfNodes();
+    if(sz > _number_of_nodes_in_the_largest_cluster){
+        _number_of_nodes_in_the_largest_cluster = sz;
+    }
+
+    _self_cluster_jump = (_last_largest_cluster_id == a_index); // true only in case of self jump
+    _last_largest_cluster_id = a_index;
+}
+
+/**
+ * For tracking largest cluster and
+ * if the largest cluster is the unchanged from previous step, i.e.,
+ * the new largest cluster is the old largest cluster.
+ *
+ * In case of zero cluster size jump
+ */
+void NetworkBApercolation_v2::track_cluster_v2() {
+    size_t a = _last_lnk.get_a();
+    int a_index = _network_frame.get_node_group_id(a);
+    if(a_index < 0){
+        cerr << "why? : line " << __LINE__ << endl;
+        a_index = _network_frame.get_node_group_id(_last_lnk.get_b());
+    }
+    size_t sz = _cluster[a_index].numberOfNodes();
+    if(sz > _number_of_nodes_in_the_largest_cluster){
+        _number_of_nodes_in_the_largest_cluster = sz;
+        _self_cluster_jump = (_last_largest_cluster_id == a_index); // true only in case of self jump
+    }else{
+        _self_cluster_jump = false;
+    }
+    _last_largest_cluster_id = a_index;
+}
 
 
 /************************************************************
@@ -433,7 +570,7 @@ bool NetworkBApercolationExplosive_v2::placeLink() {
     ++_number_of_occupied_links;
 
     // cluster management
-    manage_cluster(pos);
+    manage_cluster_v0(pos);
 
     return true;
 }
@@ -643,7 +780,7 @@ bool NetworkBApercolationExplosiveSum_v2::placeLink() {
     ++_number_of_occupied_links;
 
     // cluster management
-    manage_cluster(pos);
+    manage_cluster_v0(pos);
 
     return true;
 }
@@ -678,7 +815,7 @@ bool NetworkBApercolationExplosiveProduct_v2::placeLink() {
     ++_number_of_occupied_links;
 
     // cluster management
-    manage_cluster(pos);
+    manage_cluster_v0(pos);
 
     return true;
 }
