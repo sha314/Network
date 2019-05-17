@@ -2,17 +2,79 @@
 // Created by shahnoor on 12/19/18.
 //
 
-#include "network_percolation.h"
+#include "test_network_percolation.h"
 #include "../nets/network.h"
 #include "../util/time_tracking.h"
 #include "../percolation/network_percolation.h"
 #include "../percolation/network_percolation_reverse.h"
+#include "../percolation/network_percolation_template.h"
+//#include "../percolation/network_percolation2.h"
 #include <chrono>
 #include <fstream>
 #include <thread>
 
 using namespace std;
 
+/**
+ * Date : 2019.05.17
+ * @param argc
+ * @param argv
+ */
+void BA_self_jump(int argc, char* argv[]){
+    int m = atoi(argv[1]);
+    int N = atoi(argv[2]);
+    int M = atoi(argv[3]);
+
+    NetworkBApercolationExplosive_v2 net(m, m, N, M);
+    string signature = net.get_signature();
+    string filename = signature + "self_jump-" + currentTime() + ".txt";
+
+    ofstream fout(filename);
+    stringstream ss;
+    ss   << "{\"signature\":" << "\"" << signature << "\""
+         << ",\"m\":" << m << ",\"network_size\":" << N
+         << ",\"M\":" << M  // in case of explosive percolation
+         << ",\"number_of_links\":" << net.linkCount()
+         << ",\"number_of_nodes\":" << net.nodeCount()
+         << ",\"cols\":" << "[\"t\", \"dS\", \"color\"]" << "}";
+
+    fout << "#" << ss.str() << endl;
+    fout << "#n = number of occupied links" << endl;
+    fout << "#t = n / N" << endl;
+    fout << "#cluster size = number of nodes in the cluster" << endl;
+    fout << "#P = order parameter = largest cluster size / N" << endl;
+    fout << "#N = network size = number of nodes in it" << endl;
+    fout << "#S_max = largest cluster size" << endl;
+    fout << "#dS = largest clusteter jump" << endl;
+    fout << "#c = 0 or 1 (different cluster jump or self cluster jump)"<< endl;
+
+    double t;
+    double P{}, P_old{}, dP;
+    bool c{false};
+
+
+    net.occupyLink();
+    P_old = net.largestClusterSize();
+    t = net.occupationProbability();
+    fout << t << '\t' << 0 << '\t' << c << endl;
+
+    while (net.occupyLink()){
+//        cout << " ************* **************** *************" << endl;
+
+        t = net.occupationProbability();
+        P = net.largestClusterSize();
+
+        dP = abs(P- P_old);
+
+        P_old = P;
+        c = net.isSelfClusterJump();
+
+        fout << t << '\t' << dP << '\t' << c << endl;
+//        net.viewClusterExtended();
+//        net.viewCluster();
+    }
+    fout.close();
+}
 
 void network_percolation(int argc, char* argv[]){
 

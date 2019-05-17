@@ -2,9 +2,10 @@
 #include <chrono>
 #include "util/time_tracking.h"
 #include "nets/network.h"
-#include "test/network_percolation.h"
+#include "test/test_network_percolation.h"
 #include "test/network_build.h"
 #include "percolation/network_percolation.h"
+//#include "percolation/network_percolation2.h"
 #include <algorithm>
 #include <fstream>
 #include <thread>
@@ -57,12 +58,13 @@ void run_in_main(int argc, char* argv[]){
 //    degree_distribution_BA(argc, argv);
 //    network_percolation_to_file(argc, argv);
     //    degree_distribution_BA(argc, argv);
-      network_percolation(argc, argv);
+//      network_percolation(argc, argv);
 //    network_percolation_explosive(argc, argv);
 
 //    cout << "cores " << thread::hardware_concurrency() << endl;
 //    explosive_percolation_sum(3, 5000, 5, 100, 0); // testing only
 
+    BA_self_jump(argc, argv);
 }
 
 /**
