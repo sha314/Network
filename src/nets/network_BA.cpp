@@ -44,6 +44,10 @@ void NetworkBA::add_node_v0() {
  * 17.685811 sec for 100000 nodes
  */
 void NetworkBA::addNode() {
+    if(_static){
+        cout << "network is frozen since preferentially is empty : line " << __LINE__ << endl;
+        return;
+    }
 
 //    add_node_v1();
 //    add_node_v2();
@@ -382,5 +386,6 @@ void NetworkBA::view_preferentially() {
 void NetworkBA::reset() {
     Network::reset();
     _preferentially.clear();
+    _static = false;
     initialize_preferential();
 }

@@ -17,6 +17,7 @@
 #include <algorithm>
 #include <chrono>
 #include <unordered_set>
+#include <sys/types.h>
 
 /**********************************
  * Network consists of Nodes and Links
@@ -119,6 +120,7 @@ class NetworkBA : public Network{
     // number of neighborCount the nodes have is the number of repetition of that index
     // helps efficiently selecting nodes preferentially
     std::vector<uint> _preferentially;
+    bool _static{false};
 
     // methods
     [[deprecated("Only able to calculate for m=1")]]
@@ -165,6 +167,8 @@ public:
             _nodes[i].set_group_id(-1);
         }
     }
+
+    void clear_preferentially() {_preferentially.clear(); _static = true;}
 
 };
 

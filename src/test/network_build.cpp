@@ -28,6 +28,13 @@ void test_network_BA(){
     net.viewNodes();
     net.view_links();
 
+    net.clear_preferentially();
+    net.addNode();
+    net.reset();
+    net.viewNodes();
+    net.addNode();
+    net.viewNodes();
+
 }
 
 void test_network_MDA(){

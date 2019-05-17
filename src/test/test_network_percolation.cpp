@@ -78,25 +78,28 @@ void BA_self_jump(int argc, char* argv[]){
 
 void network_percolation(int argc, char* argv[]){
 
-    NetworkBApercolation_v2 net(3, 2, 10);
-    net.viewNodes();
-    net.viewLinks();
-    net.viewClusterExtended();
-    net.reset(1);
-    net.viewNodes();
-    net.viewLinks();
-    net.viewClusterExtended();
+    size_t m = 3;
+    size_t N = 100000;
+    size_t M = 2;
+    NetworkBApercolationExplosive_v2 net(m, m, N, M);
+//    net.viewNodes();
+//    net.viewLinks();
+//    net.viewClusterExtended();
+//    net.reset(1);
+//    net.viewNodes();
+//    net.viewLinks();
+//    net.viewClusterExtended();
 
     size_t i{};
     while (net.occupyLink()){
-        cout << " ************* **************** *************" << endl;
-        cout << i << "-th link " << net.lastLink() << endl;
-        cout << "occupationProbability = " << net.occupationProbability() << endl;
-        cout << "largestClusterSize = " << net.largestClusterSize() << endl;
-        cout << "is self jump = " << net.isSelfClusterJump() << endl;
-        ++i;
+//        cout << " ************* **************** *************" << endl;
+//        cout << i << "-th link " << net.lastLink() << endl;
+//        cout << "occupationProbability = " << net.occupationProbability() << endl;
+//        cout << "largestClusterSize = " << net.largestClusterSize() << endl;
+//        cout << "is self jump = " << net.isSelfClusterJump() << endl;
+//        ++i;
 //        net.viewClusterExtended();
-        net.viewCluster();
+//        net.viewCluster();
     }
 //    net.viewNodes();
 //    net.viewLinks();
@@ -105,7 +108,7 @@ void network_percolation(int argc, char* argv[]){
 //    net.viewNodes();
 //    net.viewLinks();
 //    net.viewClusterExtended();
-
+    net.time_summary();
 }
 
 

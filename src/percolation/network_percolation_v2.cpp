@@ -53,6 +53,7 @@ void NetworkBApercolation_v2::initialize_network() {
         ++i;
     }
     cout << "done." << endl;
+    _network_frame.clear_preferentially(); // to clear some memory
 }
 
 
@@ -433,6 +434,7 @@ bool NetworkBApercolation_v2::placeSelectedLink(size_t pos) {
 //        cout << "pos > link_count : line " << __LINE__ << endl;
         return false;
     }
+    auto start = std::chrono::system_clock::now(); // time measurement
     _last_lnk = _network_frame.getLink(pos);
     _network_frame.activateLink(pos); // activating the link
 
@@ -445,6 +447,9 @@ bool NetworkBApercolation_v2::placeSelectedLink(size_t pos) {
     add_entropy(_last_lnk);
     track_cluster_v2();
 
+    auto end = std::chrono::system_clock::now(); // time measurement
+    std::chrono::duration<double> elapsed_seconds = end-start; // time measurement
+    _time_placeSelectedLink += elapsed_seconds.count();
     return true;
 }
 
@@ -534,6 +539,11 @@ void NetworkBApercolation_v2::track_cluster_v2() {
     _last_largest_cluster_id = a_index;
 }
 
+void NetworkBApercolation_v2::time_summary() {
+    cout << "_time_placeSelectedLink " << _time_placeSelectedLink << " sec" << endl;
+
+}
+
 
 /************************************************************
  * Explosive percolation on BA network
@@ -586,6 +596,7 @@ size_t NetworkBApercolationExplosive_v2::selectLink(char rule ) {
     if(_number_of_occupied_links >= _link_count){
         return _link_count+1;
     }
+    auto start = std::chrono::system_clock::now(); // time measurement
     size_t r{};
     if(rule == 's'){
         r = link_for_min_cluster_sum_rule();;
@@ -598,13 +609,17 @@ size_t NetworkBApercolationExplosive_v2::selectLink(char rule ) {
 
     size_t pos = _randomized_indices[r];
     _randomized_indices.erase(_randomized_indices.begin() + r); // must erase the used value
+
+    auto end = std::chrono::system_clock::now(); // time measurement
+    std::chrono::duration<double> elapsed_seconds = end-start; // time measurement
+    _time_selectLink += elapsed_seconds.count();
     return pos;
 }
 
 /**
  * For minimizing cluster sizes using sum rule
 
- * @return index of the link in the _randomized_indices for which cluster size become minimum
+ * @return index of the link in the _randomized_indices for which cluster size becomes minimum
  */
 size_t NetworkBApercolationExplosive_v2::link_for_min_cluster_sum_rule() {
     size_t index_randomized_link;
@@ -760,6 +775,12 @@ bool NetworkBApercolationExplosive_v2::occupyLink() {
     }
     size_t pos = selectLink('s');
     return NetworkBApercolation_v2::placeSelectedLink(pos);
+}
+
+void NetworkBApercolationExplosive_v2::time_summary() {
+    NetworkBApercolation_v2::time_summary();
+    cout << "_time_selectLink " << _time_selectLink << " sec" << endl;
+
 }
 
 /********************************************************

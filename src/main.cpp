@@ -46,7 +46,7 @@ void network_percolation_to_file(int argc, char* argv[]){
  * @param argv
  */
 void run_in_main(int argc, char* argv[]){
-    vector<string> arguments{"N","m","M"};
+    vector<string> arguments{"m","N","M"};
     cout << "Arguments " << endl;
     for(int i{1}; i < argc; ++i){
         cout << arguments[i-1] << " : " << argv[i] << endl;
@@ -58,13 +58,13 @@ void run_in_main(int argc, char* argv[]){
 //    degree_distribution_BA(argc, argv);
 //    network_percolation_to_file(argc, argv);
     //    degree_distribution_BA(argc, argv);
-//      network_percolation(argc, argv);
+      network_percolation(argc, argv);
 //    network_percolation_explosive(argc, argv);
 
 //    cout << "cores " << thread::hardware_concurrency() << endl;
 //    explosive_percolation_sum(3, 5000, 5, 100, 0); // testing only
 
-    BA_self_jump(argc, argv);
+//    BA_self_jump(argc, argv);
 }
 
 /**

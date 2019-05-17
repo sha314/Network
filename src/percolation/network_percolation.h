@@ -127,6 +127,9 @@ class NetworkBApercolation_v2 {
     size_t _m0, _m;
 
     double log_1_by_size{}; // to make calculations easier
+
+    //time measurement variables
+    double _time_placeSelectedLink{};
 protected:
     NetworkBA _network_frame;
     Link _last_lnk;
@@ -227,6 +230,8 @@ public:
     void track_cluster();
     void track_cluster_v2();
     bool isSelfClusterJump() {return _self_cluster_jump;}
+
+    void time_summary();
 };
 
 
@@ -314,6 +319,9 @@ public:
  * Explosive percolation on BA network
  ***********************************************************/
 class NetworkBApercolationExplosive_v2 : public NetworkBApercolation_v2{
+private:
+    // time measurement variable
+    double _time_selectLink{};
 protected:
     uint _M{2}; // number of link to choose for product rule or sum rule
 public:
@@ -341,6 +349,8 @@ public:
     size_t link_for_min_cluster_product_rule();
     // TODO write function that take a lambda function and executes as it says
     size_t selectLink(char rule);
+
+    void time_summary();
 };
 
 /**
