@@ -57,14 +57,14 @@ void run_in_main(int argc, char* argv[]){
 //    network_percolationReverse_global();
 //    degree_distribution_BA(argc, argv);
 //    network_percolation_to_file(argc, argv);
-    //    degree_distribution_BA(argc, argv);
-      network_percolation(argc, argv);
+//    degree_distribution_BA(argc, argv);
+//    network_percolation(argc, argv);
 //    network_percolation_explosive(argc, argv);
-
+//
 //    cout << "cores " << thread::hardware_concurrency() << endl;
 //    explosive_percolation_sum(3, 5000, 5, 100, 0); // testing only
 
-//    BA_self_jump(argc, argv);
+    BA_self_jump(argc, argv);
 }
 
 /**

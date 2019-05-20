@@ -15,25 +15,26 @@ using namespace std;
 /*************************
  * Percolation on BA network
  */
-NetworkBApercolation_v2::NetworkBApercolation_v2(size_t m0, size_t m, size_t size)
+NetworkBApercolation_v3::NetworkBApercolation_v3(size_t m0, size_t m, size_t size)
 {
     initiate(m0, m, size);
     size_t seed = 0;
     cerr << "automatic seeding is turned off : line " << __LINE__ << endl;
 //    auto seed = _random_device();
     _random_generator.seed(seed);
-    cout << "random seed NetworkBApercolation_v2 " << seed << endl;
+    cout << "random seed NetworkBApercolation_v3 " << seed << endl;
     //    cout << _link_indices.size() << " : " << _link_indices << endl;
     randomize_v1();
     log_1_by_size = std::log(1.0 / _network_size);
 }
 
-void NetworkBApercolation_v2::initiate(size_t m0, size_t m, size_t size) {
+void NetworkBApercolation_v3::initiate(size_t m0, size_t m, size_t size) {
     _m0 = m0;
     _m = m;
     _network_size = size+_m0;
 
     initialize_network();
+    initialize_cluster();
 
     _link_count = _network_frame.getNumberOfLinks();
     _link_indices.resize(_link_count);
@@ -44,8 +45,21 @@ void NetworkBApercolation_v2::initiate(size_t m0, size_t m, size_t size) {
     _randomized_indices = _link_indices;
 
 }
+/**
+ * Must be called after the network is fully functional
+ */
+void NetworkBApercolation_v3::initialize_cluster() {
+    size_t N = _network_frame.number_of_nodes();
+    for(uint i{}; i < N ; ++i){
+        _cluster.push_back({});
+        _cluster[i].add_node(i);
+        _cluster[i].set_group_id(group_id_count);
+        _network_frame.set_node_group_id(i, group_id_count);
+        ++group_id_count;
+    }
+}
 
-void NetworkBApercolation_v2::initialize_network() {
+void NetworkBApercolation_v3::initialize_network() {
     cout << "Initializing Network ... " << std::flush;
     _network_frame = NetworkBA(_m0, _m);
     uint i= _m0;
@@ -61,21 +75,22 @@ void NetworkBApercolation_v2::initialize_network() {
 /**
  * Uses Better Random number generator from standard library
  */
-void NetworkBApercolation_v2::randomize_v1() {
+void NetworkBApercolation_v3::randomize_v1() {
 
 //    cout << "before " << _randomized_indices << endl;
+    _randomized_indices = _link_indices; // must assign. in case _randomized_indices is not suitable
     std::shuffle(_randomized_indices.begin(), _randomized_indices.end(), _random_generator);
 //    cout << "after " << _randomized_indices << endl;
 
 }
 
-bool NetworkBApercolation_v2::occupyLink(){
+bool NetworkBApercolation_v3::occupyLink(){
 //    return placeLink(); // added 2018.08.21
     size_t pos  = selectLink();  // 2018.08.21
     return placeSelectedLink(pos); // 2018.08.21
 }
 
-bool NetworkBApercolation_v2::placeLink() {
+bool NetworkBApercolation_v3::placeLink() {
     if (_number_of_occupied_links >= _link_count){
         return false;
     }
@@ -97,16 +112,17 @@ bool NetworkBApercolation_v2::placeLink() {
     return true;
 }
 
-void NetworkBApercolation_v2::manageCluster(size_t position) {
-//    manage_cluster_v0(position);
-    manage_cluster_v1(position);
+void NetworkBApercolation_v3::manageCluster(size_t link_pos) {
+//    manage_cluster_v0(link_pos);
+//    manage_cluster_v1(link_pos);
+    manage_cluster_v2(link_pos);
 }
 
 /**
  *
  * @param pos : radnomized position of the link index
  */
-void NetworkBApercolation_v2::manage_cluster_v0(size_t pos) {
+void NetworkBApercolation_v3::manage_cluster_v0(size_t pos) {
     Link lnk = _network_frame.getLink(pos);
     // getting all details
 //    int id = lnk.get_group_id();
@@ -200,9 +216,79 @@ void NetworkBApercolation_v2::manage_cluster_v0(size_t pos) {
 
 /**
  * largest cluster is managed after this particular method ends.
+ * @param link_pos : radnomized position of the link index
+ */
+void NetworkBApercolation_v3::manage_cluster_v2(size_t link_pos) { // TODO : to be edited
+    Link lnk = _network_frame.getLink(link_pos);
+    // getting all details
+//    int id = lnk.get_group_id();
+    uint node_a = lnk.get_a();
+    int id_a = _network_frame.get_node_group_id(node_a);
+    uint node_b = lnk.get_b();
+    int id_b = _network_frame.get_node_group_id(node_b);
+//    cout << "a " << id_a << " and b " << id_b << endl;
+    if(id_a == id_b){
+        ++manage_cluster_v2_c;
+        // no new nodes
+        // not -1 but same then just insert the link since both nodes already belong to same cluster
+        size_t index = size_t(id_b);
+        _cluster[index].add_link(lnk);
+        _network_frame.set_link_group_id(link_pos, id_b);
+    }
+    else{
+        ++manage_cluster_v2_d;
+        /// merge cluster
+        // no need to add nodes to the cluster. they are already there
+        size_t index_a = size_t(id_a);
+        size_t index_b = size_t(id_b);
+        // base is the larger cluster (number of nodes in it)
+        size_t size_a = _cluster[index_a].numberOfNodes();
+        size_t size_b = _cluster[index_b].numberOfNodes();
+        if(size_a > size_b){
+            merge_cluster(link_pos, lnk, id_a, id_b, node_b);
+
+        }else{
+            // index_b will survive the process
+            merge_cluster(link_pos, lnk, id_b, id_a, node_a);
+
+//            _cluster[index_b].add_link(lnk);
+//            _network_frame.set_node_group_id(node_a, id_b);
+//            _network_frame.set_link_group_id(link_pos, id_b);
+//            _cluster[index_b].insert(_cluster[index_a]);
+//            relabel_nodes(_cluster[index_a], id_b);
+//            _cluster[index_a].clear();
+
+        }
+    }
+}
+
+/**
+ *
+ * @param link_pos : position of the selected link
+ * @param lnk : currect link which has two directly connected node with id (id_a and id_b)
+ * @param id_a : one of the directly connected node id and surviving group id or base cluster id
+ * @param id_b : one of the directly connected node id
+ * @param node_b : one of the node the currect link is connected to and which was not part of base cluster
+ */
+void NetworkBApercolation_v3::merge_cluster(size_t link_pos, const Link &lnk, int id_a, int id_b,
+                                            uint node_b) {
+    size_t index_a = size_t(id_a);
+    size_t index_b = size_t(id_b);
+    // index_base will survive the process
+    _cluster[index_a].add_link(lnk);
+    _network_frame.set_node_group_id(node_b, id_a);
+    _network_frame.set_link_group_id(link_pos, id_a);
+    _cluster[index_a].insert(_cluster[index_b]);
+    // relabeling
+    relabel_nodes(_cluster[index_b], id_a);
+    _cluster[index_b].clear();
+}
+
+/**
+ * largest cluster is managed after this particular method ends.
  * @param pos : radnomized position of the link index
  */
-void NetworkBApercolation_v2::manage_cluster_v1(size_t pos) { // TODO : to be edited
+void NetworkBApercolation_v3::manage_cluster_v1(size_t pos) { // TODO : to be edited
     Link lnk = _network_frame.getLink(pos);
     // getting all details
 //    int id = lnk.get_group_id();
@@ -213,6 +299,7 @@ void NetworkBApercolation_v2::manage_cluster_v1(size_t pos) { // TODO : to be ed
 //    cout << "a " << id_a << " and b " << id_b << endl;
     // if both nodes have id -1. means they are not part of any cluster
     if(id_a == -1 && id_b == -1){
+        ++manage_cluster_v2_a;
 //        cout << "################ new cluster ################ : line " <<__LINE__ << endl;
         size_t  sz = _cluster.size();
         _cluster.push_back({});
@@ -227,6 +314,7 @@ void NetworkBApercolation_v2::manage_cluster_v1(size_t pos) { // TODO : to be ed
         ++group_id_count;
 
     }else if(id_a != -1 && id_b == -1){
+        ++manage_cluster_v2_b;
         // add to id_a
         size_t index = size_t(id_a);
         _cluster[index].add_link(lnk);
@@ -237,6 +325,7 @@ void NetworkBApercolation_v2::manage_cluster_v1(size_t pos) { // TODO : to be ed
 
     }
     else if(id_a == -1 && id_b != -1){
+        ++manage_cluster_v2_b;
         // add to id_b
         size_t index = size_t(id_b);
         _cluster[index].add_link(lnk);
@@ -246,6 +335,7 @@ void NetworkBApercolation_v2::manage_cluster_v1(size_t pos) { // TODO : to be ed
         _network_frame.set_link_group_id(pos, id_b);
 
     } else if(id_a == id_b){
+        ++manage_cluster_v2_c;
         // no new nodes
         // not -1 but same then just insert the link since both nodes already belong to same cluster
         size_t index = size_t(id_b);
@@ -253,6 +343,7 @@ void NetworkBApercolation_v2::manage_cluster_v1(size_t pos) { // TODO : to be ed
         _network_frame.set_link_group_id(pos, id_b);
     }
     else{
+        ++manage_cluster_v2_d;
         /// merge cluster
         // no need to add nodes to the cluster. they are already there
         size_t index_a = size_t(id_a);
@@ -283,7 +374,7 @@ void NetworkBApercolation_v2::manage_cluster_v1(size_t pos) { // TODO : to be ed
     }
 }
 
-void NetworkBApercolation_v2::viewCluster() {
+void NetworkBApercolation_v3::viewCluster() {
     cout << "viewCluster : line " << __LINE__ << endl;
     for(size_t i{}; i < _cluster.size(); ++i){
         if(_cluster[i].empty()){
@@ -301,7 +392,7 @@ void NetworkBApercolation_v2::viewCluster() {
 
 }
 
-void NetworkBApercolation_v2::viewClusterExtended() {
+void NetworkBApercolation_v3::viewClusterExtended() {
     cout << "viewClusterExtended : line " << __LINE__ << endl;
     for(size_t i{}; i < _cluster.size(); ++i){
         if(_cluster[i].empty()){
@@ -324,7 +415,7 @@ void NetworkBApercolation_v2::viewClusterExtended() {
 
 }
 
-void NetworkBApercolation_v2::relabel_nodes(Cluster& clstr, int id) {
+void NetworkBApercolation_v3::relabel_nodes(Cluster& clstr, int id) {
     auto nds = clstr.getNodes();
     for(size_t i{}; i < nds.size(); ++i){
         _network_frame.set_node_group_id(nds[i],id);
@@ -337,7 +428,7 @@ void NetworkBApercolation_v2::relabel_nodes(Cluster& clstr, int id) {
  * H = - sum mu_i log(mu_i)
  * @return
  */
-double NetworkBApercolation_v2::entropy_v1() {
+double NetworkBApercolation_v3::entropy_v1() {
     size_t count{}, n;
     double mu{}, H{};
     for(size_t i{}; i < _cluster.size(); ++i){
@@ -355,7 +446,7 @@ double NetworkBApercolation_v2::entropy_v1() {
     return _current_entropy;
 }
 
-double NetworkBApercolation_v2::entropy_v2() {
+double NetworkBApercolation_v3::entropy_v2() {
     size_t isolated_node = _network_size - _number_of_connected_nodes;
 //    double lg = std::log(1.0 / _network_size);
 //    cout << logOneBySize() << endl;
@@ -368,7 +459,7 @@ double NetworkBApercolation_v2::entropy_v2() {
  * Subtract entropy for two nodes of the lnk link
  * @param lnk
  */
-void NetworkBApercolation_v2::subtract_entropy(Link &lnk) {
+void NetworkBApercolation_v3::subtract_entropy(Link &lnk) {
     size_t a = lnk.get_a();
     size_t b = lnk.get_b();
     size_t n{};
@@ -400,7 +491,7 @@ void NetworkBApercolation_v2::subtract_entropy(Link &lnk) {
     _entropy -= H;
 }
 
-void NetworkBApercolation_v2::add_entropy(Link &lnk) {
+void NetworkBApercolation_v3::add_entropy(Link &lnk) {
     size_t a = lnk.get_a();
     size_t b = lnk.get_b();
     size_t n{};
@@ -417,7 +508,7 @@ void NetworkBApercolation_v2::add_entropy(Link &lnk) {
  * Selects a link randomly
  * @return
  */
-size_t NetworkBApercolation_v2::selectLink() {
+size_t NetworkBApercolation_v3::selectLink() {
     if(index_var >= _link_count){
         return _link_count + 1; // so that program crashes or stops
     }
@@ -429,24 +520,24 @@ size_t NetworkBApercolation_v2::selectLink() {
 
 /**
  * place the link whose index in network is passed as argument
- * @param pos
+ * @param link_pos
  * @return
  */
-bool NetworkBApercolation_v2::placeSelectedLink(size_t pos) {
-    if(pos >= _link_count){
-//        cout << "pos > link_count : line " << __LINE__ << endl;
+bool NetworkBApercolation_v3::placeSelectedLink(size_t link_pos) {
+    if(link_pos >= _link_count){
+//        cout << "link_pos > link_count : line " << __LINE__ << endl;
         return false;
     }
     auto start = std::chrono::system_clock::now(); // time measurement
-    _last_lnk = _network_frame.getLink(pos);
-    _network_frame.activateLink(pos); // activating the link
+    _last_lnk = _network_frame.getLink(link_pos);
+    _network_frame.activateLink(link_pos); // activating the link
 
     // occupy that link
     ++_number_of_occupied_links;
 
     // cluster management
     subtract_entropy(_last_lnk);
-    manageCluster(pos);
+    manageCluster(link_pos);
     add_entropy(_last_lnk);
     track_cluster_v2();
 
@@ -456,8 +547,8 @@ bool NetworkBApercolation_v2::placeSelectedLink(size_t pos) {
     return true;
 }
 
-void NetworkBApercolation_v2::reset(int i) {
-    cout << "reset NetworkBApercolation_v2: line " <<__LINE__ << endl;
+void NetworkBApercolation_v3::reset(int i) {
+    cout << "reset NetworkBApercolation_v3: line " <<__LINE__ << endl;
     index_var = 0;
     _number_of_occupied_links = 0;
     _number_of_connected_nodes = 0;
@@ -468,22 +559,24 @@ void NetworkBApercolation_v2::reset(int i) {
     _current_entropy = 0;
     group_id_count = 0;
     _last_lnk = {};
+    _cluster.clear();
+    _network_frame.clear_node_id();
+
+
     if(i == 1){
         // initialize the network again
         initialize_network();
     }
-    _randomized_indices = _link_indices;
+    initialize_cluster();
+//    _randomized_indices = _link_indices; // assigned inside randomize_v1() function
     randomize_v1();
-    _cluster.clear();
-    _network_frame.clear_node_id();
-
 }
 
 
 /**
  * Must be called after entropy is calculated each time. If not then this function will not work.
  */
-void NetworkBApercolation_v2::jump() {
+void NetworkBApercolation_v3::jump() {
     double delta_H{};
     if(_number_of_occupied_links == 1){
         _previous_entropy = _current_entropy;
@@ -502,7 +595,7 @@ void NetworkBApercolation_v2::jump() {
  * if the largest cluster is the unchanged from previous step, i.e.,
  * the new largest cluster is the old largest cluster
  */
-void NetworkBApercolation_v2::track_cluster() {
+void NetworkBApercolation_v3::track_cluster() {
     size_t a = _last_lnk.get_a();
     int a_index = _network_frame.get_node_group_id(a);
     if(a_index < 0){
@@ -525,7 +618,7 @@ void NetworkBApercolation_v2::track_cluster() {
  *
  * In case of zero cluster size jump
  */
-void NetworkBApercolation_v2::track_cluster_v2() {
+void NetworkBApercolation_v3::track_cluster_v2() {
     size_t a = _last_lnk.get_a();
     int a_index = _network_frame.get_node_group_id(a);
     if(a_index < 0){
@@ -542,8 +635,13 @@ void NetworkBApercolation_v2::track_cluster_v2() {
     _last_largest_cluster_id = a_index;
 }
 
-void NetworkBApercolation_v2::time_summary() {
+void NetworkBApercolation_v3::time_summary() {
     cout << "_time_placeSelectedLink " << _time_placeSelectedLink << " sec" << endl;
+
+    cout << "manage_cluster_v2_a " << manage_cluster_v2_a << " times" << endl;
+    cout << "manage_cluster_v2_b " << manage_cluster_v2_b << " times" << endl;
+    cout << "manage_cluster_v2_c " << manage_cluster_v2_c << " times" << endl;
+    cout << "manage_cluster_v2_d " << manage_cluster_v2_d << " times" << endl;
 
 }
 
@@ -551,7 +649,7 @@ void NetworkBApercolation_v2::time_summary() {
  * Counting total number of cluster with size greater than 1
  * @return
  */
-size_t NetworkBApercolation_v2::clusterCount() const {
+size_t NetworkBApercolation_v3::clusterCount() const {
     size_t count{};
     for(size_t i{}; i < _cluster.size();++i){
         if(!_cluster[i].empty()) count++;
@@ -559,302 +657,17 @@ size_t NetworkBApercolation_v2::clusterCount() const {
     return count;
 }
 
-
-/************************************************************
- * Explosive percolation on BA network
- *************************************************************/
 /**
- *
- * @param m0
- * @param m
- * @param size
- * @param M
+ * if _randomized_indices changes as the program occupies new links, it is
+ * because of necessity
  */
-NetworkBApercolationExplosive_v2::NetworkBApercolationExplosive_v2(size_t m0, size_t m, size_t size, uint M)
-        : NetworkBApercolation_v2(m0, m, size)
-{
-    if (M > 2) {
-        if(M > MAX_M_VALUE){
-            cout << "M exceeds maximum allowed value : line " << __LINE__ << endl;
-            _M = MAX_M_VALUE;
-        }
-        _M = M;
+void NetworkBApercolation_v3::view_randomized_indices() const {
+    cout << "{";
+    for(auto a: _randomized_indices){
+        cout << a << ",";
     }
-}
-
-bool NetworkBApercolationExplosive_v2::placeLink() {
-    if (_number_of_occupied_links >= _link_count){
-        return false;
-    }
-//    cout << index_var << " ==? " << _randomized_indices.size();
-    // select M links and occupy that one which makes the cluster size minimum
-    size_t pos = selectLink('s');
-    _last_lnk = _network_frame.getLink(pos);
-    _network_frame.activateLink(pos); // activating the link
-
-    // occupy that link
-    ++_number_of_occupied_links;
-
-    // cluster management
-    manage_cluster_v0(pos);
-
-    return true;
-}
-
-/**
- *
- * @param rule : specify sum rule or product rule
- *               values : 's' for sum rule and 'p' for product rule
- * @return
- */
-size_t NetworkBApercolationExplosive_v2::selectLink(char rule ) {
-    if(_number_of_occupied_links >= _link_count){
-        return _link_count+1;
-    }
-    auto start = std::chrono::system_clock::now(); // time measurement
-    size_t r{};
-    if(rule == 's'){
-        r = link_for_min_cluster_sum_rule();;
-    }else if(rule =='p'){
-        r = link_for_min_cluster_product_rule();;
-    }else{
-        cerr << "bad argument : line " << __LINE__ << endl;
-        return _link_count + 1; // to terminate the program
-    }
-
-    size_t pos = _randomized_indices[r];
-    // must erase the used value. // TODO but erasing takes more than 90% of total time
-    _randomized_indices.erase(_randomized_indices.begin() + r);
-
-    auto end = std::chrono::system_clock::now(); // time measurement
-    std::chrono::duration<double> elapsed_seconds = end-start; // time measurement
-    _time_selectLink += elapsed_seconds.count();
-    return pos;
-}
-
-/**
- * For minimizing cluster sizes using sum rule
-
- * @return index of the link in the _randomized_indices for which cluster size becomes minimum
- */
-size_t NetworkBApercolationExplosive_v2::link_for_min_cluster_sum_rule() {
-    size_t index_randomized_link;
-
-    size_t tmp_lnk_index, index1, index2;
-    int id1, id2;
-    size_t sum{}, n_nodes;
-    Link tmp_lnk;
-    for(size_t i{}; i < _M; ++i){
-        if(i >= _randomized_indices.size()){
-//            cout << "not enough free link : line " << __LINE__ << endl;
-            break;
-        }
-        id1 = -1;
-        id2 = -1;
-        tmp_lnk_index = _randomized_indices[i];
-        tmp_lnk = _network_frame.getLink(tmp_lnk_index);
-        if(_network_frame.get_node_group_id(tmp_lnk.get_a()) == -1 && _network_frame.get_node_group_id(tmp_lnk.get_b()) == -1){
-            // since we are minimizing cluster sizes
-            index_randomized_link = i;
-//            cout << "got link " << _network_frame.getLink(_randomized_indices[i]) << " id = " << id1 << " and " << id2 << endl;
-            break; // since this is the minimum link case
-        }
-        else if(_network_frame.get_node_group_id(tmp_lnk.get_a()) == -1 && _network_frame.get_node_group_id(tmp_lnk.get_b()) != -1){
-            id1 = _network_frame.get_node_group_id(tmp_lnk.get_b());
-            index1 = size_t(id1);
-            n_nodes = _cluster[index1].numberOfNodes() + 1; // 1 node would have been added
-            if(sum == 0 || sum > n_nodes) { // since we are minimizing cluster sizes
-                sum = n_nodes;
-                index_randomized_link = i;
-            }
-        }
-        else if(_network_frame.get_node_group_id(tmp_lnk.get_a()) != -1 && _network_frame.get_node_group_id(tmp_lnk.get_b()) == -1){
-            id1 = _network_frame.get_node_group_id(tmp_lnk.get_a());
-            index1 = size_t(id1);
-            n_nodes = _cluster[index1].numberOfNodes() + 1; // 1 node would have been added
-            if(sum == 0 || sum > n_nodes) { // since we are minimizing cluster sizes
-                sum = n_nodes;
-                index_randomized_link = i;
-            }
-        }
-        else{
-
-            id1 = _network_frame.get_node_group_id(tmp_lnk.get_a());
-            id2 = _network_frame.get_node_group_id(tmp_lnk.get_b());
-            index1 = size_t(id1);
-            index2 = size_t(id2);
-            if(id1 == id2){
-                // if they belong to same cluster. adding new link does not increase cluster size.
-                n_nodes = _cluster[index1].numberOfNodes();
-//                cout << "same cluster " << endl;
-            }else {
-
-                n_nodes = _cluster[index1].numberOfNodes() + _cluster[index2].numberOfNodes();
-            }
-            if(sum == 0 || sum > n_nodes) { // since we are minimizing cluster sizes
-                sum = n_nodes;
-                index_randomized_link = i;
-            }
-        }
-//        cout << "checking link " << _network_frame.getLink(_randomized_indices[i])
-//             << " id = " << id1 << " and " << id2 << " sum= " << sum << endl;
-    }
-    if(index_randomized_link >= _randomized_indices.size()){
-        cerr << "out of bound : line " << __LINE__ << endl;
-    }
-//    cout << "selected link " << _network_frame.getLink(_randomized_indices[index_randomized_link])
-//            << " id = " << id1 << " and " << id2 << " sum= " << sum << endl;
-    return index_randomized_link;
+    cout << "}" << endl;
 }
 
 
-/**
- * For minimizing cluster sizes using sum rule
-
- * @return index of the link in the _randomized_indices for which cluster size become minimum
- */
-size_t NetworkBApercolationExplosive_v2::link_for_min_cluster_product_rule() {
-    size_t index_randomized_link;
-
-    size_t tmp_lnk_index, index1, index2;
-    int id1, id2;
-    size_t prod{1}, n_nodes;
-    Link tmp_lnk;
-    for(size_t i{}; i < _M; ++i){
-        if(i >= _randomized_indices.size()){
-            cout << "not enough free link : line " << __LINE__ << endl;
-            break;
-        }
-        id1 = -1;
-        id2 = -1;
-        tmp_lnk_index = _randomized_indices[i];
-        tmp_lnk = _network_frame.getLink(tmp_lnk_index);
-        if(_network_frame.get_node_group_id(tmp_lnk.get_a()) == -1
-           && _network_frame.get_node_group_id(tmp_lnk.get_b()) == -1){
-            // since we are minimizing cluster sizes
-            index_randomized_link = i;
-            cout << "got link " << _network_frame.getLink(_randomized_indices[i]) << " id = " << id1 << " and " << id2 << endl;
-            break; // since this is the minimum link case
-        }
-        else if(_network_frame.get_node_group_id(tmp_lnk.get_a()) == -1
-                && _network_frame.get_node_group_id(tmp_lnk.get_b()) != -1){
-            id1 = _network_frame.get_node_group_id(tmp_lnk.get_b());
-            index1 = size_t(id1);
-            n_nodes = _cluster[index1].numberOfNodes(); // 1 node would have been multiplied
-            if(prod == 1 || prod > n_nodes) { // since we are minimizing cluster sizes
-                prod = n_nodes;
-                index_randomized_link = i;
-            }
-        }
-        else if(_network_frame.get_node_group_id(tmp_lnk.get_a()) != -1
-                && _network_frame.get_node_group_id(tmp_lnk.get_b()) == -1){
-            id1 = _network_frame.get_node_group_id(tmp_lnk.get_a());
-            index1 = size_t(id1);
-            n_nodes = _cluster[index1].numberOfNodes(); // 1 node would have been multiplied
-            if(prod == 1 || prod > n_nodes) { // since we are minimizing cluster sizes
-                prod = n_nodes;
-                index_randomized_link = i;
-            }
-        }
-        else{
-
-            id1 = _network_frame.get_node_group_id(tmp_lnk.get_a());
-            id2 = _network_frame.get_node_group_id(tmp_lnk.get_b());
-            index1 = size_t(id1);
-            index2 = size_t(id2);
-            if(id1 == id2){
-                // if they belong to same cluster. adding new link does not increase cluster size.
-                n_nodes = _cluster[index1].numberOfNodes();
-                cout << "same cluster " << endl;
-            }else {
-                n_nodes = _cluster[index1].numberOfNodes() * _cluster[index2].numberOfNodes(); // product rule
-            }
-            if(prod == 1 || prod > n_nodes) { // since we are minimizing cluster sizes
-                prod = n_nodes;
-                index_randomized_link = i;
-            }
-        }
-        cout << "checking link " << _network_frame.getLink(_randomized_indices[i])
-             << " id = " << id1 << " and " << id2 << " sum= " << prod << endl;
-    }
-    if(index_randomized_link >= _randomized_indices.size()){
-        cout << "out of bound : line " << __LINE__ << endl;
-    }
-    cout << "selected link " << _network_frame.getLink(_randomized_indices[index_randomized_link])
-         << " id = " << id1 << " and " << id2 << " sum= " << prod << endl;
-    return index_randomized_link;
-}
-
-bool NetworkBApercolationExplosive_v2::occupyLink() {
-    if (_number_of_occupied_links >= _link_count){
-        return false;
-    }
-    size_t pos = selectLink('s');
-    return NetworkBApercolation_v2::placeSelectedLink(pos);
-}
-
-void NetworkBApercolationExplosive_v2::time_summary() {
-    NetworkBApercolation_v2::time_summary();
-    cout << "_time_selectLink " << _time_selectLink << " sec" << endl;
-
-}
-
-/********************************************************
- * Sum rule
- *****************************************************/
-bool NetworkBApercolationExplosiveSum_v2::placeLink() {
-    if (_number_of_occupied_links >= _link_count){
-        return false;
-    }
-//    cout << index_var << " ==? " << _randomized_indices.size();
-    // select M links and occupy that one which makes the cluster size minimum
-    size_t r = link_for_min_cluster_sum_rule();
-    size_t pos = _randomized_indices[r];
-    _randomized_indices.erase(_randomized_indices.begin() + r); // must erase the used value
-    _last_lnk = _network_frame.getLink(pos);
-    _network_frame.activateLink(pos); // activating the link
-
-    // occupy that link
-    ++_number_of_occupied_links;
-
-    // cluster management
-    manage_cluster_v0(pos);
-
-    return true;
-}
-
-bool NetworkBApercolationExplosiveSum_v2::occupyLink() {
-    size_t r = NetworkBApercolationExplosive_v2::selectLink('s');
-    return NetworkBApercolationExplosive_v2::placeSelectedLink(r);
-}
-
-/*****************************************
- * Product rule
- ******************************************/
-bool NetworkBApercolationExplosiveProduct_v2::occupyLink() {
-    size_t r = NetworkBApercolationExplosive_v2::selectLink('p');
-    return NetworkBApercolationExplosive_v2::placeSelectedLink(r);
-}
-
-
-bool NetworkBApercolationExplosiveProduct_v2::placeLink() {
-    if (_number_of_occupied_links >= _link_count){
-        return false;
-    }
-//    cout << index_var << " ==? " << _randomized_indices.size();
-    // select M links and occupy that one which makes the cluster size minimum
-    size_t r = link_for_min_cluster_product_rule();
-    size_t pos = _randomized_indices[r];
-    _randomized_indices.erase(_randomized_indices.begin() + r); // must erase the used value
-    _last_lnk = _network_frame.getLink(pos);
-    _network_frame.activateLink(pos); // activating the link
-
-    // occupy that link
-    ++_number_of_occupied_links;
-
-    // cluster management
-    manage_cluster_v0(pos);
-
-    return true;
-}
 

@@ -33,7 +33,8 @@ Network::Network(uint m0, uint m) {
     std::random_device _random_device;
     unsigned long random_seed  = 1;
 //    random_seed  = _random_device();
-    cout << "Random seed : " << random_seed << endl;
+    cerr << "automatic seeding is turned off : line " << __LINE__ << endl;
+    cout << "Random seed Network: " << random_seed << endl;
     _random_generator.seed(random_seed); // seeding
 
     initialize();
