@@ -78,7 +78,7 @@ public:
         return ss.str();
     }
 
-    std::vector<double> degrees();
+    std::vector<size_t> degrees();
     double clusteringCoefficient() const {
         cout << "TODO : line " << __LINE__ << endl;
         return 0;

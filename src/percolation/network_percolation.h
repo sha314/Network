@@ -491,11 +491,14 @@ public:
 
 /**
  * version 3 : inherits NetworkBApercolation_v3
+ *
+ * with m, N, M = 2, 1000000, 9 => time elapsed = 18.774518 sec
  */
 class NetworkBApercolationExplosive_v3 : public NetworkBApercolation_v3{
 private:
     // time measurement variable
     double _time_selectLink{}, _time_link_for_min_cluster_sum_rule {};
+    size_t _count_link_for_min_cluster_sum_rule_a{}, _count_link_for_min_cluster_sum_rule_b{}, _count_link_for_min_cluster_sum_rule_c{};
 protected:
     uint _M{2}; // number of link to choose for product rule or sum rule
 public:
@@ -521,8 +524,11 @@ public:
      */
     size_t link_for_min_cluster_sum_rule(size_t start_at=0);
     size_t link_for_min_cluster_product_rule(size_t start_at=0);
+    size_t link_for_min_cluster_sum_product(size_t start_at=0); // both sum and product rule
+    size_t link_for_min_cluster_sum_product_v2(size_t start_at=0); // both sum and product rule and randomly chooses from _randomized_indices
     // TODO write function that take a lambda function and executes as it says
     size_t selectLink(char rule);
+    size_t selectLink_v2();
 
     void time_summary();
 };

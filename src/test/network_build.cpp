@@ -57,42 +57,44 @@ void test_network_MDA(){
 
 void degree_distribution_BA(int argc, char **argv) {
 //    size_t m0 = size_t(atoi(argv[1]));
-    if (argc < 1) {
-        cout << "supply argument " << endl;
+    if (argc < 2) {
+        cout << "argv[1] = m" << endl;
+        cout << "argv[2] = NetworkSize" << endl;
+        cout << "argv[3] = EnsembleSize" << endl;
         return;
     }
 
     size_t m = size_t(atoi(argv[1]));
-    size_t network_size = size_t(atoi(argv[2]));
-    size_t ensemble_size = size_t(atoi(argv[3]));
+    size_t N = size_t(atoi(argv[2]));
+    size_t En = size_t(atoi(argv[3]));
 
-    cout << "network size " << network_size << endl;
-    cout << "ensemble size " << ensemble_size << endl;
+    cout << "network size " << N << endl;
+    cout << "ensemble size " << En << endl;
 
     NetworkBA net(m, m);
     cout << "m0 " << net.get_m0() << ", m " << net.get_m() << endl;
 
-    string filename = net.get_signature() + "size_" + to_string(network_size)
+    string filename = net.get_signature() + "size_" + to_string(N)
                       + "-degree" + currentTime() + ".txt";
     ofstream fout(filename);
     fout << "#{\"m0\":" << net.get_m0()
          << ",\"m\":" << net.get_m()
-         << ",\"network_size\":" << network_size
-         << ",\"ensemble_size\":" << ensemble_size
+         << ",\"N\":" << N
+         << ",\"En\":" << En
          << "}" << endl;
 
-    for (size_t en{}; en < ensemble_size; ++en) {
+    for (size_t en{}; en < En; ++en) {
         auto t0 = std::chrono::system_clock::now();
         net.reset();
 
-        for (size_t i{}; i < network_size; ++i) {
+        for (size_t i{}; i < N; ++i) {
             net.addNode();
         }
 //        _network_frame.view_nodes();
 
 //        cout << "line " << __LINE__ << endl;
 
-        vector<double> degs = net.degrees();
+        vector<size_t> degs = net.degrees();
         std::sort(degs.begin(), degs.end());
 
 //        cout << degs.size() << " and  " << neighborCount.size() << endl;
@@ -104,6 +106,75 @@ void degree_distribution_BA(int argc, char **argv) {
         auto t1 = std::chrono::system_clock::now();
         std::chrono::duration<double> drtion = t1 - t0;
         cout << "Iteration " << en << " : time " << drtion.count() << " sec" << endl;
+    }
+
+    // normalization
+    fout.close();
+
+}
+
+
+void degree_distribution_BA_v2(int argc, char **argv) {
+//    size_t m0 = size_t(atoi(argv[1]));
+    if (argc < 2) {
+        cout << "argv[1] = m" << endl;
+        cout << "argv[2] = NetworkSize" << endl;
+        cout << "argv[3] = EnsembleSize" << endl;
+        return;
+    }
+
+    size_t m = size_t(atoi(argv[1]));
+    size_t N = size_t(atoi(argv[2]));
+    size_t En = size_t(atoi(argv[3]));
+
+    cout << "network size " << N << endl;
+    cout << "ensemble size " << En << endl;
+
+    NetworkBA net(m, m);
+    cout << "m0 " << net.get_m0() << ", m " << net.get_m() << endl;
+
+    string filename = net.get_signature() + "size_" + to_string(N)
+                      + "-degree_distribution-" + currentTime() + ".txt";
+    ofstream fout(filename);
+    fout << "#{\"m0\":" << net.get_m0()
+         << ",\"m\":" << net.get_m()
+         << ",\"N\":" << N
+         << ",\"En\":" << En
+         << "}" << endl;
+
+    vector<size_t> count(10);
+
+    for (size_t en{}; en < En; ++en) {
+        auto t0 = std::chrono::system_clock::now();
+        net.reset();
+
+        for (size_t i{}; i < N; ++i) {
+            net.addNode();
+        }
+//        _network_frame.view_nodes();
+
+//        cout << "line " << __LINE__ << endl;
+
+        vector<size_t> degs = net.degrees();
+//        std::sort(degs.begin(), degs.end());
+
+//        cout << degs.size() << " and  " << neighborCount.size() << endl;
+
+        for (size_t i{}; i < degs.size(); ++i) {
+            if(degs[i] >= count.size()){
+                count.resize(degs[i]);
+            }
+            ++count[degs[i]];
+        }
+
+
+//        cout << "line " << __LINE__ << endl;
+        auto t1 = std::chrono::system_clock::now();
+        std::chrono::duration<double> drtion = t1 - t0;
+        cout << "Iteration " << en << " : time " << drtion.count() << " sec" << endl;
+    }
+    for (size_t i{1}; i < count.size(); ++i) {
+        fout << i << "\t" << count[i]/En << endl;
     }
 
     // normalization

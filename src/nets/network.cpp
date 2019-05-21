@@ -32,8 +32,8 @@ Network::Network(uint m0, uint m) {
 
     std::random_device _random_device;
     unsigned long random_seed  = 1;
-//    random_seed  = _random_device();
-    cerr << "automatic seeding is turned off : line " << __LINE__ << endl;
+    random_seed  = _random_device();
+//    cerr << "automatic seeding is turned off : line " << __LINE__ << endl;
     cout << "Random seed Network: " << random_seed << endl;
     _random_generator.seed(random_seed); // seeding
 
@@ -190,8 +190,8 @@ void Network::view_links() {
     cout << "}" << endl;
 }
 
-vector<double> Network::degrees() {
-    vector<double> degs(_nodes.size());
+vector<size_t> Network::degrees() {
+    vector<size_t> degs(_nodes.size());
 
     for(uint i{}; i < _nodes.size(); ++i){
         degs[i] = _nodes[i].neighborCount();

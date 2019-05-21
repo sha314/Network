@@ -357,6 +357,7 @@ void NetworkBA::select_m_links_preferentially_v4(uint sz) {
 //    cout << '}' << endl;
 }
 
+
 /**
  * Initialize the preferentially array.
  */

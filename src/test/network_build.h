@@ -7,6 +7,7 @@
 
 void test_network_BA();
 void degree_distribution_BA(int argc, char **argv);
+void degree_distribution_BA_v2(int argc, char **argv);
 
 void test_network_MDA();
 

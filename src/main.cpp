@@ -58,6 +58,7 @@ void run_in_main(int argc, char* argv[]){
 //    degree_distribution_BA(argc, argv);
 //    network_percolation_to_file(argc, argv);
 //    degree_distribution_BA(argc, argv);
+//    degree_distribution_BA_v2(argc, argv); // 2019.05.21
 //    network_percolation(argc, argv);
 //    network_percolation_explosive(argc, argv);
 //

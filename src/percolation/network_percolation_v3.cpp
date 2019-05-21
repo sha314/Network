@@ -18,9 +18,9 @@ using namespace std;
 NetworkBApercolation_v3::NetworkBApercolation_v3(size_t m0, size_t m, size_t size)
 {
     initiate(m0, m, size);
-    size_t seed = 0;
-    cerr << "automatic seeding is turned off : line " << __LINE__ << endl;
-//    auto seed = _random_device();
+//    size_t seed = 0;
+//    cerr << "automatic seeding is turned off : line " << __LINE__ << endl;
+    auto seed = _random_device();
     _random_generator.seed(seed);
     cout << "random seed NetworkBApercolation_v3 " << seed << endl;
     //    cout << _link_indices.size() << " : " << _link_indices << endl;
@@ -375,11 +375,13 @@ void NetworkBApercolation_v3::manage_cluster_v1(size_t pos) { // TODO : to be ed
 }
 
 void NetworkBApercolation_v3::viewCluster() {
+    size_t count{};
     cout << "viewCluster : line " << __LINE__ << endl;
     for(size_t i{}; i < _cluster.size(); ++i){
         if(_cluster[i].empty()){
             continue;
         }
+        ++count;
         cout << "cluster[" << i << "] : id " << _cluster[i].get_group_id() << "{" << endl;
         cout << "  Nodes (" << _cluster[i].numberOfNodes() << "): ";
         _cluster[i].viewNodes();
@@ -389,15 +391,18 @@ void NetworkBApercolation_v3::viewCluster() {
         cout << endl;
         cout << "}" << endl;
     }
+    cout << "number of cluster " << count << endl;
 
 }
 
 void NetworkBApercolation_v3::viewClusterExtended() {
+    size_t count{};
     cout << "viewClusterExtended : line " << __LINE__ << endl;
     for(size_t i{}; i < _cluster.size(); ++i){
         if(_cluster[i].empty()){
             continue;
         }
+        ++count;
         cout << "cluster[" << i << "] : id " << _cluster[i].get_group_id() << "{" << endl;
         cout << "  Nodes (" << _cluster[i].numberOfNodes() << "): ";
         auto nds = _cluster[i].getNodes();
@@ -412,7 +417,7 @@ void NetworkBApercolation_v3::viewClusterExtended() {
         cout << endl;
         cout << "}" << endl;
     }
-
+    cout << "number of cluster " << count << endl;
 }
 
 void NetworkBApercolation_v3::relabel_nodes(Cluster& clstr, int id) {
