@@ -20,5 +20,6 @@ void network_percolation_global();
 void network_percolationReverse_global();
 
 void BA_self_jump(int argc, char* argv[]);
+void BA_self_jump_avg(int argc, char* argv[]);
 
 #endif //NETWORK_NETWORK_PERCOLATION_H

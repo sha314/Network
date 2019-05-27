@@ -37,7 +37,8 @@ Network::Network(uint m0, uint m) {
     cout << "Random seed Network: " << random_seed << endl;
     _random_generator.seed(random_seed); // seeding
 
-    initialize();
+//    initialize();
+    initialize_v2();
 
 }
 
@@ -54,6 +55,30 @@ void Network::initialize() {
         _nodes[k].addNeighbor(i);
         _total_degree += 2;
         _links.push_back({k, i});
+    }
+    _m_links.resize(_m);
+
+}
+/**
+ * link label follow a convention. for example (a,b) link means that a < b
+ */
+void Network::initialize_v2() {
+    for(uint i{}; i != _m0; ++i){
+        _nodes.push_back({i}); // add node with id equal to the size of the _nodes
+    }
+    uint k{};
+    _node_indices.resize(_m0);
+    for(uint i{}; i != _m0; ++i){
+        _node_indices[i] = i;
+        k = (i+1) % _m0;
+        _nodes[i].addNeighbor(k);
+        _nodes[k].addNeighbor(i);
+        _total_degree += 2;
+        if(k < i) {
+            _links.push_back({k, i});
+        }else{
+            _links.push_back({i, k});
+        }
     }
     _m_links.resize(_m);
 

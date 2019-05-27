@@ -174,6 +174,7 @@ void NetworkBA::add_node_v3() {
     // set m_links such that there is no repetition
     // selecting m links preferentially
     select_m_links_preferentially_v3(sz);
+
 //    auto t1 = chrono::_V2::system_clock::now();
 //    chrono::duration<double> drtion = t1 - t0;
 //    time += drtion.count();
@@ -183,6 +184,7 @@ void NetworkBA::add_node_v3() {
 
     // connecting new node with m preferentially selected links
     connect_with_m_nodes_v3(sz);
+
 }
 
 
@@ -219,7 +221,7 @@ void NetworkBA::connect_with_m_nodes_v3(uint sz) {
         _nodes[i].addNeighbor(sz);
 
         _total_degree += 2; // one link  increases total degree by 2.
-        _links[link_old_size + k] = Link(sz, i);
+        _links[link_old_size + k] = Link(i, sz);
 
         _preferentially.push_back(sz);
         _preferentially.push_back(i);
@@ -249,7 +251,7 @@ void NetworkBA::connect_with_m_nodes_v4(uint sz) {
         _nodes[i].addNeighbor(sz);
 
         _total_degree += 2; // one link  increases neighborCount by 2.
-        _links[link_old_size + k] = Link(sz, i);
+        _links[link_old_size + k] = Link(i, sz);
 
         _preferentially[prep_size + k] = sz;
         _preferentially[prep_size + k + _m] = i;

@@ -88,6 +88,7 @@ public:
         return 0;
     }
     void initialize();
+    void initialize_v2();
 
     size_t getNumberOfLinks() const { return _links.size();}
     size_t getNumberOfNodes() const { return _nodes.size();}

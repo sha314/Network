@@ -25,10 +25,46 @@ void BA_self_jump(int argc, char* argv[]){
     int N = atoi(argv[2]);
     int M = atoi(argv[3]);
 
-    NetworkBApercolationExplosive_v3 net(m, m, N, M);
-//    NetworkBApercolation_v3 net(m, m, N);
+    NetworkBApercolationExplosive_v3 net(m*2, m, N, M);
+//    NetworkBApercolation_v3 net(m*2, m, N);
     string signature = net.get_signature();
-    string filename = signature + "order_parameter-" + currentTime() + ".txt";
+    string filename = signature + "jump-" + currentTime() + ".txt";
+
+
+
+    double t;
+    double P{}, P_old{}, dP;
+    bool c{false};
+
+
+    vector<double> dP_list(net.linkCount()), color_list(net.linkCount());
+
+    size_t i{1};
+
+    net.occupyLink();
+    P_old = net.largestClusterSize();
+    t = net.occupationProbability();
+//    fout << t << '\t' << 0 << '\t' << c << endl;
+
+    while (net.occupyLink()){
+//        cout << " ************* **************** *************" << endl;
+
+        t = net.relativeLinkDensity();
+        P = net.largestClusterSize();
+
+        dP = abs(P- P_old);
+
+        P_old = P;
+        c = net.isSelfClusterJump();
+
+        dP_list[i] = dP;
+        color_list[i] = c;
+        ++i;
+
+//        fout << t << '\t' << P << '\t' << c << endl; // takes ~80% of the total time
+//        net.viewClusterExtended();
+//        net.viewCluster();
+    }
 
     ofstream fout(filename);
     stringstream ss;
@@ -37,7 +73,95 @@ void BA_self_jump(int argc, char* argv[]){
          << ",\"M\":" << M  // in case of explosive percolation
          << ",\"number_of_links\":" << net.linkCount()
          << ",\"number_of_nodes\":" << net.nodeCount()
-         << ",\"cols\":" << "[\"t\", \"P\", \"color\"]" << "}";
+         << ",\"cols\":" << "[\"t\", \"dP\", \"color\"]" << "}";
+
+    fout << "#" << ss.str() << endl;
+    fout << "#n = number of occupied links" << endl;
+    fout << "#t = n / N" << endl;
+    fout << "#t = relative occupation probability" << endl;
+    fout << "#cluster size = number of nodes in the cluster" << endl;
+    fout << "#P = order parameter = largest cluster size / N" << endl;
+    fout << "#N = network size = number of nodes in it" << endl;
+    fout << "#S_max = largest cluster size" << endl;
+    fout << "#dS = largest clusteter jump" << endl;
+    fout << "#c = 0 or 1 (different cluster jump or self cluster jump)"<< endl;
+
+    size_t sz = net.linkCount();
+    N = net.nodeCount();
+    for(size_t i{}; i < sz; ++i){
+        if (dP_list[i] != 0) {
+            fout << (i+1)/double(N) << '\t' << dP_list[i] << '\t' << color_list[i] << endl;
+        }
+    }
+
+    fout.close();
+}
+
+
+/**
+ * average of 100 ensemble includeing colors
+ * Date : 2019.05.22
+ * @param argc
+ * @param argv
+ */
+void BA_self_jump_avg(int argc, char* argv[]){
+    int m = atoi(argv[1]);
+    int N = atoi(argv[2]);
+    int M = atoi(argv[3]);
+
+    NetworkBApercolationExplosive_v3 net(m, m, N, M);
+//    NetworkBApercolation_v3 net(m, m, N);
+
+
+    double t;
+    double P{}, P_old{}, dP;
+    bool c{false};
+
+    vector<double> dP_list(net.linkCount()), color_list(net.linkCount());
+
+    size_t En = 100;
+    size_t i{};
+    for(size_t en{}; en < En; ++en) {
+        net.reset(en % 10 == 0); // reset network in every 10 interval
+
+        net.occupyLink();
+
+        P_old = net.largestClusterSize();
+        t = net.occupationProbability();
+
+        i = 0;
+        while (net.occupyLink()) {
+//        cout << " ************* **************** *************" << endl;
+
+            t = net.occupationProbability();
+            P = net.largestClusterSize();
+
+            dP = abs(P - P_old);
+
+            P_old = P;
+            c = net.isSelfClusterJump();
+
+            dP_list[i] += dP;
+            color_list[i] += c;
+
+//        net.viewClusterExtended();
+//        net.viewCluster();
+        }
+
+
+    }
+
+    string signature = net.get_signature();
+    string filename = signature + "jump_avg-" + currentTime() + ".txt";
+
+    ofstream fout(filename);
+    stringstream ss;
+    ss   << "{\"signature\":" << "\"" << signature << "\""
+         << ",\"m\":" << m << ",\"network_size\":" << N
+         << ",\"M\":" << M  // in case of explosive percolation
+         << ",\"number_of_links\":" << net.linkCount()
+         << ",\"number_of_nodes\":" << net.nodeCount()
+         << ",\"cols\":" << "[\"t\", \"dP\", \"color\"]" << "}";
 
     fout << "#" << ss.str() << endl;
     fout << "#n = number of occupied links" << endl;
@@ -49,71 +173,54 @@ void BA_self_jump(int argc, char* argv[]){
     fout << "#dS = largest clusteter jump" << endl;
     fout << "#c = 0 or 1 (different cluster jump or self cluster jump)"<< endl;
 
-    double t;
-    double P{}, P_old{}, dP;
-    bool c{false};
 
-
-//    net.occupyLink();
-//    P_old = net.largestClusterSize();
-//    t = net.occupationProbability();
-//    fout << t << '\t' << 0 << '\t' << c << endl;
-
-    while (net.occupyLink()){
-//        cout << " ************* **************** *************" << endl;
-
-        t = net.occupationProbability();
-        P = net.largestClusterSize();
-
-//        dP = abs(P- P_old);
-
-//        P_old = P;
-        c = net.isSelfClusterJump();
-
-        fout << t << '\t' << P << '\t' << c << endl; // takes ~80% of the total time
-//        net.viewClusterExtended();
-//        net.viewCluster();
+    double sz = dP_list.size();
+    for(i=0; i < dP_list.size(); ++i){
+        fout << (i+1)/sz << '\t' << dP_list[i]/En << "\t" << color_list[i]/En << endl;
     }
+
     fout.close();
 }
 
 void network_percolation(int argc, char* argv[]){
 
-    size_t m = 3;
+    size_t m = 2;
     size_t N = 10;
     size_t M = 2;
-    NetworkBApercolationExplosive_v3 net(m, m, N, M);
-//    NetworkBApercolation_v3 net(m, m, N);
+    NetworkBApercolation_v3 net(m, m, N);
+//    NetworkBApercolationExplosive_v3 net(m, m, N, M);
 //    net.viewNodes();
 //    net.viewLinks();
 //    net.viewClusterExtended();
 //    net.reset(1);
 //    net.viewNodes();
 //    net.viewLinks();
-//    net.viewClusterExtended();
+    net.viewClusterExtended();
 
     size_t i{};
-    net.view_randomized_indices();
+//    net.view_randomized_indices();
+//    net.viewLinks();
     while (net.occupyLink()){
-//        cout << " ************* **************** *************" << endl;
+        cout << " ************* **************** *************" << endl;
 //        cout << i << "-th link " << net.lastLink() << endl;
-//        cout << "occupationProbability = " << net.occupationProbability() << endl;
-//        cout << "largestClusterSize = " << net.largestClusterSize() << endl;
-//        cout << "is self jump = " << net.isSelfClusterJump() << endl;
+//        cout << "relativeLinkDensity, t = " << net.relativeLinkDensity() << endl;
+        cout << "largestClusterSize = " << net.largestClusterSize() << endl;
+        cout << "largestClusterID " << net.largestClusterID() << endl;
+        cout << "is self jump = " << net.isSelfClusterJump() << endl;
 //        cout << "number of clusters " << net.clusterCount() << endl;
-//        ++i;
-//        net.viewClusterExtended();
+        ++i;
+        net.viewClusterExtended();
 //        net.viewCluster();
-        net.view_randomized_indices();
+//        net.view_randomized_indices();
     }
 //    net.viewNodes();
 //    net.viewLinks();
-    net.viewClusterExtended();
+//    net.viewClusterExtended();
 //    net.reset();
 //    net.viewNodes();
 //    net.viewLinks();
 //    net.viewClusterExtended();
-    net.time_summary();
+//    net.time_summary();
 }
 
 

@@ -15,6 +15,8 @@ class LinkIndex{
     uint node_a;
     uint node_b;
 public:
+    ~LinkIndex() = default;
+    LinkIndex(): node_a{0}, node_b{0} {} // Null Link
     LinkIndex(uint a, uint b): node_a{a}, node_b{b} {
         if(node_a == node_b) {
             std::cout << "between " << node_a << " and " << node_b << std::endl;
@@ -59,6 +61,14 @@ public:
 
     uint get_a() const {return _id_node_a;}
     uint get_b() const {return _id_node_b;}
+
+    LinkIndex getIndex() const {
+        if (_id_node_a < _id_node_b) return {_id_node_a, _id_node_b};
+        return {_id_node_b, _id_node_a};
+
+//        return _id_node_a < _id_node_b ? {_id_node_a, _id_node_b}
+//                                       :{_id_node_b, _id_node_a};
+    }
 };
 
 std::ostream& operator<<(std::ostream& os, const Link& lnk);

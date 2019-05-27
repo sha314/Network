@@ -34,6 +34,6 @@ set(SOURCE_FILES
         src/percolation/network_percolation_reverse.h
         src/percolation/percolation.h
         src/percolation/network_percolation_explosive.h
-        src/percolation/network_percolation_template.h src/percolation/network_percolation_explosive.cpp)
+        src/percolation/network_percolation_template.h src/percolation/network_percolation_explosive.cpp src/percolation/cluster_v2.cpp)
 
 add_executable(networks ${SOURCE_FILES})

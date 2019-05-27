@@ -218,7 +218,7 @@ void NetworkBApercolation_v3::manage_cluster_v0(size_t pos) {
  * largest cluster is managed after this particular method ends.
  * @param link_pos : radnomized position of the link index
  */
-void NetworkBApercolation_v3::manage_cluster_v2(size_t link_pos) { // TODO : to be edited
+void NetworkBApercolation_v3::manage_cluster_v2(size_t link_pos) {
     Link lnk = _network_frame.getLink(link_pos);
     // getting all details
 //    int id = lnk.get_group_id();
@@ -227,27 +227,32 @@ void NetworkBApercolation_v3::manage_cluster_v2(size_t link_pos) { // TODO : to 
     uint node_b = lnk.get_b();
     int id_b = _network_frame.get_node_group_id(node_b);
 //    cout << "a " << id_a << " and b " << id_b << endl;
+
+    size_t index_a = size_t(id_a);
+    size_t index_b = size_t(id_b);
+//    cout << "clusters " << id_a << " and " << id_b << endl;
+
     if(id_a == id_b){
         ++manage_cluster_v2_c;
         // no new nodes
         // not -1 but same then just insert the link since both nodes already belong to same cluster
-        size_t index = size_t(id_b);
-        _cluster[index].add_link(lnk);
+        _cluster[index_b].add_link(lnk);
         _network_frame.set_link_group_id(link_pos, id_b);
     }
     else{
         ++manage_cluster_v2_d;
         /// merge cluster
         // no need to add nodes to the cluster. they are already there
-        size_t index_a = size_t(id_a);
-        size_t index_b = size_t(id_b);
+
         // base is the larger cluster (number of nodes in it)
         size_t size_a = _cluster[index_a].numberOfNodes();
         size_t size_b = _cluster[index_b].numberOfNodes();
         if(size_a > size_b){
+//            cout << "size_a > size_b : surviving cluster " << id_a << " : " << __LINE__ << endl;
             merge_cluster(link_pos, lnk, id_a, id_b, node_b);
 
         }else{
+//            cout << "size_a <= size_b : surviving cluster " << id_b << " : " << __LINE__ << endl;
             // index_b will survive the process
             merge_cluster(link_pos, lnk, id_b, id_a, node_a);
 
@@ -288,7 +293,7 @@ void NetworkBApercolation_v3::merge_cluster(size_t link_pos, const Link &lnk, in
  * largest cluster is managed after this particular method ends.
  * @param pos : radnomized position of the link index
  */
-void NetworkBApercolation_v3::manage_cluster_v1(size_t pos) { // TODO : to be edited
+void NetworkBApercolation_v3::manage_cluster_v1(size_t pos) {
     Link lnk = _network_frame.getLink(pos);
     // getting all details
 //    int id = lnk.get_group_id();
@@ -427,6 +432,14 @@ void NetworkBApercolation_v3::relabel_nodes(Cluster& clstr, int id) {
     }
 }
 
+void NetworkBApercolation_v3::relabel_links(Cluster& clstr, int id) { // todo : but how?
+    cout << "undefined. NetworkBApercolation_v3::relabel_links  : line " << __LINE__ << endl;
+    auto nds = clstr.getLinks();
+//    for(size_t i{}; i < nds.size(); ++i){
+//        _network_frame.set_link_group_id(nds[i],id);
+//    }
+}
+
 /**
  * Calculates shanon entropy
  * mu = (number of nodes in a cluster) / (total number of nodes)
@@ -519,6 +532,7 @@ size_t NetworkBApercolation_v3::selectLink() {
     }
     // select a link randomly
     size_t pos = _randomized_indices[index_var];
+    _randomized_indices[index_var] = 0; // only for debugging
     ++index_var;
     return pos;
 }
@@ -624,8 +638,17 @@ void NetworkBApercolation_v3::track_cluster() {
  * In case of zero cluster size jump
  */
 void NetworkBApercolation_v3::track_cluster_v2() {
-    size_t a = _last_lnk.get_a();
+    size_t a = _last_lnk.get_a(); // both a and b belongs to the same cluster
     int a_index = _network_frame.get_node_group_id(a);
+
+    ////
+//    size_t b = _last_lnk.get_b();
+//    int b_index = _network_frame.get_node_group_id(b);
+//
+//    if(a_index != b_index){
+//        cout << "index should be equal " << __LINE__ << endl;
+//    }
+
     if(a_index < 0){
         cerr << "why? : line " << __LINE__ << endl;
         a_index = _network_frame.get_node_group_id(_last_lnk.get_b());
@@ -634,10 +657,11 @@ void NetworkBApercolation_v3::track_cluster_v2() {
     if(sz > _number_of_nodes_in_the_largest_cluster){
         _number_of_nodes_in_the_largest_cluster = sz;
         _self_cluster_jump = (_last_largest_cluster_id == a_index); // true only in case of self jump
+        _last_largest_cluster_id = a_index;
     }else{
         _self_cluster_jump = false;
     }
-    _last_largest_cluster_id = a_index;
+
 }
 
 void NetworkBApercolation_v3::time_summary() {

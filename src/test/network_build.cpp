@@ -13,27 +13,28 @@
 using namespace std;
 
 void test_network_BA(){
-    NetworkBA net(3, 1);
+    size_t m = 1;
+    NetworkBA net(m, m);
 
     net.viewNodes();
     net.view_links();
     size_t i=0;
 
-    while(i < 10) {
+    while(i < 100) {
         net.addNode();
-        net.viewNodes();
+//        net.viewNodes();
         ++i;
     }
 
     net.viewNodes();
     net.view_links();
-
-    net.clear_preferentially();
-    net.addNode();
-    net.reset();
-    net.viewNodes();
-    net.addNode();
-    net.viewNodes();
+//
+//    net.clear_preferentially();
+//    net.addNode();
+//    net.reset();
+//    net.viewNodes();
+//    net.addNode();
+//    net.viewNodes();
 
 }
 
@@ -75,7 +76,7 @@ void degree_distribution_BA(int argc, char **argv) {
     cout << "m0 " << net.get_m0() << ", m " << net.get_m() << endl;
 
     string filename = net.get_signature() + "size_" + to_string(N)
-                      + "-degree" + currentTime() + ".txt";
+                      + "-degree-" + currentTime() + ".txt";
     ofstream fout(filename);
     fout << "#{\"m0\":" << net.get_m0()
          << ",\"m\":" << net.get_m()
@@ -135,12 +136,7 @@ void degree_distribution_BA_v2(int argc, char **argv) {
 
     string filename = net.get_signature() + "size_" + to_string(N)
                       + "-degree_distribution-" + currentTime() + ".txt";
-    ofstream fout(filename);
-    fout << "#{\"m0\":" << net.get_m0()
-         << ",\"m\":" << net.get_m()
-         << ",\"N\":" << N
-         << ",\"En\":" << En
-         << "}" << endl;
+
 
     vector<size_t> count(10);
 
@@ -173,8 +169,16 @@ void degree_distribution_BA_v2(int argc, char **argv) {
         std::chrono::duration<double> drtion = t1 - t0;
         cout << "Iteration " << en << " : time " << drtion.count() << " sec" << endl;
     }
+
+    ofstream fout(filename);
+    fout << "#{\"m0\":" << net.get_m0()
+         << ",\"m\":" << net.get_m()
+         << ",\"N\":" << N
+         << ",\"En\":" << En
+         << "}" << endl;
+
     for (size_t i{1}; i < count.size(); ++i) {
-        fout << i << "\t" << count[i]/En << endl;
+        fout << i << "\t" << double(count[i])/En << endl;
     }
 
     // normalization

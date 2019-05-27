@@ -38,6 +38,27 @@ void network_percolation_to_file(int argc, char* argv[]){
 
 }
 
+void test_sizes()
+{
+    auto lnk = Link();
+    cout << "size of a link " << sizeof(lnk) << " bytes" << endl;
+
+    auto nd = Node(0);
+    cout << "size of a node " << sizeof(nd) << " bytes" << endl;
+
+    auto lnk_ind = LinkIndex(0, 2);
+    cout << "size of a LinkIndex " << sizeof(lnk_ind) << " bytes" << endl;
+
+    auto clstr = Cluster();
+    cout << "size of a Cluster " << sizeof(clstr) << " bytes" << endl;
+
+    auto clstr_2 = Cluster_v2();
+    cout << "size of a Cluster_v2 " << sizeof(clstr_2) << " bytes" << endl;
+
+    auto clstr_3 = Cluster_v3();
+    cout << "size of a Cluster_v3 " << sizeof(clstr_3) << " bytes" << endl;
+
+}
 /**
  * N : network size
  * m :
@@ -51,11 +72,12 @@ void run_in_main(int argc, char* argv[]){
     for(int i{1}; i < argc; ++i){
         cout << arguments[i-1] << " : " << argv[i] << endl;
     }
+    test_sizes(); // 2019.05.26
 //    test_network_BA();
 //    test_network_MDA();
 //    network_percolation_global();
 //    network_percolationReverse_global();
-//    degree_distribution_BA(argc, argv);
+
 //    network_percolation_to_file(argc, argv);
 //    degree_distribution_BA(argc, argv);
 //    degree_distribution_BA_v2(argc, argv); // 2019.05.21
@@ -66,6 +88,7 @@ void run_in_main(int argc, char* argv[]){
 //    explosive_percolation_sum(3, 5000, 5, 100, 0); // testing only
 
     BA_self_jump(argc, argv);
+
 }
 
 /**

@@ -316,7 +316,9 @@ public:
      * Information about the state of network
      ***********************************************/
     double occupationProbability() const { return double(_number_of_occupied_links) / _link_count;}
+    double relativeLinkDensity() const { return double(_number_of_occupied_links) / _network_size;}
     size_t largestClusterSize() const {return _number_of_nodes_in_the_largest_cluster;}
+    int largestClusterID() const {return _last_largest_cluster_id;}
     size_t linkCount() const { return _network_frame.number_of_links();}
     size_t nodeCount() const { return _network_frame.number_of_nodes();}
     Link lastLink() const {return _last_lnk;}
@@ -342,6 +344,7 @@ public:
     void manage_cluster_v1(size_t position);
     void manage_cluster_v2(size_t link_pos); // only merges the clusters
     void relabel_nodes(Cluster& clster, int id);
+    void relabel_links(Cluster& clster, int id);
 
     /***************************************
      * View the network
