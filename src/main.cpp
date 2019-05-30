@@ -97,7 +97,7 @@ void run_in_main(int argc, char* argv[]){
 //    cout << "cores " << thread::hardware_concurrency() << endl;
 //    explosive_percolation_sum(3, 5000, 5, 100, 0); // testing only
 
-//    BA_self_jump(argc, argv);
+    BA_self_jump(argc, argv);
 
 }
 
