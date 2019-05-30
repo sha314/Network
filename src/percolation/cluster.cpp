@@ -83,4 +83,13 @@ Link Cluster::getLinkRandomlyAndRemove(size_t r)  {
     return n;
 }
 
+double Cluster::size_in_MB() {
+
+    double sz = sizeof(int) + sizeof(uint) * _nodes.size() + sizeof(Link) * _links.size();
+    sz += sizeof(std::vector<uint>);
+    sz += sizeof(std::vector<Link>);
+//    cout << "sizeof  Cluster" << sz/(1024*1024) << " MB" << endl;
+    return sz/(1024*1024);
+}
+
 

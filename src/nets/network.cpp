@@ -295,6 +295,40 @@ void Network::activateNode(size_t pos) {
     }
 }
 
+double Network::size_in_MB() {
+
+    double sz = 0;
+//    sz += sizeof(std::vector<Node>) + sizeof(std::vector<Link>);
+    sz += sizeof(Link) * _links.capacity(); // most important
+
+
+//    sz += sizeof(std::vector<uint>) + sizeof(std::vector<uint>);
+    sz += sizeof(uint) * _node_indices.capacity() + sizeof(uint) * _m_links.capacity(); // most important
+//    sz += sizeof(uint)*2 + sizeof(double);
+//    sz += sizeof(std::mt19937);
+//    sz += sizeof(std::chrono::duration<double>);
+
+//    sz += sizeof(Network); // network class itself
+
+    //    sz += sizeof(Node) * _nodes.capacity(); // most important
+
+    sz /= (1024 * 1024);
+    for(size_t i{}; i < _nodes.size(); ++i){ // most important
+        sz += _nodes[i].size_in_MB();
+    }
+    return sz ;
+}
+
+void Network::shrink_to_fit() {
+    _nodes.shrink_to_fit();
+    for(size_t i{}; i < _nodes.size(); ++i){
+        _nodes[i].shrink_to_fit();
+    }
+    _links.shrink_to_fit();
+    _node_indices.shrink_to_fit();
+    _m_links.shrink_to_fit();
+}
+
 
 //
 ///*************************
@@ -312,10 +346,10 @@ void Network::activateNode(size_t pos) {
 //    _network_size = size;
 //    initialize_network();
 //    _link_count = _network_frame.getNumberOfLinks();
-//    _link_indices.resize(_link_count);
-//    _randomized_indices.resize(_link_count);
+//    _randomized_link_indices.resize(_link_count);
+//    _randomized_link_indices.resize(_link_count);
 //    for(uint i = 0; i < _link_count; ++i){
-//        _link_indices[i] = i;
+//        _randomized_link_indices[i] = i;
 //    }
 ////    cout << _link_indices.size() << " : " << _link_indices << endl;
 //    randomize_v1();
@@ -333,14 +367,14 @@ void Network::activateNode(size_t pos) {
 //
 //void NetworkBApercolation::randomize_v0() {
 //
-//    _randomized_indices = _link_indices;
+//    _randomized_link_indices = _randomized_link_indices;
 //
 //    uint tmp, r;
 //    for(uint i{}; i < _link_count; ++i) {
 //        r = rand() % _link_count;
-//        tmp = _randomized_indices[i];
-//        _randomized_indices[i] = _randomized_indices[r];
-//        _randomized_indices[r] = tmp;
+//        tmp = _randomized_link_indices[i];
+//        _randomized_link_indices[i] = _randomized_link_indices[r];
+//        _randomized_link_indices[r] = tmp;
 //    }
 ////    cout << "original " << _link_indices << endl;
 ////    cout << "randomized " << _randomized_indices << endl;
@@ -351,13 +385,13 @@ void Network::activateNode(size_t pos) {
 // */
 //void NetworkBApercolation::randomize_v1() {
 //
-//    _randomized_indices = _link_indices;
+//    _randomized_link_indices = _randomized_link_indices;
 //
 //    std::random_device _random_device;
 //    std::mt19937 g(_random_device());
 //
 ////    cout << "before " << _randomized_indices << endl;
-//    std::shuffle(_randomized_indices.begin(), _randomized_indices.end(), g);
+//    std::shuffle(_randomized_link_indices.begin(), _randomized_link_indices.end(), g);
 ////    cout << "after " << _randomized_indices << endl;
 //
 //}
@@ -368,7 +402,7 @@ void Network::activateNode(size_t pos) {
 //    }
 ////    cout << index_var << " ==? " << _randomized_indices.size();
 //    // select a link randomly
-//    size_t last_link_pos_in_randomized = _randomized_indices[index_var];
+//    size_t last_link_pos_in_randomized = _randomized_link_indices[index_var];
 //    ++index_var;
 //    _last_lnk = _network_frame.getLink(last_link_pos_in_randomized);
 //    _network_frame.activateLink(last_link_pos_in_randomized); // activating the link
@@ -544,8 +578,8 @@ void Network::activateNode(size_t pos) {
 ////    cout << index_var << " ==? " << _randomized_indices.size();
 //    // select M links and occupy that one which makes the cluster size minimum
 //    size_t r = link_for_min_cluster_sum_rule();
-//    size_t pos = _randomized_indices[r];
-//    _randomized_indices.erase(_randomized_indices.begin() + r); // must erase the used value
+//    size_t pos = _randomized_link_indices[r];
+//    _randomized_link_indices.erase(_randomized_link_indices.begin() + r); // must erase the used value
 //    _last_lnk = _network_frame.getLink(pos);
 //    _network_frame.activateLink(pos); // activating the link
 //
@@ -561,7 +595,7 @@ void Network::activateNode(size_t pos) {
 ///**
 // * For minimizing cluster sizes using sum rule
 //
-// * @return index of the link in the _randomized_indices for which cluster size become minimum
+// * @return index of the link in the _randomized_link_indices for which cluster size become minimum
 // */
 //size_t NetworkBApercolationExplosive::link_for_min_cluster_sum_rule() {
 //    size_t index_randomized_link;
@@ -571,18 +605,18 @@ void Network::activateNode(size_t pos) {
 //    size_t sum{}, n_nodes;
 //    Link tmp_lnk;
 //    for(size_t i{}; i < _M; ++i){
-//        if(i >= _randomized_indices.size()){
+//        if(i >= _randomized_link_indices.size()){
 //            cout << "not enough free link : line " << __LINE__ << endl;
 //            break;
 //        }
 //        id1 = -1;
 //        id2 = -1;
-//        tmp_lnk_index = _randomized_indices[i];
+//        tmp_lnk_index = _randomized_link_indices[i];
 //        tmp_lnk = _network_frame.getLink(tmp_lnk_index);
 //        if(_network_frame.get_node_group_id(tmp_lnk.get_a()) == -1 && _network_frame.get_node_group_id(tmp_lnk.get_b()) == -1){
 //             // since we are minimizing cluster sizes
 //            index_randomized_link = i;
-//            cout << "got link " << _network_frame.getLink(_randomized_indices[i]) << " id = " << id1 << " and " << id2 << endl;
+//            cout << "got link " << _network_frame.getLink(_randomized_link_indices[i]) << " id = " << id1 << " and " << id2 << endl;
 //            break; // since this is the minimum link case
 //        }
 //        else if(_network_frame.get_node_group_id(tmp_lnk.get_a()) == -1 && _network_frame.get_node_group_id(tmp_lnk.get_b()) != -1){
@@ -622,13 +656,13 @@ void Network::activateNode(size_t pos) {
 //                index_randomized_link = i;
 //            }
 //        }
-//        cout << "checking link " << _network_frame.getLink(_randomized_indices[i])
+//        cout << "checking link " << _network_frame.getLink(_randomized_link_indices[i])
 //             << " id = " << id1 << " and " << id2 << " sum= " << sum << endl;
 //    }
-//    if(index_randomized_link >= _randomized_indices.size()){
+//    if(index_randomized_link >= _randomized_link_indices.size()){
 //        cout << "out of bound : line " << __LINE__ << endl;
 //    }
-//    cout << "selected link " << _network_frame.getLink(_randomized_indices[index_randomized_link])
+//    cout << "selected link " << _network_frame.getLink(_randomized_link_indices[index_randomized_link])
 //            << " id = " << id1 << " and " << id2 << " sum= " << sum << endl;
 //    return index_randomized_link;
 //}
@@ -637,7 +671,7 @@ void Network::activateNode(size_t pos) {
 ///**
 // * For minimizing cluster sizes using sum rule
 //
-// * @return index of the link in the _randomized_indices for which cluster size become minimum
+// * @return index of the link in the _randomized_link_indices for which cluster size become minimum
 // */
 //size_t NetworkBApercolationExplosive::link_for_min_cluster_product_rule() {
 //    size_t index_randomized_link;
@@ -647,18 +681,18 @@ void Network::activateNode(size_t pos) {
 //    size_t prod{1}, n_nodes;
 //    Link tmp_lnk;
 //    for(size_t i{}; i < _M; ++i){
-//        if(i >= _randomized_indices.size()){
+//        if(i >= _randomized_link_indices.size()){
 //            cout << "not enough free link : line " << __LINE__ << endl;
 //            break;
 //        }
 //        id1 = -1;
 //        id2 = -1;
-//        tmp_lnk_index = _randomized_indices[i];
+//        tmp_lnk_index = _randomized_link_indices[i];
 //        tmp_lnk = _network_frame.getLink(tmp_lnk_index);
 //        if(_network_frame.get_node_group_id(tmp_lnk.get_a()) == -1 && _network_frame.get_node_group_id(tmp_lnk.get_b()) == -1){
 //            // since we are minimizing cluster sizes
 //            index_randomized_link = i;
-//            cout << "got link " << _network_frame.getLink(_randomized_indices[i]) << " id = " << id1 << " and " << id2 << endl;
+//            cout << "got link " << _network_frame.getLink(_randomized_link_indices[i]) << " id = " << id1 << " and " << id2 << endl;
 //            break; // since this is the minimum link case
 //        }
 //        else if(_network_frame.get_node_group_id(tmp_lnk.get_a()) == -1 && _network_frame.get_node_group_id(tmp_lnk.get_b()) != -1){
@@ -698,13 +732,13 @@ void Network::activateNode(size_t pos) {
 //                index_randomized_link = i;
 //            }
 //        }
-//        cout << "checking link " << _network_frame.getLink(_randomized_indices[i])
+//        cout << "checking link " << _network_frame.getLink(_randomized_link_indices[i])
 //             << " id = " << id1 << " and " << id2 << " sum= " << prod << endl;
 //    }
-//    if(index_randomized_link >= _randomized_indices.size()){
+//    if(index_randomized_link >= _randomized_link_indices.size()){
 //        cout << "out of bound : line " << __LINE__ << endl;
 //    }
-//    cout << "selected link " << _network_frame.getLink(_randomized_indices[index_randomized_link])
+//    cout << "selected link " << _network_frame.getLink(_randomized_link_indices[index_randomized_link])
 //         << " id = " << id1 << " and " << id2 << " sum= " << prod << endl;
 //    return index_randomized_link;
 //}

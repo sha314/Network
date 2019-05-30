@@ -61,6 +61,15 @@ void Cluster_v2::insert(const Cluster_v2 &clstr) {
     _links_indices.insert(_links_indices.end(), clstr._links_indices.begin(), clstr._links_indices.end());
 }
 
+double Cluster_v2::size_in_MB() {
+
+    double sz = sizeof(int) + sizeof(uint) * _nodes.size() + sizeof(Link) * _links_indices.size();
+    sz += sizeof(std::vector<uint>);
+    sz += sizeof(std::vector<LinkIndex>);
+//    cout << "sizeof  Cluster" << sz/(1024*1024) << " MB" << endl;
+    return sz/(1024*1024);
+}
+
 
 
 

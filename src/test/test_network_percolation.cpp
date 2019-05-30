@@ -25,14 +25,14 @@ void BA_self_jump(int argc, char* argv[]){
     int N = atoi(argv[2]);
     int M = atoi(argv[3]);
 
-    NetworkBApercolationExplosive_v3 net(m*2, m, N, M);
-//    NetworkBApercolation_v3 net(m*2, m, N);
+//    NetworkBApercolationExplosive_v3 net(m*2, m, N, M);
+    NetworkBApercolation_v3 net(m*2, m, N);
     string signature = net.get_signature();
     string filename = signature + "jump-" + currentTime() + ".txt";
 
 
 
-    double t;
+//    double t;
     double P{}, P_old{}, dP;
     bool c{false};
 
@@ -43,13 +43,13 @@ void BA_self_jump(int argc, char* argv[]){
 
     net.occupyLink();
     P_old = net.largestClusterSize();
-    t = net.occupationProbability();
+//    t = net.occupationProbability();
 //    fout << t << '\t' << 0 << '\t' << c << endl;
 
     while (net.occupyLink()){
 //        cout << " ************* **************** *************" << endl;
 
-        t = net.relativeLinkDensity();
+//        t = net.relativeLinkDensity();
         P = net.largestClusterSize();
 
         dP = abs(P- P_old);
@@ -87,10 +87,10 @@ void BA_self_jump(int argc, char* argv[]){
     fout << "#c = 0 or 1 (different cluster jump or self cluster jump)"<< endl;
 
     size_t sz = net.linkCount();
-    N = net.nodeCount();
+    size_t Norm = net.nodeCount();
     for(size_t i{}; i < sz; ++i){
         if (dP_list[i] != 0) {
-            fout << (i+1)/double(N) << '\t' << dP_list[i] << '\t' << color_list[i] << endl;
+            fout << (i+1)/double(Norm) << '\t' << dP_list[i] << '\t' << color_list[i] << endl;
         }
     }
 
@@ -184,9 +184,15 @@ void BA_self_jump_avg(int argc, char* argv[]){
 
 void network_percolation(int argc, char* argv[]){
 
-    size_t m = 2;
-    size_t N = 10;
-    size_t M = 2;
+//    size_t m = 2;
+//    size_t N = 10;
+//    size_t M = 2;
+
+    int m = atoi(argv[1]);
+    int N = atoi(argv[2]);
+    int M = atoi(argv[3]);
+
+
     NetworkBApercolation_v3 net(m, m, N);
 //    NetworkBApercolationExplosive_v3 net(m, m, N, M);
 //    net.viewNodes();
@@ -195,24 +201,26 @@ void network_percolation(int argc, char* argv[]){
 //    net.reset(1);
 //    net.viewNodes();
 //    net.viewLinks();
-    net.viewClusterExtended();
+//    net.viewClusterExtended();
 
     size_t i{};
 //    net.view_randomized_indices();
 //    net.viewLinks();
+    net.sizeSummary_in_MB();
     while (net.occupyLink()){
-        cout << " ************* **************** *************" << endl;
+//        cout << " ************* **************** *************" << endl;
 //        cout << i << "-th link " << net.lastLink() << endl;
 //        cout << "relativeLinkDensity, t = " << net.relativeLinkDensity() << endl;
-        cout << "largestClusterSize = " << net.largestClusterSize() << endl;
-        cout << "largestClusterID " << net.largestClusterID() << endl;
-        cout << "is self jump = " << net.isSelfClusterJump() << endl;
+//        cout << "largestClusterSize = " << net.largestClusterSize() << endl;
+//        cout << "largestClusterID " << net.largestClusterID() << endl;
+//        cout << "is self jump = " << net.isSelfClusterJump() << endl;
 //        cout << "number of clusters " << net.clusterCount() << endl;
         ++i;
-        net.viewClusterExtended();
+//        net.viewClusterExtended();
 //        net.viewCluster();
 //        net.view_randomized_indices();
     }
+    net.sizeSummary_in_MB();
 //    net.viewNodes();
 //    net.viewLinks();
 //    net.viewClusterExtended();
@@ -221,6 +229,7 @@ void network_percolation(int argc, char* argv[]){
 //    net.viewLinks();
 //    net.viewClusterExtended();
 //    net.time_summary();
+    cin.get(); // pausing program
 }
 
 

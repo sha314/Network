@@ -5,7 +5,7 @@
 #ifndef NETWORK_NETWORK_BUILD_H
 #define NETWORK_NETWORK_BUILD_H
 
-void test_network_BA();
+void test_network_BA(int argc, char **argv);
 void degree_distribution_BA(int argc, char **argv);
 void degree_distribution_BA_v2(int argc, char **argv);
 

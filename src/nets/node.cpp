@@ -37,6 +37,15 @@ void Node::add_neighbor_checked(uint n) {
     _connected_nodes.push_back(n);
 }
 
+double Node::size_in_MB() {
+    double sz = 0;
+
+    sz += 2* sizeof(uint) + sizeof(int) + sizeof(std::vector<uint>);
+    sz += sizeof(uint) * _connected_nodes.capacity();
+
+    return sz / (1024*1024);
+}
+
 std::ostream& operator<<(std::ostream& os, const Node& node){
     return os << node.get_id();
 }

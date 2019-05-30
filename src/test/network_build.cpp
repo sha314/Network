@@ -12,22 +12,33 @@
 
 using namespace std;
 
-void test_network_BA(){
-    size_t m = 1;
+void test_network_BA(int argc, char * argv[]){
+
+//    size_t m = 1;
+
+    int m = atoi(argv[1]);
+    int N = atoi(argv[2]);
+//    int M = atoi(argv[3]);
+
     NetworkBA net(m, m);
 
-    net.viewNodes();
-    net.view_links();
+    double sz = net.size_in_MB();
+    cout << "NetworkBA size " << sz << " MB" << endl;
+//    net.viewLinks();
+
+
+//    net.viewNodes();
+//    net.view_links();
     size_t i=0;
 
-    while(i < 100) {
+    while(i < N) {
         net.addNode();
 //        net.viewNodes();
         ++i;
     }
-
-    net.viewNodes();
-    net.view_links();
+    net.shrink_to_fit();
+//    net.viewNodes();
+//    net.view_links();
 //
 //    net.clear_preferentially();
 //    net.addNode();
@@ -35,6 +46,10 @@ void test_network_BA(){
 //    net.viewNodes();
 //    net.addNode();
 //    net.viewNodes();
+    sz = net.size_in_MB();
+    cout << "Last NetworkBA size " << sz << " MB" << endl;
+//    cout << "NetworkBA " << sizeof(NetworkBA) << endl;
+    cin.get(); // pausing program
 
 }
 

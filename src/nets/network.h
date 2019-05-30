@@ -108,6 +108,10 @@ public:
 
     void getTime() const {cout << "shuffle time " << shuffle_time.count() << endl;}
 
+    double size_in_MB();
+
+    void shrink_to_fit();
+
 };
 
 /****************************************
@@ -170,6 +174,10 @@ public:
     }
 
     void clear_preferentially() {_preferentially.clear(); _static = true;}
+
+    double size_in_MB();
+
+    void shrink_to_fit(); // since pushback allocates extra memory, this function resizes it to minimum
 
 };
 

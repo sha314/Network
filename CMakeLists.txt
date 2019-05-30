@@ -23,6 +23,7 @@ set(SOURCE_FILES
         src/percolation/network_percolation.cpp
         src/percolation/network_percolation_v2.cpp
         src/percolation/network_percolation_v3.cpp
+        src/percolation/network_percolation_v4.cpp
         src/test/network_build.cpp
         src/test/network_build.h
         src/test/test_network_percolation.cpp
@@ -34,6 +35,8 @@ set(SOURCE_FILES
         src/percolation/network_percolation_reverse.h
         src/percolation/percolation.h
         src/percolation/network_percolation_explosive.h
-        src/percolation/network_percolation_template.h src/percolation/network_percolation_explosive.cpp src/percolation/cluster_v2.cpp)
+        src/percolation/network_percolation_template.h
+        src/percolation/network_percolation_explosive.cpp
+        src/percolation/cluster_v2.cpp src/percolation/cluster_v3.cpp)
 
 add_executable(networks ${SOURCE_FILES})

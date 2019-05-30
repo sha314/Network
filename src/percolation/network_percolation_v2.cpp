@@ -23,7 +23,7 @@ NetworkBApercolation_v2::NetworkBApercolation_v2(size_t m0, size_t m, size_t siz
 //    auto seed = _random_device();
     _random_generator.seed(seed);
     cout << "random seed NetworkBApercolation_v2 " << seed << endl;
-    //    cout << _link_indices.size() << " : " << _link_indices << endl;
+    //    cout << _randomized_link_indices.size() << " : " << _randomized_link_indices << endl;
     randomize_v1();
     log_1_by_size = std::log(1.0 / _network_size);
 }
@@ -63,9 +63,9 @@ void NetworkBApercolation_v2::initialize_network() {
  */
 void NetworkBApercolation_v2::randomize_v1() {
 
-//    cout << "before " << _randomized_indices << endl;
+//    cout << "before " << _randomized_link_indices << endl;
     std::shuffle(_randomized_indices.begin(), _randomized_indices.end(), _random_generator);
-//    cout << "after " << _randomized_indices << endl;
+//    cout << "after " << _randomized_link_indices << endl;
 
 }
 
@@ -79,7 +79,7 @@ bool NetworkBApercolation_v2::placeLink() {
     if (_number_of_occupied_links >= _link_count){
         return false;
     }
-//    cout << index_var << " ==? " << _randomized_indices.size();
+//    cout << index_var << " ==? " << _randomized_link_indices.size();
     // select a link randomly
     size_t last_link_pos_in_randomized = _randomized_indices[index_var];
     ++index_var;
@@ -586,7 +586,7 @@ bool NetworkBApercolationExplosive_v2::placeLink() {
     if (_number_of_occupied_links >= _link_count){
         return false;
     }
-//    cout << index_var << " ==? " << _randomized_indices.size();
+//    cout << index_var << " ==? " << _randomized_link_indices.size();
     // select M links and occupy that one which makes the cluster size minimum
     size_t pos = selectLink('s');
     _last_lnk = _network_frame.getLink(pos);
@@ -656,7 +656,7 @@ size_t NetworkBApercolationExplosive_v2::link_for_min_cluster_sum_rule() {
         if(_network_frame.get_node_group_id(tmp_lnk.get_a()) == -1 && _network_frame.get_node_group_id(tmp_lnk.get_b()) == -1){
             // since we are minimizing cluster sizes
             index_randomized_link = i;
-//            cout << "got link " << _network_frame.getLink(_randomized_indices[i]) << " id = " << id1 << " and " << id2 << endl;
+//            cout << "got link " << _network_frame.getLink(_randomized_link_indices[i]) << " id = " << id1 << " and " << id2 << endl;
             break; // since this is the minimum link case
         }
         else if(_network_frame.get_node_group_id(tmp_lnk.get_a()) == -1 && _network_frame.get_node_group_id(tmp_lnk.get_b()) != -1){
@@ -696,13 +696,13 @@ size_t NetworkBApercolationExplosive_v2::link_for_min_cluster_sum_rule() {
                 index_randomized_link = i;
             }
         }
-//        cout << "checking link " << _network_frame.getLink(_randomized_indices[i])
+//        cout << "checking link " << _network_frame.getLink(_randomized_link_indices[i])
 //             << " id = " << id1 << " and " << id2 << " sum= " << sum << endl;
     }
     if(index_randomized_link >= _randomized_indices.size()){
         cerr << "out of bound : line " << __LINE__ << endl;
     }
-//    cout << "selected link " << _network_frame.getLink(_randomized_indices[index_randomized_link])
+//    cout << "selected link " << _network_frame.getLink(_randomized_link_indices[index_randomized_link])
 //            << " id = " << id1 << " and " << id2 << " sum= " << sum << endl;
     return index_randomized_link;
 }
@@ -806,7 +806,7 @@ bool NetworkBApercolationExplosiveSum_v2::placeLink() {
     if (_number_of_occupied_links >= _link_count){
         return false;
     }
-//    cout << index_var << " ==? " << _randomized_indices.size();
+//    cout << index_var << " ==? " << _randomized_link_indices.size();
     // select M links and occupy that one which makes the cluster size minimum
     size_t r = link_for_min_cluster_sum_rule();
     size_t pos = _randomized_indices[r];
@@ -841,7 +841,7 @@ bool NetworkBApercolationExplosiveProduct_v2::placeLink() {
     if (_number_of_occupied_links >= _link_count){
         return false;
     }
-//    cout << index_var << " ==? " << _randomized_indices.size();
+//    cout << index_var << " ==? " << _randomized_link_indices.size();
     // select M links and occupy that one which makes the cluster size minimum
     size_t r = link_for_min_cluster_product_rule();
     size_t pos = _randomized_indices[r];

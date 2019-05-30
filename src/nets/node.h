@@ -27,7 +27,8 @@ class Node{
     // if nodes have same _current_group value that means the node is already selected
     uint _current_group{};
 public:
-    ~Node() {_connected_nodes.clear();};
+    ~Node() = default;
+//    ~Node() {_connected_nodes.clear();};
     Node(uint id):_id{id}{};
     Node(uint id, int groupId):_id{id}, _group_id{groupId}{};
 
@@ -54,6 +55,9 @@ public:
      * Number of links a node have is the degree of that node
      */
     uint neighborCount() const {return _connected_nodes.size();}
+
+    void shrink_to_fit() {_connected_nodes.shrink_to_fit();}
+    double size_in_MB();
 
 };
 

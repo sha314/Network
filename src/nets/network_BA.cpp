@@ -392,3 +392,18 @@ void NetworkBA::reset() {
     _static = false;
     initialize_preferential();
 }
+
+double NetworkBA::size_in_MB() {
+
+    double sz = 0;
+//    sz += sizeof(double) + sizeof(bool) + sizeof(std::vector<uint>);
+    sz += sizeof(uint) * _preferentially.capacity();
+    sz /= (1024 * 1024);  // converting to MB
+    sz += Network::size_in_MB();
+    return sz;
+}
+
+void NetworkBA::shrink_to_fit() { // frequently calling this function will reduce performance
+    _preferentially.shrink_to_fit();
+    Network::shrink_to_fit();
+}

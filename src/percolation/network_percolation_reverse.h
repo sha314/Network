@@ -163,7 +163,7 @@ NetworkPercolationReverse<NET>::NetworkPercolationReverse(size_t m0, size_t m, s
 //    std::random_device _random_device;
 //    auto seed = _random_device();
     _random_generator.seed(seed);
-    //    cout << _link_indices.size() << " : " << _link_indices << endl;
+    //    cout << _randomized_link_indices.size() << " : " << _randomized_link_indices << endl;
     randomize_v1();
     log_1_by_size = std::log(1.0 / _network_size);
 }
@@ -221,9 +221,9 @@ void NetworkPercolationReverse<NET>::initialize_network() {
 template <class NET>
 void NetworkPercolationReverse<NET>::randomize_v1() {
 
-//    cout << "before " << _randomized_indices << endl;
+//    cout << "before " << _randomized_link_indices << endl;
     std::shuffle(_randomized_indices.begin(), _randomized_indices.end(), _random_generator);
-//    cout << "after " << _randomized_indices << endl;
+//    cout << "after " << _randomized_link_indices << endl;
 
 }
 /**
@@ -248,7 +248,7 @@ bool NetworkPercolationReverse<NET>::placeLink() {
     if (_number_of_occupied_links >= _link_count){
         return false;
     }
-//    cout << index_var << " ==? " << _randomized_indices.size();
+//    cout << index_var << " ==? " << _randomized_link_indices.size();
     // select a link randomly
     size_t last_link_pos_in_randomized = _randomized_indices[index_var];
     ++index_var;

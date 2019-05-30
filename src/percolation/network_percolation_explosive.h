@@ -70,7 +70,7 @@ size_t NetworkPercolationExplosive<NET>::selectLink() {
     auto it_last = _randomized_indices.begin() + limit;
     std::vector<uint> selected_links;
 
-    // moving it from _randomized_indices
+    // moving it from _randomized_link_indices
     std::move(it, it_last, std::back_inserter(selected_links));
 
     // checking for one selectable link
@@ -85,7 +85,7 @@ size_t NetworkPercolationExplosive<NET>::selectLink() {
     }
 
 
-    // moving unselected indices to _randomized_indices
+    // moving unselected indices to _randomized_link_indices
     std::move(selected_links.begin(), selected_links.end(),
               std::back_inserter(_randomized_indices));
 

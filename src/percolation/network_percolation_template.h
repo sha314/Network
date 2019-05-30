@@ -156,7 +156,7 @@ NetworkPercolation<NET>::NetworkPercolation(size_t m0, size_t m, size_t size)
 //    std::random_device _random_device;
 //    auto seed = _random_device();
     _random.seed(seed);
-    //    std::cout << _link_indices.size() << " : " << _link_indices << std::endl;
+    //    std::cout << _randomized_link_indices.size() << " : " << _randomized_link_indices << std::endl;
     randomize_v1();
     log_1_by_size = std::log(1.0 / _network_size);
 }
@@ -205,9 +205,9 @@ void NetworkPercolation<NET>::initialize_network() {
 template <class NET>
 void NetworkPercolation<NET>::randomize_v1() {
 
-//    std::cout << "before " << _randomized_indices << std::endl;
+//    std::cout << "before " << _randomized_link_indices << std::endl;
     std::shuffle(_randomized_indices.begin(), _randomized_indices.end(), _random);
-//    std::cout << "after " << _randomized_indices << std::endl;
+//    std::cout << "after " << _randomized_link_indices << std::endl;
 
 }
 
@@ -226,7 +226,7 @@ bool NetworkPercolation<NET>::placeLink() {
     if (_number_of_occupied_links >= _link_count){
         return false;
     }
-//    std::cout << index_var << " ==? " << _randomized_indices.size();
+//    std::cout << index_var << " ==? " << _randomized_link_indices.size();
     // select a link randomly
     size_t last_link_pos_in_randomized = _randomized_indices[index_var];
     ++index_var;

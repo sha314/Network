@@ -11,6 +11,8 @@
 #include <thread>
 
 
+void test_component_sizes();
+
 using namespace std;
 
 
@@ -40,25 +42,32 @@ void network_percolation_to_file(int argc, char* argv[]){
 
 void test_sizes()
 {
-    auto lnk = Link();
-    cout << "size of a link " << sizeof(lnk) << " bytes" << endl;
+    cout << "size of a link " << sizeof(Link) << " bytes" << endl;
+    cout << "size of a node " << sizeof(Node) << " bytes" << endl;
+    cout << "size of a LinkIndex " << sizeof(LinkIndex) << " bytes" << endl;
+    cout << "size of a Cluster " << sizeof(Cluster) << " bytes" << endl;
+    cout << "size of a Cluster_v2 " << sizeof(Cluster_v2) << " bytes" << endl;
+    cout << "size of a Cluster_v3 " << sizeof(Cluster_v2) << " bytes" << endl;
+    cout << "size of a Network " << sizeof(Network) << " bytes" << endl;
+    cout << "size of a NetworkBA " << sizeof(NetworkBA) << " bytes" << endl;
+    cout << "size of a NetworkBApercolation_v3 " << sizeof(NetworkBApercolation_v3) << " bytes" << endl;
+    cout << "size of a NetworkBApercolation_v4 " << sizeof(NetworkBApercolation_v4) << " bytes" << endl;
 
-    auto nd = Node(0);
-    cout << "size of a node " << sizeof(nd) << " bytes" << endl;
-
-    auto lnk_ind = LinkIndex(0, 2);
-    cout << "size of a LinkIndex " << sizeof(lnk_ind) << " bytes" << endl;
-
-    auto clstr = Cluster();
-    cout << "size of a Cluster " << sizeof(clstr) << " bytes" << endl;
-
-    auto clstr_2 = Cluster_v2();
-    cout << "size of a Cluster_v2 " << sizeof(clstr_2) << " bytes" << endl;
-
-    auto clstr_3 = Cluster_v3();
-    cout << "size of a Cluster_v3 " << sizeof(clstr_3) << " bytes" << endl;
+    cout << "size of a NetworkBApercolationExplosive_v3 " << sizeof(NetworkBApercolationExplosive_v3) << " bytes" << endl;
 
 }
+
+void test_component_sizes() {
+   Node n = Node(0);
+   cout << "sizeof Node " << sizeof(n) << " bytes" << endl;
+   for (size_t i{1}; i < 1000000; ++i) {
+       n.addNeighbor(i);
+   }
+   n.shrink_to_fit();
+   cout << "sizeof Node " << n.size_in_MB() << " MB" << endl;
+   // cin.get();
+}
+
 /**
  * N : network size
  * m :
@@ -72,8 +81,9 @@ void run_in_main(int argc, char* argv[]){
     for(int i{1}; i < argc; ++i){
         cout << arguments[i-1] << " : " << argv[i] << endl;
     }
-    test_sizes(); // 2019.05.26
-//    test_network_BA();
+//    test_sizes(); // 2019.05.26
+    test_component_sizes(); // 2019.05.30
+//    test_network_BA(argc, argv);
 //    test_network_MDA();
 //    network_percolation_global();
 //    network_percolationReverse_global();
@@ -87,7 +97,7 @@ void run_in_main(int argc, char* argv[]){
 //    cout << "cores " << thread::hardware_concurrency() << endl;
 //    explosive_percolation_sum(3, 5000, 5, 100, 0); // testing only
 
-    BA_self_jump(argc, argv);
+//    BA_self_jump(argc, argv);
 
 }
 
