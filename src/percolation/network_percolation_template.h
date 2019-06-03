@@ -163,7 +163,7 @@ NetworkPercolation<NET>::NetworkPercolation(size_t m0, size_t m, size_t size)
 
 template <class NET>
 void NetworkPercolation<NET>::initialize_for_percolation() {
-    auto t0 = chrono::system_clock::now();
+    auto t0 = std::chrono::system_clock::now();
     _link_count = _network_frame.getNumberOfLinks();
     _link_indices.resize(_link_count);
     _randomized_indices.resize(_link_count);
@@ -179,23 +179,23 @@ void NetworkPercolation<NET>::initialize_for_percolation() {
         _network_frame.set_node_group_id(i, i);
         _cluster[i].set_group_id(i);
     }
-    auto t1 = chrono::system_clock::now();
-    std::cout << "Initialization for percolation time " << chrono::duration<double>(t1-t0).count() << std::endl;
+    auto t1 = std::chrono::system_clock::now();
+    std::cout << "Initialization for percolation time " << std::chrono::duration<double>(t1-t0).count() << std::endl;
 }
 
 template <class NET>
 void NetworkPercolation<NET>::initialize_network() {
     std::cout << "Initializing Network ... " << std::flush;
-    auto t0 = chrono::system_clock::now();
+    auto t0 = std::chrono::system_clock::now();
     _network_frame = NET(_m0, _m);
     uint i= _m0;
     while (i < _network_size){ // sp that number of nodes is the network size
         _network_frame.addNode();
         ++i;
     }
-    auto t1 = chrono::system_clock::now();
+    auto t1 = std::chrono::system_clock::now();
     std::cout << "done." << std::endl;
-    std::cout << "Network initialization time " << chrono::duration<double>(t1-t0).count() << std::endl;
+    std::cout << "Network initialization time " << std::chrono::duration<double>(t1-t0).count() << std::endl;
 }
 
 

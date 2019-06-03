@@ -19,11 +19,8 @@ set(SOURCE_FILES
         src/nets/link.cpp
         src/nets/link.h
         src/types.h
-        src/ext_libs/inverse_array.h
-        src/percolation/network_percolation.cpp
-        src/percolation/network_percolation_v2.cpp
+#        src/ext_libs/inverse_array.h
         src/percolation/network_percolation_v3.cpp
-        src/percolation/network_percolation_v4.cpp
         src/test/network_build.cpp
         src/test/network_build.h
         src/test/test_network_percolation.cpp

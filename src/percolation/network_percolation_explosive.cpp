@@ -5,6 +5,8 @@
 
 #include "network_percolation.h"
 
+using namespace std;
+
 /**
  *
  * @param m0

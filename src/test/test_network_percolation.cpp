@@ -25,8 +25,8 @@ void BA_self_jump(int argc, char* argv[]){
     int N = atoi(argv[2]);
     int M = atoi(argv[3]);
 
-//    NetworkBApercolationExplosive_v3 net(m*2, m, N, M);
-    NetworkBApercolation_v3 net(m*2, m, N);
+//   NetworkBApercolationExplosive_v3 net(m*2, m, N, M);
+     NetworkBApercolation_v3 net(m*2, m, N);
     string signature = net.get_signature();
     string filename = signature + "jump-" + currentTime() + ".txt";
 
@@ -235,7 +235,7 @@ void network_percolation(int argc, char* argv[]){
 
 
 void  explosive_percolation_sum(uint m, uint network_size, uint M, uint ensemble_size, size_t th_id) {
-    NetworkBApercolationExplosiveSum net(m + 1, m, network_size, M);
+    NetworkBApercolationExplosive_v3 net(m * 2, m, network_size, M);
 
     size_t sz = net.linkCount();
     double node_count = net.nodeCount();

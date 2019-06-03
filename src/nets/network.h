@@ -12,7 +12,6 @@
 #include "node.h"
 #include "link.h"
 #include "../percolation/cluster.h"
-#include "../ext_libs/inverse_array.h"
 #include <random>
 #include <algorithm>
 #include <chrono>
@@ -39,7 +38,7 @@ protected:
     std::vector<uint> _m_links;
     // random engine
     std::mt19937 _random_generator;
-    std::chrono::duration<double> shuffle_time=chrono::duration<double>(0);
+    std::chrono::duration<double> shuffle_time=std::chrono::duration<double>(0);
 public:
     ~Network() = default;
     explicit Network(uint m0=0, uint m=1);
@@ -80,11 +79,11 @@ public:
 
     std::vector<size_t> degrees();
     double clusteringCoefficient() const {
-        cout << "TODO : line " << __LINE__ << endl;
+        std::cout << "TODO : line " << __LINE__ << std::endl;
         return 0;
     }
     double clusteringCoefficient(size_t i) const {
-        cout << "TODO : line " << __LINE__ << endl;
+        std::cout << "TODO : line " << __LINE__ << std::endl;
         return 0;
     }
     void initialize();
@@ -106,7 +105,7 @@ public:
     void activateLink(size_t pos);
     void activateNode(size_t pos);
 
-    void getTime() const {cout << "shuffle time " << shuffle_time.count() << endl;}
+    void getTime() const {std::cout << "shuffle time " << shuffle_time.count() << std::endl;}
 
     double size_in_MB();
 
@@ -211,7 +210,7 @@ public:
     virtual ~NetworkMDA() = default;
     NetworkMDA() = default;
     NetworkMDA(size_t m0, size_t m):Network(m0, m) {
-        cout << "MDA network" << endl;
+        std::cout << "MDA network" << std::endl;
     }
 
     // methods
