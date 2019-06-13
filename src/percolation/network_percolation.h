@@ -157,7 +157,7 @@ public:
 
     double sizeSummary_in_MB();
 
-
+    const std::vector<double>& clusterPickingProbability();
 };
 
 

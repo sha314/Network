@@ -723,5 +723,24 @@ double NetworkBApercolation_v3::sizeSummary_in_MB() {
 
 }
 
+/**
+ * s_i = size of the i-th cluster
+ * N = network size or number of nodes in the network
+ * mu_i = s_i / N
+ * such that,
+ * sum_i mu_i = 1
+ *
+ * @return an array. values of the are are the clusterPickingProbabilities (CPP).
+ * indices of the array are the cluster numbers
+ */
+const std::vector<double>& NetworkBApercolation_v3::clusterPickingProbability() {
+    double N = nodeCount();
+    vector<double> mu_i(_cluster.size());
+    for(size_t i{}; i < _cluster.size(); ++i){
+        mu_i[i] = _cluster[i].numberOfNodes() / N;
+    }
+    return mu_i;
+}
+
 
 
