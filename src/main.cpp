@@ -75,7 +75,7 @@ void test_component_sizes() {
  * @param argv
  */
 void run_in_main(int argc, char* argv[]){
-    vector<string> arguments{"m","N","M"};
+    vector<string> arguments{"m","N","M", "Ensemble", "?", "?", "?"};
     cout << "Arguments " << endl;
     for(int i{1}; i < argc; ++i){
         cout << arguments[i-1] << " : " << argv[i] << endl;
@@ -96,7 +96,8 @@ void run_in_main(int argc, char* argv[]){
 //    cout << "cores " << thread::hardware_concurrency() << endl;
 //    explosive_percolation_sum(3, 5000, 5, 100, 0); // testing only
 
-    BA_self_jump(argc, argv);
+//    BA_order_parameter_jump(argc, argv);
+    BA_entropy_jump_ensemble(argc, argv);
 
 }
 

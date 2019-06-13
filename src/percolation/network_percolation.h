@@ -74,7 +74,7 @@ protected:
     bool placeLink();
     size_t selectLink(); // select links randomly
     bool placeSelectedLink(size_t link_pos); // place the selected link
-
+    double one_by_N {};
 public:
 
     virtual ~NetworkBApercolation_v3()  = default;
@@ -112,7 +112,7 @@ public:
     void jump(); // calculates jump of entropy and
     double largestEntropyJump()     const { return _largest_jump_entropy;}
     double largestEntropyJump_pc()  const { return _entropy_jump_pc;} // occupation probability at largest jump of entropy
-
+    double maxEntropy(){return log(nodeCount());}; // clusters mesured by nodes
     virtual bool occupyLink();
 
 
@@ -142,6 +142,7 @@ public:
     }
 
     double logOneBySize()           const { return log_1_by_size;}
+    double oneBySize()              const { return one_by_N;}
 
     void track_cluster();
     void track_cluster_v2();
@@ -155,6 +156,8 @@ public:
     void view_randomized_indices()  const ;
 
     double sizeSummary_in_MB();
+
+
 };
 
 
@@ -183,7 +186,7 @@ public:
 
     std::string get_signature() {
         std::stringstream ss;
-        ss << "netrowk_BA_percolation_explosive_m0_";
+        ss << "network_BA_percolation_explosive_m0_";
         ss << _network_frame.get_m0() << "_m_" << _network_frame.get_m() << "_size_" << _network_size << "_M_" << _M << '-';
         return ss.str();
     }
