@@ -24,7 +24,7 @@ void network_percolation_to_file(int argc, char* argv[]){
     uint network_size = atoi(argv[2]);
     uint ensemble_size = atoi(argv[3]);
 
-    NetworkBApercolation net(3, m, network_size);
+    NetworkBApercolation_v4 net(3, m, network_size);
     net.reset();
     net.viewNodes();
     net.viewLinks();
@@ -50,10 +50,9 @@ void test_sizes()
     cout << "size of a Cluster_v3 " << sizeof(Cluster_v2) << " bytes" << endl;
     cout << "size of a Network " << sizeof(Network) << " bytes" << endl;
     cout << "size of a NetworkBA " << sizeof(NetworkBA) << " bytes" << endl;
-    cout << "size of a NetworkBApercolation_v3 " << sizeof(NetworkBApercolation_v3) << " bytes" << endl;
     cout << "size of a NetworkBApercolation_v4 " << sizeof(NetworkBApercolation_v4) << " bytes" << endl;
 
-    cout << "size of a NetworkBApercolationExplosive_v3 " << sizeof(NetworkBApercolationExplosive_v3) << " bytes" << endl;
+    cout << "size of a NetworkBApercolationExplosive_v3 " << sizeof(NetworkBApercolationExplosive_v4) << " bytes" << endl;
 
 }
 
@@ -76,13 +75,13 @@ void test_component_sizes() {
  * @param argv
  */
 void run_in_main(int argc, char* argv[]){
-    vector<string> arguments{"m","N","M"};
+    vector<string> arguments{"m","N","M","","",""};
     cout << "Arguments " << endl;
     for(int i{1}; i < argc; ++i){
         cout << arguments[i-1] << " : " << argv[i] << endl;
     }
 //    test_sizes(); // 2019.05.26
-    test_component_sizes(); // 2019.05.30
+//    test_component_sizes(); // 2019.05.30
 //    test_network_BA(argc, argv);
 //    test_network_MDA();
 //    network_percolation_global();
@@ -91,7 +90,7 @@ void run_in_main(int argc, char* argv[]){
 //    network_percolation_to_file(argc, argv);
 //    degree_distribution_BA(argc, argv);
 //    degree_distribution_BA_v2(argc, argv); // 2019.05.21
-//    network_percolation(argc, argv);
+    network_percolation(argc, argv);
 //    network_percolation_explosive(argc, argv);
 //
 //    cout << "cores " << thread::hardware_concurrency() << endl;
@@ -128,6 +127,9 @@ int main(int argc, char* argv[]) {
     std::time_t end_time = std::chrono::system_clock::to_time_t(t_end);
     cout << "Program finished at " << std::ctime(&end_time) << endl;
     std::cout << "Time elapsed "   << getFormattedTime(drtion.count()) << std::endl;
+
+    cout << "program paused" << endl;
+    cin.get(); // pausing program
     return 0;
 
 }

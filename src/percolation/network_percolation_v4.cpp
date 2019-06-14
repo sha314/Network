@@ -205,15 +205,15 @@ void NetworkBApercolation_v4::viewClusterExtended() {
         cout << "cluster[" << i << "] : id " << _cluster[i].get_group_id() << "{" << endl;
         cout << "  Nodes (" << _cluster[i].numberOfNodes() << "): ";
         auto nds = _cluster[i].getNodes();
-        cout << "(index, id)->";
+        cout << "(index, id)->{";
         for(auto n: nds){
             cout << "(" << n << "," << _network_frame.get_node_group_id(n) << "),";
         }
-        cout << endl;
-        cout << "  Links (" << _cluster[i].numberOfLinks() << "): ";
+        cout << "}" << endl;
+        cout << "  Links (" << _cluster[i].numberOfLinks() << "): {";
 //        _cluster[i].viewLinks();
 //        _cluster[i].viewLinksExtended();
-        cout << endl;
+        cout << "}" << endl;
         cout << "}" << endl;
     }
     cout << "number of cluster " << count << endl;
