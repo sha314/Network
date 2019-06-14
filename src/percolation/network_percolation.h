@@ -256,6 +256,7 @@ public:
 class NetworkBApercolation_v3 {
     size_t _m0, _m;
 
+    double one_by_N;
     double log_1_by_size{}; // to make calculations easier
 
     //time measurement variables
@@ -381,6 +382,10 @@ public:
     void view_randomized_indices()  const ;
 
     double sizeSummary_in_MB();
+
+    double oneBySize() {return one_by_N;}
+
+    const std::vector<double>& clusterPickingProbability();
 };
 
 

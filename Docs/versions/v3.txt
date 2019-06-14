@@ -1,0 +1,5 @@
+git branch : v3
+Only the NetworkBApercolation_v3 and NetworkBApercolationExplosive_v3 class are developed here.
+This branch only focuses only on the development of one idea :
+    1. total number of cluster = total number of node in a network
+    2. clusters are not deleted (instead the are marked as empty), so that id is the index of the cluster and it is fixed.
