@@ -22,4 +22,6 @@ void network_percolationReverse_global();
 void BA_order_parameter_jump(int argc, char **argv); // for demarcation line
 void BA_entropy_jump_ensemble(int argc, char **argv);
 
+void clusterSizeDistribution(int argc, char **argv);// added 2019.06.22
+
 #endif //NETWORK_NETWORK_PERCOLATION_H

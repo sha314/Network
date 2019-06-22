@@ -30,12 +30,12 @@ Network::Network(uint m0, uint m) {
     }
     if(_m0 < 3){_m0=3;}
 
-    std::random_device _random_device;
-    unsigned long random_seed  = 1;
-    random_seed  = _random_device();
-//    cerr << "automatic seeding is turned off : line " << __LINE__ << endl;
-    cout << "Random seed Network: " << random_seed << endl;
-    _random_generator.seed(random_seed); // seeding
+//    std::random_device _random_device;
+//    unsigned long random_seed  = 1;
+//    random_seed  = _random_device();
+////    cerr << "automatic seeding is turned off : line " << __LINE__ << endl;
+//    cout << "Random seed Network: " << random_seed << endl;
+//    _random_generator.seed(random_seed); // seeding
 
 //    initialize();
     initialize_v2();
@@ -327,6 +327,19 @@ void Network::shrink_to_fit() {
     _links.shrink_to_fit();
     _node_indices.shrink_to_fit();
     _m_links.shrink_to_fit();
+}
+
+void Network::setRandomState(size_t seed, bool g) {
+    if(g){
+        std::random_device _random_device;
+        _random_state = _random_device();
+    }else {
+        cerr << "automatic seeding is turned off : line " << __LINE__ << endl;
+        _random_state = seed;
+    }
+
+    _random_generator.seed(_random_state);
+    cout << "random seed Network " << _random_state << endl;
 }
 
 

@@ -395,3 +395,62 @@ void network_percolationReverse_global(){
     cout << "time " << networkPercolation.time() << " sec" << endl;
 
 }
+
+void clusterSizeDistribution(int argc, char **argv) {
+//    size_t m0 = size_t(atoi(argv[1]));
+    if (argc < 4) {
+        cout << "argv[1] = m" << endl;
+        cout << "argv[2] = NetworkSize" << endl;
+        cout << "argv[3] = EnsembleSize" << endl;
+        return;
+    }
+
+    size_t m = size_t(atoi(argv[1]));
+    size_t N = size_t(atoi(argv[2]));
+    size_t En = size_t(atoi(argv[3]));
+
+    cout << "network size " << N << endl;
+    cout << "ensemble size " << En << endl;
+
+    NetworkBApercolation_v3 net(m*2, m, N);
+    net.setRandomState(0, true);
+
+    string filename = net.get_signature() + "size_" + to_string(N)
+                      + "-cluster_size_distribution-" + currentTime() + ".txt";
+
+
+    vector<size_t> count(10);
+    double t;
+    for (size_t en{}; en < En; ++en) {
+        auto t0 = std::chrono::system_clock::now();
+        net.reset(en%50 == 0);
+
+        while(net.occupyLink()){
+            t = net.relativeLinkDensity();
+            if (t  > 0.5){
+                net.clusterSizeDistribution();
+                break;
+            }
+        }
+
+
+//        cout << "line " << __LINE__ << endl;
+        auto t1 = std::chrono::system_clock::now();
+        std::chrono::duration<double> drtion = t1 - t0;
+        cout << "Iteration " << en << " : time " << drtion.count() << " sec" << endl;
+    }
+
+//    ofstream fout(filename);
+//    fout << "#{\"m0\":" << net.get_m0()
+//         << ",\"m\":" << net.get_m()
+//         << ",\"N\":" << N
+//         << ",\"En\":" << En
+//         << "}" << endl;
+//
+//    for (size_t i{1}; i < count.size(); ++i) {
+//        fout << i << "\t" << double(count[i])/En << endl;
+//    }
+//
+//    // normalization
+//    fout.close();
+}

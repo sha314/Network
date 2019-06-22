@@ -38,11 +38,14 @@ protected:
     std::vector<uint> _m_links;
     // random engine
     std::mt19937 _random_generator;
+    size_t _random_state;
     std::chrono::duration<double> shuffle_time=std::chrono::duration<double>(0);
 public:
     ~Network() = default;
     explicit Network(uint m0=0, uint m=1);
 
+    void setRandomState(size_t seed, bool g=true) ;
+    size_t getRandomState() const{return _random_state;} ;
     virtual void reset(){
         _nodes.clear();
         _links.clear();

@@ -97,7 +97,9 @@ void run_in_main(int argc, char* argv[]){
 //    explosive_percolation_sum(3, 5000, 5, 100, 0); // testing only
 
 //    BA_order_parameter_jump(argc, argv);
-    BA_entropy_jump_ensemble(argc, argv);
+//    BA_entropy_jump_ensemble(argc, argv);
+
+    clusterSizeDistribution(argc, argv); // added 2019.06.22
 
 }
 

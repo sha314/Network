@@ -18,11 +18,11 @@ using namespace std;
 NetworkBApercolation_v3::NetworkBApercolation_v3(size_t m0, size_t m, size_t size)
 {
     initiate(m0, m, size);
-//    size_t seed = 0;
-//    cerr << "automatic seeding is turned off : line " << __LINE__ << endl;
-    auto seed = _random_device();
-    _random_generator.seed(seed);
-    cout << "random seed NetworkBApercolation_v3 " << seed << endl;
+////    size_t seed = 0;
+////    cerr << "automatic seeding is turned off : line " << __LINE__ << endl;
+//    auto seed = _random_device();
+//    _random_generator.seed(seed);
+//    cout << "random seed NetworkBApercolation_v3 " << seed << endl;
     //    cout << _randomized_link_indices.size() << " : " << _randomized_link_indices << endl;
     randomize_v1();
     one_by_N = 1 / double(nodeCount());
@@ -733,13 +733,44 @@ double NetworkBApercolation_v3::sizeSummary_in_MB() {
  * @return an array. values of the are are the clusterPickingProbabilities (CPP).
  * indices of the array are the cluster numbers
  */
-const std::vector<double>& NetworkBApercolation_v3::clusterPickingProbability() {
+const std::vector<double> NetworkBApercolation_v3::clusterPickingProbability() {
     double N = nodeCount();
     vector<double> mu_i(_cluster.size());
     for(size_t i{}; i < _cluster.size(); ++i){
         mu_i[i] = _cluster[i].numberOfNodes() / N;
     }
     return mu_i;
+}
+
+void NetworkBApercolation_v3::setRandomState(size_t seed, bool g) {
+    if(g){
+        std::random_device _random_device;
+        _random_state = _random_device();
+    }else {
+        cerr << "automatic seeding is turned off : line " << __LINE__ << endl;
+        _random_state = seed;
+    }
+
+    _random_generator.seed(_random_state);
+    cout << "random seed NetworkBApercolation_v3 " << _random_state << endl;
+}
+
+std::vector<double> NetworkBApercolation_v3::clusterSizeDistribution() {
+    vector<double> cluster_counts;
+    size_t n{};
+    double area=0;
+    for(size_t i{}; i < _cluster.size(); ++i){
+        n = _cluster[i].numberOfNodes();
+        if (cluster_counts.size() <= n){
+            cluster_counts.resize(n+1);
+        }
+        ++cluster_counts[n];
+    }
+    for(size_t i{}; i < cluster_counts.size(); ++i){
+        area += i * cluster_counts[i];
+    }
+    cout << "area under curve " << area / number_of_nodes() << endl;
+    return cluster_counts;
 }
 
 

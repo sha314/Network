@@ -64,8 +64,9 @@ protected:
     double _entropy{};
     size_t index_var{};
 
-    std::random_device _random_device;
+
     std::mt19937 _random_generator;
+    size_t _random_state;
 
     // methods
     void randomize_v1();
@@ -81,6 +82,8 @@ public:
     NetworkBApercolation_v3()           = default;
     NetworkBApercolation_v3(size_t m0, size_t m, size_t size);
     void initialize_network();
+    void setRandomState(size_t seed, bool gen);
+    size_t getRandomState() const;
 
     void reset(int i=0);
 
@@ -96,7 +99,7 @@ public:
      * Information about the state of network
      ***********************************************/
     double occupationProbability()  const { return double(_number_of_occupied_links) / _link_count;}
-    double relativeLinkDensity()    const { return double(_number_of_occupied_links) / _network_size;}
+    double relativeLinkDensity()    const { return double(_number_of_occupied_links) / number_of_nodes();}
     size_t largestClusterSize()     const {return _number_of_nodes_in_the_largest_cluster;}
     int largestClusterID()          const {return _last_largest_cluster_id;}
     size_t linkCount()              const { return _network_frame.number_of_links();}
@@ -157,7 +160,15 @@ public:
 
     double sizeSummary_in_MB();
 
-    const std::vector<double>& clusterPickingProbability();
+    const std::vector<double> clusterPickingProbability();
+
+    uint get_m0() const { return _network_frame.get_m0();}
+    uint get_m() const { return _network_frame.get_m();}
+    size_t number_of_nodes() const  {return _network_frame.number_of_nodes();}
+    size_t number_of_links() const  {return _network_frame.number_of_links();}
+
+    std::vector<double> clusterSizeDistribution();
+
 };
 
 
