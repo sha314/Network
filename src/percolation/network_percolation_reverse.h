@@ -500,7 +500,7 @@ double NetworkPercolationReverse<NET>::entropy_v1() {
         H += mu * std::log(mu); // shanon entropy
     }
     if(_network_size != _network_frame.number_of_nodes()){
-        std::cout << "_network_size != _network_frame.number_of_nodes() ; line "
+        std::cout << "_network_size != _network_frame.getNetworkSize() ; line "
                   << __LINE__ << std::endl;
     }
     size_t remaining = _network_size - count;

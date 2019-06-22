@@ -457,8 +457,8 @@ double NetworkBApercolation_v3::entropy_v1() {
         mu = n * oneBySize();
         H += mu * std::log(mu); // shanon entropy
     }
-//    if(_network_size != _network_frame.number_of_nodes()){
-//        cout << "_network_size != _network_frame.number_of_nodes() ; line " << __LINE__ << endl;
+//    if(_network_size != _network_frame.getNetworkSize()){
+//        cout << "_network_size != _network_frame.getNetworkSize() ; line " << __LINE__ << endl;
 //    }
     /* // no need in new paradigm
     size_t remaining = _network_size - count;
@@ -758,7 +758,7 @@ void NetworkBApercolation_v3::setRandomState(size_t seed, bool g) {
 std::vector<double> NetworkBApercolation_v3::clusterSizeDistribution() {
     vector<double> cluster_counts;
     size_t n{};
-    double area=0;
+
     for(size_t i{}; i < _cluster.size(); ++i){
         n = _cluster[i].numberOfNodes();
         if (cluster_counts.size() <= n){
@@ -766,10 +766,11 @@ std::vector<double> NetworkBApercolation_v3::clusterSizeDistribution() {
         }
         ++cluster_counts[n];
     }
-    for(size_t i{}; i < cluster_counts.size(); ++i){
-        area += i * cluster_counts[i];
-    }
-    cout << "area under curve " << area / number_of_nodes() << endl;
+//    double area=0;
+//    for(size_t i{}; i < cluster_counts.size(); ++i){
+//        area += i * cluster_counts[i];
+//    }
+//    cout << "area under curve " << area / getNetworkSize() << endl;
     return cluster_counts;
 }
 

@@ -72,7 +72,7 @@ void BA_order_parameter_jump(int argc, char **argv){
          << ",\"m\":" << m << ",\"network_size\":" << N
          << ",\"M\":" << M  // in case of explosive percolation
          << ",\"number_of_links\":" << net.linkCount()
-         << ",\"number_of_nodes\":" << net.nodeCount()
+         << ",\"getNetworkSize\":" << net.nodeCount()
          << ",\"cols\":" << "[\"t\", \"dP\", \"color\"]" << "}";
 
     fout << "#" << ss.str() << endl;
@@ -162,7 +162,7 @@ void BA_entropy_jump_ensemble(int argc, char **argv){
          << ",\"m\":" << m << ",\"network_size\":" << N
          << ",\"M\":" << M  // in case of explosive percolation
          << ",\"number_of_links\":" << net.linkCount()
-         << ",\"number_of_nodes\":" << net.nodeCount()
+         << ",\"getNetworkSize\":" << net.nodeCount()
          << ",\"entropy_jump_avg\":" << entropy_jmp_avg/En
          << ",\"cols\":" << "[\"N\", \"m\", \"M\", \"jump\"]" << "}";
 
@@ -283,7 +283,7 @@ void  explosive_percolation_sum(uint m, uint network_size, uint M, uint ensemble
     ss   << "{\"signature\":" << "\"" << signature << "\""
          << ",\"m\":" << m << ",\"network_size\":" << network_size
          << ",\"number_of_links\":" << net.linkCount()
-         << ",\"number_of_nodes\":" << net.nodeCount()
+         << ",\"getNetworkSize\":" << net.nodeCount()
          << ",\"M\":" << M << ",\"ensemble_size\":" << ensemble_size << "}";
 
     fout << "#" << ss.str() << endl;
@@ -415,11 +415,7 @@ void clusterSizeDistribution(int argc, char **argv) {
     NetworkBApercolation_v3 net(m*2, m, N);
     net.setRandomState(0, true);
 
-    string filename = net.get_signature() + "size_" + to_string(N)
-                      + "-cluster_size_distribution-" + currentTime() + ".txt";
-
-
-    vector<size_t> count(10);
+    vector<double> csd(10);
     double t;
     for (size_t en{}; en < En; ++en) {
         auto t0 = std::chrono::system_clock::now();
@@ -428,7 +424,13 @@ void clusterSizeDistribution(int argc, char **argv) {
         while(net.occupyLink()){
             t = net.relativeLinkDensity();
             if (t  > 0.5){
-                net.clusterSizeDistribution();
+                auto tmp = net.clusterSizeDistribution();
+                if(csd.size() < tmp.size()){
+                    csd.resize(tmp.size());
+                }
+                for(size_t i{}; i < tmp.size(); ++i){
+                    csd[i] += tmp[i];
+                }
                 break;
             }
         }
@@ -440,17 +442,36 @@ void clusterSizeDistribution(int argc, char **argv) {
         cout << "Iteration " << en << " : time " << drtion.count() << " sec" << endl;
     }
 
-//    ofstream fout(filename);
-//    fout << "#{\"m0\":" << net.get_m0()
-//         << ",\"m\":" << net.get_m()
-//         << ",\"N\":" << N
-//         << ",\"En\":" << En
-//         << "}" << endl;
-//
-//    for (size_t i{1}; i < count.size(); ++i) {
-//        fout << i << "\t" << double(count[i])/En << endl;
-//    }
-//
-//    // normalization
-//    fout.close();
+    string tm = currentTime();
+    string filename = net.get_signature() + "N_" + to_string(N)
+                      + "-cluster-size-distribution-" + tm + ".txt";
+    stringstream ss;
+    ss   << "{"
+         << R"("signature":")" << net.get_signature() << "\""
+         << R"(,"m":)" << m
+         << R"(,"N":)" << net.getNetworkSize()
+         << R"(,"number_of_links":)" << net.linkCount()
+         << R"(,"number_of_nodes":)" << net.nodeCount()
+//         << R"(,"M":)" << M
+         << R"(,"ensemble_size":)" << En
+         << R"(,"random_state":)" << net.getRandomState()
+         << R"(,"time":")" << tm << "\""
+         << "}";
+
+
+    ofstream fout(filename);
+    fout << "#" << ss.str() << endl;
+    fout << "#{\"m0\":" << net.get_m0()
+         << ",\"m\":" << net.get_m()
+         << ",\"N\":" << N
+         << ",\"En\":" << En
+         << "}" << endl;
+
+    for (size_t i{0}; i < csd.size(); ++i) {
+        if(csd[i] == 0) continue;
+        fout << i << "\t" << csd[i]/(En * net.getNetworkSize()) << endl;
+    }
+
+    // normalization
+    fout.close();
 }
