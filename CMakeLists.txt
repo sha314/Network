@@ -12,8 +12,12 @@ set(SOURCE_FILES
         src/util/printer.h
         src/util/time_tracking.cpp
         src/util/time_tracking.h
-        src/percolation/cluster.cpp
-        src/percolation/cluster.h
+        src/percolation/cluster/cluster.cpp
+        src/percolation/cluster/cluster.h
+        src/percolation/cluster/cluster_v2.cpp
+        src/percolation/cluster/cluster_v2.h
+        src/percolation/cluster/cluster_v3.cpp
+        src/percolation/cluster/cluster_v3.h
         src/nets/node.cpp
         src/nets/node.h
         src/nets/link.cpp
@@ -33,8 +37,6 @@ set(SOURCE_FILES
         src/percolation/percolation.h
         src/percolation/network_percolation_explosive.h
         src/percolation/network_percolation_template.h
-        src/percolation/cluster_v2.cpp
-        src/percolation/cluster_v3.cpp
         src/percolation/network_percolation_explosive_v3.cpp)
 
 add_executable(networks ${SOURCE_FILES})

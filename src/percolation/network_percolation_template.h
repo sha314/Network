@@ -9,7 +9,7 @@
 #include <random>
 #include <algorithm>
 #include <iostream>
-#include "cluster.h"
+#include "cluster/cluster.h"
 #include "../nets/link.h"
 #include <chrono>
 
