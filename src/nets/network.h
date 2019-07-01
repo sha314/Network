@@ -11,7 +11,7 @@
 #include <sstream>
 #include "node.h"
 #include "link.h"
-#include "../percolation/cluster.h"
+#include "../percolation/cluster/cluster.h"
 #include "../ext_libs/inverse_array.h"
 #include <random>
 #include <algorithm>

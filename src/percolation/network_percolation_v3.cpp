@@ -6,7 +6,7 @@
 #include <cmath>
 #include <random>
 #include "../nets/network.h"
-#include "network_percolation.h"
+#include "network_percolation_v3.h"
 
 
 using namespace std;
@@ -18,14 +18,15 @@ using namespace std;
 NetworkBApercolation_v3::NetworkBApercolation_v3(size_t m0, size_t m, size_t size)
 {
     initiate(m0, m, size);
-//    size_t seed = 0;
-//    cerr << "automatic seeding is turned off : line " << __LINE__ << endl;
-    auto seed = _random_device();
-    _random_generator.seed(seed);
-    cout << "random seed NetworkBApercolation_v3 " << seed << endl;
+////    size_t seed = 0;
+////    cerr << "automatic seeding is turned off : line " << __LINE__ << endl;
+//    auto seed = _random_device();
+//    _random_generator.seed(seed);
+//    cout << "random seed NetworkBApercolation_v3 " << seed << endl;
     //    cout << _randomized_link_indices.size() << " : " << _randomized_link_indices << endl;
     randomize_v1();
-    log_1_by_size = std::log(1.0 / _network_size);
+    one_by_N = 1 / double(nodeCount());
+    log_1_by_size = std::log(one_by_N);
 }
 
 void NetworkBApercolation_v3::initiate(size_t m0, size_t m, size_t size) {
@@ -450,25 +451,27 @@ double NetworkBApercolation_v3::entropy_v1() {
     size_t count{}, n;
     double mu{}, H{};
     for(size_t i{}; i < _cluster.size(); ++i){
+        if(_cluster[i].empty()) continue;
         n = _cluster[i].numberOfNodes();
         count += n;
-        mu = n / double(_network_size);
+        mu = n * oneBySize();
         H += mu * std::log(mu); // shanon entropy
     }
-    if(_network_size != _network_frame.number_of_nodes()){
-        cout << "_network_size != _network_frame.number_of_nodes() ; line " << __LINE__ << endl;
-    }
+//    if(_network_size != _network_frame.getNetworkSize()){
+//        cout << "_network_size != _network_frame.getNetworkSize() ; line " << __LINE__ << endl;
+//    }
+    /* // no need in new paradigm
     size_t remaining = _network_size - count;
     H += remaining * logOneBySize() / double(_network_size); // for the clusters of size one
+     */
     _current_entropy = -H;
     return _current_entropy;
 }
 
 double NetworkBApercolation_v3::entropy_v2() {
-    size_t isolated_node = _network_size - _number_of_connected_nodes;
-//    double lg = std::log(1.0 / _network_size);
-//    cout << logOneBySize() << endl;
-    double H = - (logOneBySize() * isolated_node) / _network_size;
+    // isolated nodes are the one that is not connected with any node
+    size_t isolated_node = nodeCount() - _number_of_connected_nodes;
+    double H = - (logOneBySize() * isolated_node) * oneBySize() ;
     _current_entropy = H + _entropy;
     return _current_entropy;
 }
@@ -491,19 +494,19 @@ void NetworkBApercolation_v3::subtract_entropy(Link &lnk) {
     if(id_a == id_b && id_a != -1){
         // belongs to same cluster
         n = _cluster[id_a].numberOfNodes();
-        mu = n / double(_network_size);
+        mu = n * oneBySize();
         H += - mu * std::log(mu);
         _entropy -= H;
         return; // no need to go further
     }
     if(id_a != -1){
         n = _cluster[id_a].numberOfNodes();
-        mu = n / double(_network_size);
+        mu = n * oneBySize();
         H += - mu * std::log(mu);
     }
     if(id_b != -1){
         n = _cluster[id_b].numberOfNodes();
-        mu = n / double(_network_size);
+        mu = n * oneBySize();
         H += - mu * std::log(mu);
     }
     _entropy -= H;
@@ -514,9 +517,10 @@ void NetworkBApercolation_v3::add_entropy(Link &lnk) {
     size_t b = lnk.get_b();
     size_t n{};
     double H{}, mu{};
-    if(_network_frame.getNode(a).get_group_id() != -1) {
-        n = _cluster[_network_frame.getNode(a).get_group_id()].numberOfNodes();
-        mu = n / double(_network_size);
+    int gid = _network_frame.getNode(a).get_group_id();
+    if(gid != -1) {
+        n = _cluster[gid].numberOfNodes();
+        mu = n * oneBySize();
         H += - mu * std::log(mu);
     }
     _entropy += H;
@@ -567,7 +571,7 @@ bool NetworkBApercolation_v3::placeSelectedLink(size_t link_pos) {
 }
 
 void NetworkBApercolation_v3::reset(int i) {
-    cout << "reset NetworkBApercolation_v3: line " <<__LINE__ << endl;
+//    cout << "reset NetworkBApercolation_v3: line " <<__LINE__ << endl;
     index_var = 0;
     _number_of_occupied_links = 0;
     _number_of_connected_nodes = 0;
@@ -717,6 +721,57 @@ double NetworkBApercolation_v3::sizeSummary_in_MB() {
     cout << "Total size " << sz_tot << " MB" << endl;
     return sz_tot;
 
+}
+
+/**
+ * s_i = size of the i-th cluster
+ * N = network size or number of nodes in the network
+ * mu_i = s_i / N
+ * such that,
+ * sum_i mu_i = 1
+ *
+ * @return an array. values of the are are the clusterPickingProbabilities (CPP).
+ * indices of the array are the cluster numbers
+ */
+const std::vector<double> NetworkBApercolation_v3::clusterPickingProbability() {
+    double N = nodeCount();
+    vector<double> mu_i(_cluster.size());
+    for(size_t i{}; i < _cluster.size(); ++i){
+        mu_i[i] = _cluster[i].numberOfNodes() / N;
+    }
+    return mu_i;
+}
+
+void NetworkBApercolation_v3::setRandomState(size_t seed, bool g) {
+    if(g){
+        std::random_device _random_device;
+        _random_state = _random_device();
+    }else {
+        cerr << "automatic seeding is turned off : line " << __LINE__ << endl;
+        _random_state = seed;
+    }
+
+    _random_generator.seed(_random_state);
+    cout << "random seed NetworkBApercolation_v3 " << _random_state << endl;
+}
+
+std::vector<double> NetworkBApercolation_v3::clusterSizeDistribution() {
+    vector<double> cluster_counts;
+    size_t n{};
+
+    for(size_t i{}; i < _cluster.size(); ++i){
+        n = _cluster[i].numberOfNodes();
+        if (cluster_counts.size() <= n){
+            cluster_counts.resize(n+1);
+        }
+        ++cluster_counts[n];
+    }
+//    double area=0;
+//    for(size_t i{}; i < cluster_counts.size(); ++i){
+//        area += i * cluster_counts[i];
+//    }
+//    cout << "area under curve " << area / getNetworkSize() << endl;
+    return cluster_counts;
 }
 
 

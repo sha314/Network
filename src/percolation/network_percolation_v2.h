@@ -1,30 +1,31 @@
 //
-// Created by shahnoor on 12/26/18.
+// Created by shahnoor on 7/1/19.
 //
 
-#ifndef NETWORK_PERCOLATION_H
-#define NETWORK_PERCOLATION_H
+#ifndef NETWORK_NETWORK_PERCOLATION_V2_H
+#define NETWORK_NETWORK_PERCOLATION_V2_H
 
-
-#include <random>
+#include "../nets/network.h"
 #include "../nets/link.h"
-#include "cluster/cluster.h"
-
+#include "cluster/cluster_v2.h"
+#include "cluster/cluster_v3.h"
 
 /**
- * A generalalized percolation class.
- * Only to be used after extending this class
- * @tparam NET
+ * Random Link percolation on Barabasi-Albert Network model
+ * make it a template class and the template argument is the NetworkBA or NetworkMDA or NetworkRandom
+ *
+ * paradigm shift: clusters are no longer erased instead just clear them so that each nodes contains
+ * cluster id which is the cluster index. Therefore, InverseArray class is not needed here.
  */
-template <class NET>
-class Percolation{
-protected:
+class NetworkBApercolation_v2 {
     size_t _m0, _m;
-    double log_1_by_size{}; // to make calculations easier
-    double time_elapsed{0}; // only for debugging purposes
 
-    // the network frame
-    NET _network_frame;
+    double log_1_by_size{}; // to make calculations easier
+
+    //time measurement variables
+    double _time_placeSelectedLink{};
+protected:
+    NetworkBA _network_frame;
     Link _last_lnk;
     std::vector<Cluster> _cluster;
     int group_id_count{};
@@ -36,6 +37,8 @@ protected:
     double _number_of_occupied_links{};
     size_t _number_of_connected_nodes{}; // not isolated
     size_t _number_of_nodes_in_the_largest_cluster{0};
+    int _last_largest_cluster_id{0};
+    bool _self_cluster_jump{false};
 
     double _current_entropy{};
     double _previous_entropy{};
@@ -48,29 +51,29 @@ protected:
     double _entropy{};
     size_t index_var{};
 
+    std::random_device _random_device;
     std::mt19937 _random_generator;
 
     // methods
     void randomize_v1();
-    void initialize_for_percolation();
+    void initiate(size_t m0, size_t m, size_t size);
     bool placeLink();
     size_t selectLink(); // select links randomly
-    bool occupySelectedLink(size_t pos); // place the selected link
+    bool placeSelectedLink(size_t pos); // place the selected link
 
 public:
 
-    virtual ~Percolation() = default;
-    explicit Percolation() = default;
-    Percolation(size_t m0, size_t m, size_t size);
-
+    virtual ~NetworkBApercolation_v2() = default;
+    NetworkBApercolation_v2() = default;
+    NetworkBApercolation_v2(size_t m0, size_t m, size_t size);
     void initialize_network();
 
     void reset(int i=0);
 
     virtual std::string get_signature() {
         std::stringstream ss;
-        ss << _network_frame.get_signature();
-        ss << "_N_" << nodeCount() << "-";
+        ss << "netrowk_BA_percolation_m0_";
+        ss << _network_frame.get_m0() << "_m_" << _network_frame.get_m() << "_size_" << _network_size << "-";
         return ss.str();
     }
 
@@ -84,7 +87,11 @@ public:
     size_t nodeCount() const { return _network_frame.number_of_nodes();}
     Link lastLink() const {return _last_lnk;}
 
-    double entropy();
+    double entropy_v1();
+    double entropy_v2();
+
+    void subtract_entropy(Link& lnk);
+    void add_entropy(Link& lnk);
 
     void jump(); // calculates jump of entropy and
     double largestEntropyJump()const { return _largest_jump_entropy;}
@@ -97,12 +104,14 @@ public:
      *  cluster management and relabeling
      ***********************************/
     void manageCluster(size_t position);
-
+    void manage_cluster_v0(size_t position);
+    void manage_cluster_v1(size_t position);
+    void relabel_nodes(Cluster& clster, int id);
 
     /***************************************
      * View the network
      *************************************/
-    void viewNodes() { _network_frame.viewNodesExtended();}
+    void viewNodes() { _network_frame.viewNodes();}
     void viewLinks() {_network_frame.view_links();}
     void viewCluster();
     void viewClusterExtended();
@@ -112,30 +121,16 @@ public:
 
     double logOneBySize() const { return log_1_by_size;}
 
-    double time() const {return time_elapsed;}
+    void track_cluster();
+    void track_cluster_v2();
+    bool isSelfClusterJump() {return _self_cluster_jump;}
+
+    void time_summary();
+
+    size_t clusterCount() const;
 };
 
-template <class NET>
-void Percolation<NET>::reset(int i) {
-    index_var = 0;
-    _number_of_occupied_links = 0;
-    _number_of_connected_nodes = 0;
-    _number_of_nodes_in_the_largest_cluster = 0;
-    _entropy = 0;
-    _largest_jump_entropy =0;
-    _previous_entropy = 0;
-    _current_entropy = 0;
-    group_id_count = 0;
-    _last_lnk = {};
-    if(i == 1){
-        // initialize the network again
-        initialize_network();
-    }
-    _randomized_indices = _link_indices;
-    randomize_v1();
-    _cluster.clear();
-    _network_frame.clear_node_id();
-}
 
 
-#endif //NETWORK_PERCOLATION_H
+
+#endif //NETWORK_NETWORK_PERCOLATION_V2_H

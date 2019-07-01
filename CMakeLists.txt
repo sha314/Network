@@ -12,8 +12,12 @@ set(SOURCE_FILES
         src/util/printer.h
         src/util/time_tracking.cpp
         src/util/time_tracking.h
-        src/percolation/cluster.cpp
-        src/percolation/cluster.h
+        src/percolation/cluster/cluster.cpp
+        src/percolation/cluster/cluster.h
+        src/percolation/cluster/cluster_v2.cpp
+        src/percolation/cluster/cluster_v3.cpp
+        src/percolation/cluster/cluster_v2.h
+        src/percolation/cluster/cluster_v3.h
         src/nets/node.cpp
         src/nets/node.h
         src/nets/link.cpp
@@ -31,12 +35,12 @@ set(SOURCE_FILES
         src/nets/network_MDA.cpp
         src/nets/network_BA.cpp
         src/percolation/network_percolation.h
-        src/percolation/network_percolation_reverse.cpp
-        src/percolation/network_percolation_reverse.h
+        src/percolation/reverse/network_percolation_reverse.cpp
+        src/percolation/reverse/network_percolation_reverse.h
         src/percolation/percolation.h
-        src/percolation/network_percolation_explosive.h
+        src/percolation/explosive/network_percolation_explosive.h
         src/percolation/network_percolation_template.h
-        src/percolation/network_percolation_explosive.cpp
-        src/percolation/cluster_v2.cpp src/percolation/cluster_v3.cpp)
+        src/percolation/explosive/network_percolation_explosive.cpp
+        src/percolation/network_percolation_v3.h src/percolation/network_percolation_v2.h src/percolation/network_percolation_v4.h src/percolation/network_percolation_v5.cpp src/percolation/network_percolation_v5.h)
 
 add_executable(networks ${SOURCE_FILES})

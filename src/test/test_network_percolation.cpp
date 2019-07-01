@@ -6,8 +6,10 @@
 #include "../nets/network.h"
 #include "../util/time_tracking.h"
 #include "../percolation/network_percolation.h"
-#include "../percolation/network_percolation_reverse.h"
+#include "../percolation/reverse/network_percolation_reverse.h"
 #include "../percolation/network_percolation_template.h"
+#include "../percolation/network_percolation_v3.h"
+#include "../percolation/explosive/network_percolation_explosive.h"
 //#include "../percolation/network_percolation2.h"
 #include <chrono>
 #include <fstream>

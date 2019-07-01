@@ -7,6 +7,7 @@
 #include <random>
 #include "../nets/network.h"
 #include "network_percolation.h"
+#include "explosive/network_percolation_explosive.h"
 //#include "network_percolation2.h"
 
 using namespace std;

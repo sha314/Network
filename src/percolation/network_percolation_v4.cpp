@@ -6,7 +6,7 @@
 #include <cmath>
 #include <random>
 #include "../nets/network.h"
-#include "network_percolation.h"
+#include "network_percolation_v4.h"
 
 
 using namespace std;

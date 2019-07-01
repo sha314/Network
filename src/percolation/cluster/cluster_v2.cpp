@@ -3,12 +3,9 @@
 //
 
 
-//
-// Created by shahnoor on 8/9/18.
-//
-
 #include <iostream>
 #include "cluster.h"
+#include "cluster_v2.h"
 
 using namespace std;
 

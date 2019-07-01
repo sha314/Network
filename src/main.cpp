@@ -5,6 +5,10 @@
 #include "test/test_network_percolation.h"
 #include "test/network_build.h"
 #include "percolation/network_percolation.h"
+#include "percolation/network_percolation_v2.h"
+#include "percolation/network_percolation_v3.h"
+#include "percolation/network_percolation_v4.h"
+#include "percolation/explosive/network_percolation_explosive.h"
 //#include "percolation/network_percolation2.h"
 #include <algorithm>
 #include <fstream>
