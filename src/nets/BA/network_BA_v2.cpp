@@ -51,6 +51,7 @@ void NetworkBA_v2::initialize() {
                 degree_count[i] += 1;
                 degree_count[j] += 1;
                 _c += 1;
+                ++_link_count;
 
             }
         }
@@ -89,6 +90,7 @@ bool NetworkBA_v2::add_node_v1() {
         degree_count[_N] += 1;
         degree_count[j] += 1;
         ++_c;
+        ++_link_count;
     }
     _preferentially.insert(_preferentially.end(),
                            tmp.begin(), tmp.end());
@@ -115,6 +117,7 @@ bool NetworkBA_v2::add_node_v2() {
         k = _preferentially[rnd];
         m_nodes.insert(k);
     }
+    _link_count += m_nodes.size();
 // then connect the new node to the selected m_nodes
     for(int j: m_nodes){
         network_map_A.emplace_back(_node_index);

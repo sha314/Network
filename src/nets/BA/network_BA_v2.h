@@ -60,6 +60,10 @@ public:
     size_t getRandomState() {return _random_state;};
     void setMaxNetworkSize(size_t N);
     size_t getBlankSize();
+    size_t get_m0()const { return  _m0;}
+    size_t get_m() const { return  _m;}
+    size_t getNodeCount() const { return  _N;}
+    size_t getLinkCount() const { return  _link_count;}
     bool spaceAvailable();
     bool grow(size_t netowk_size);
     bool addNode();
@@ -69,6 +73,8 @@ public:
 
 
     std::vector<double> degreeDistribution();
+    int fromNetworkMapA(uint a) { return network_map_A[a];}
+    int fromNetworkMapB(uint a) { return network_map_B[a];}
 };
 
 

@@ -10,5 +10,6 @@
 
 void test_ba_v2();
 void test_ba_v2_2();
+void test_ba_v2_3();
 
 #endif //NETWORK_TEST_NETWORK_BA_V2_H

@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include "test_network_ba_v2.h"
+#include "../percolation/network_percolation_v5.h"
 
 using namespace std;
 
@@ -33,5 +34,16 @@ void test_ba_v2_2() {
     ba.view();
 
 //    ba.view();
+
+}
+
+void test_ba_v2_3() {
+    NetworkBApercolation_v5 net(3, 1, 100);
+    net.setRandomState(0, false);
+    net.init(false);
+    while(net.placeLink()){
+
+    }
+    net.viewCLusters();
 
 }
