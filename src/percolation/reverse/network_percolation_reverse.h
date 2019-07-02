@@ -11,7 +11,7 @@
 #include <chrono>
 #include <algorithm>
 #include "../cluster/cluster.h"
-#include "../../nets/link.h"
+#include "../../nets/link/link.h"
 
 /**
  * A universal class that can perform random reverse percolation on any network

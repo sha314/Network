@@ -6,7 +6,7 @@
 #define NETWORK_NETWORK_PERCOLATION_V4_H
 
 #include "../nets/network.h"
-#include "../nets/link.h"
+#include "../nets/link/link.h"
 #include "cluster/cluster_v2.h"
 #include "cluster/cluster_v3.h"
 

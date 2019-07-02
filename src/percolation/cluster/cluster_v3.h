@@ -6,8 +6,8 @@
 #define NETWORK_CLUSTER_V3_H
 
 #include <vector>
-#include "../../nets/node.h"
-#include "../../nets/link.h"
+#include "../../nets/node/node.h"
+#include "../../nets/link/link.h"
 
 /**
  * Instead of using Link object it uses LinkIndex to make it memory efficient.

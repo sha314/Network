@@ -9,6 +9,7 @@
 #include "percolation/network_percolation_v3.h"
 #include "percolation/network_percolation_v4.h"
 #include "percolation/explosive/network_percolation_explosive.h"
+#include "test/test_network_ba_v2.h"
 //#include "percolation/network_percolation2.h"
 #include <algorithm>
 #include <fstream>
@@ -86,7 +87,7 @@ void run_in_main(int argc, char* argv[]){
         cout << arguments[i-1] << " : " << argv[i] << endl;
     }
 //    test_sizes(); // 2019.05.26
-    test_component_sizes(); // 2019.05.30
+//    test_component_sizes(); // 2019.05.30
 //    test_network_BA(argc, argv);
 //    test_network_MDA();
 //    network_percolation_global();
@@ -101,7 +102,10 @@ void run_in_main(int argc, char* argv[]){
 //    cout << "cores " << thread::hardware_concurrency() << endl;
 //    explosive_percolation_sum(3, 5000, 5, 100, 0); // testing only
 
-    BA_self_jump(argc, argv);
+//    BA_self_jump(argc, argv);
+    // 2019.07.02
+//    test_ba_v2();
+    test_ba_v2_2();
 
 }
 

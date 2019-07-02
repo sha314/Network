@@ -63,7 +63,7 @@ void NetworkBApercolation_v3::initialize_cluster() {
 void NetworkBApercolation_v3::initialize_network() {
     cout << "Initializing Network ... " << std::flush;
     _network_frame = NetworkBA(_m0, _m);
-    uint i= _m0;
+    size_t i= _m0;
     while (i < _network_size){ // sp that number of nodes is the network size
         _network_frame.addNode();
         ++i;

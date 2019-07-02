@@ -7,7 +7,7 @@
 
 
 #include <random>
-#include "../nets/link.h"
+#include "../nets/link/link.h"
 #include "cluster/cluster.h"
 
 

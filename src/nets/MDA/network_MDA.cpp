@@ -2,7 +2,7 @@
 // Created by shahnoor on 12/24/18.
 //
 
-#include "network.h"
+#include "../network.h"
 
 using namespace std;
 

@@ -6,8 +6,8 @@
 #define NETWORK_CLUSTER_H
 
 #include <vector>
-#include "../../nets/node.h"
-#include "../../nets/link.h"
+#include "../../nets/node/node.h"
+#include "../../nets/link/link.h"
 
 /**
  * Cluster of Links and Nodes

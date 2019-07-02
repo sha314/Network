@@ -9,8 +9,8 @@
 #include <vector>
 #include <iostream>
 #include <sstream>
-#include "node.h"
-#include "link.h"
+#include "node/node.h"
+#include "link/link.h"
 #include "../percolation/cluster/cluster.h"
 #include "../ext_libs/inverse_array.h"
 #include <random>

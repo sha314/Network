@@ -10,7 +10,7 @@
 #include <algorithm>
 #include <iostream>
 #include "cluster/cluster.h"
-#include "../nets/link.h"
+#include "../nets/link/link.h"
 #include <chrono>
 
 /**

@@ -50,7 +50,7 @@ void NetworkBApercolation_v2::initiate(size_t m0, size_t m, size_t size) {
 void NetworkBApercolation_v2::initialize_network() {
     cout << "Initializing Network ... " << std::flush;
     _network_frame = NetworkBA(_m0, _m);
-    uint i= _m0;
+    size_t i= _m0;
     while (i < _network_size){ // sp that number of nodes is the network size
         _network_frame.addNode();
         ++i;
