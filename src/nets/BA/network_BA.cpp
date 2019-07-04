@@ -67,7 +67,7 @@ void NetworkBA::add_node_v1() {
     }
 
     auto t0 = chrono::_V2::system_clock::now();
-    select_m_links_preferentially_v1(sz);
+    select_m_nodes_preferentially_v1(sz);
 
     auto t1 = chrono::_V2::system_clock::now();
     chrono::duration<double> drtion = t1 - t0;
@@ -84,7 +84,7 @@ void NetworkBA::add_node_v1() {
 void NetworkBA::connect_with_m_nodes_v1(uint sz) {
     uint i{};
     for(uint k{}; k < _m; ++k){ // 0.058 sec when total time is 19.05 sec. ~0.25 % of total time
-        i = _m_links[k];
+        i = _m_nodes[k];
         _nodes[sz].addNeighbor(i);
         _nodes[i].addNeighbor(sz);
 
@@ -103,7 +103,7 @@ void NetworkBA::connect_with_m_nodes_v1(uint sz) {
  * selecting m links preferentially.
  * set m_links such that there is no repetition.
  */
-void NetworkBA::select_m_links_preferentially_v1(uint sz) {
+void NetworkBA::select_m_nodes_preferentially_v1(uint sz) {
     double p;
     double tmp{};
     for(uint j{}; j < _m; ++j){
@@ -111,7 +111,7 @@ void NetworkBA::select_m_links_preferentially_v1(uint sz) {
         for(uint k{}; k < sz; ++k) {
             tmp += _nodes[_node_indices[k]].neighborCount() / _total_degree;
             if(tmp >= p) {
-                _m_links[j] = _node_indices[k];
+                _m_nodes[j] = _node_indices[k];
                 _node_indices.erase(_node_indices.begin() + k);
                 break;
             }
@@ -133,7 +133,7 @@ void NetworkBA::add_node_v2() {
 
     // set m_links such that there is no repetition
     // selecting m links preferentially
-    select_m_links_preferentially_v2(sz);
+    select_m_nodes_preferentially_v2(sz);
 //    select_m_links_preferentially_v3_omp(sz);
     auto t1 = chrono::_V2::system_clock::now();
     chrono::duration<double> drtion = t1 - t0;
@@ -173,7 +173,7 @@ void NetworkBA::add_node_v3() {
 
     // set m_links such that there is no repetition
     // selecting m links preferentially
-    select_m_links_preferentially_v3(sz);
+    select_m_nodes_preferentially_v3(sz);
 
 //    auto t1 = chrono::_V2::system_clock::now();
 //    chrono::duration<double> drtion = t1 - t0;
@@ -193,7 +193,7 @@ void NetworkBA::connect_with_m_nodes_v2(uint sz) {
     uint old_size = _links.size();
     _links.resize(old_size + _m);
     for(uint k{}; k < _m; ++k){ // 0.058 sec when total time is 19.05 sec. ~0.25 % of total time
-        i = _m_links[k];
+        i = _m_nodes[k];
         _nodes[sz].addNeighbor(i);
         _nodes[i].addNeighbor(sz);
 
@@ -216,7 +216,7 @@ void NetworkBA::connect_with_m_nodes_v3(uint sz) {
     size_t link_old_size = _links.size();
     _links.resize(link_old_size + _m);
     for(size_t k{}; k < _m; ++k){ // 0.058 sec when total time is 19.05 sec. ~0.25 % of total time
-        i = _m_links[k];
+        i = _m_nodes[k];
         _nodes[sz].addNeighbor(i);
         _nodes[i].addNeighbor(sz);
 
@@ -246,7 +246,7 @@ void NetworkBA::connect_with_m_nodes_v4(uint sz) {
     size_t link_old_size = _links.size();
     _links.resize(link_old_size + _m);
     for(uint k{}; k < _m; ++k){ // 0.058 sec when total time is 19.05 sec. ~0.25 % of total time
-        i = _m_links[k];
+        i = _m_nodes[k];
         _nodes[sz].addNeighbor(i);
         _nodes[i].addNeighbor(sz);
 
@@ -272,7 +272,7 @@ void NetworkBA::connect_with_m_nodes_v4(uint sz) {
  * set m_links such that there is no repetition.
  * selecting m links preferentially.
  */
-void NetworkBA::select_m_links_preferentially_v2(uint sz) {
+void NetworkBA::select_m_nodes_preferentially_v2(uint sz) {
     double p;
     double tmp{};
     for(uint j{}; j < _m; ++j){
@@ -284,7 +284,7 @@ void NetworkBA::select_m_links_preferentially_v2(uint sz) {
 //                    cout << "already selected " << __LINE__ << endl;
                     continue;
                 }
-                _m_links[j] = k;
+                _m_nodes[j] = k;
                 _nodes[k].set_current_group(sz);
                 break;
             }
@@ -307,11 +307,11 @@ void NetworkBA::select_m_links_preferentially_v2(uint sz) {
  * selecting m links preferentially.
  * Much efficient than previous versions
  */
-void NetworkBA::select_m_links_preferentially_v3(uint sz) {
+void NetworkBA::select_m_nodes_preferentially_v3(uint sz) {
     size_t r, index;
     for(size_t j=0; j < _m; ++j){
 //        r = rand() % _preferentially.size();
-        r = _random_generator() % _preferentially.size();
+        r = _random() % _preferentially.size();
         index = _preferentially[r];
         if(_nodes[index].get_current_group() == sz){
 //            cout << index << " id already selected " << __LINE__ << endl;
@@ -319,7 +319,7 @@ void NetworkBA::select_m_links_preferentially_v3(uint sz) {
             continue;
         }
 //        cout << "selecting " << index << endl;
-        _m_links[j] = index;
+        _m_nodes[j] = index;
 //        _nodes[index].set_current_group(sz); // is it necessary??
     }
 
@@ -331,15 +331,11 @@ void NetworkBA::select_m_links_preferentially_v3(uint sz) {
 //    cout << '}' << endl;
 }
 
-void NetworkBA::select_m_links_preferentially_v4(uint sz) {
+void NetworkBA::select_m_nodes_preferentially_v4(uint sz) {
     size_t r, index;
-
-    std::random_device rd;  //Will be used to obtain a seed for the random number engine
-    std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with _random_device()
     std::uniform_int_distribution<size_t> dis(0, _preferentially.size()-1);
-
     for(size_t j=0; j < _m; ++j){
-        r =  dis(gen);
+        r =  dis(_random);
         index = _preferentially[r];
         if(_nodes[index].get_current_group() == sz){
 //            cout << index << " id already selected " << __LINE__ << endl;
@@ -347,7 +343,7 @@ void NetworkBA::select_m_links_preferentially_v4(uint sz) {
             continue;
         }
 //        cout << "selecting " << index << endl;
-        _m_links[j] = index;
+        _m_nodes[j] = index;
         _nodes[index].set_current_group(sz);
     }
 
@@ -406,4 +402,17 @@ double NetworkBA::size_in_MB() {
 void NetworkBA::shrink_to_fit() { // frequently calling this function will reduce performance
     _preferentially.shrink_to_fit();
     Network::shrink_to_fit();
+}
+
+
+bool NetworkBA::grow(size_t netowk_size) {
+    if(netowk_size <= _N){
+        cout << "cannot grow" << endl;
+        return false;
+    }
+    for(size_t i{_N}; i < netowk_size; ++i){
+        addNode();
+    }
+    _N = netowk_size;
+    return true;
 }

@@ -20,12 +20,12 @@ void NetworkMDA::add_node_v0() {
     cout << "mediator :{";
     if(selected_links.size() < _m){
         // randomly select one node, the mediator
-        auto r = _random_generator() % sz;
+        auto r = _random() % sz;
         cout << r << ',';
         // get the list of the nodes connected to the mediator
         auto neighbors = _nodes[r].get_neighbors();
         // select one of the neighbor to connect with
-        auto r2 = _random_generator() % neighbors.size();
+        auto r2 = _random() % neighbors.size();
         selected_links.insert(neighbors[r2]);
 
         // what if I select the same mediator again or
@@ -41,8 +41,8 @@ void NetworkMDA::add_node_v0() {
     cout << '}' << endl;
 
     // inserting selected links to the vector
-    _m_links.clear();
-    _m_links.insert(_m_links.end(), selected_links.begin(), selected_links.end());
+    _m_nodes.clear();
+    _m_nodes.insert(_m_nodes.end(), selected_links.begin(), selected_links.end());
 
     // adding new node
     _nodes.push_back({sz});
@@ -56,11 +56,11 @@ void NetworkMDA::add_node_v1() {
     // select m nodes using MDA rule to connect with
     if(selected_links.size() < _m){
         // randomly select one node, the mediator
-        auto r = _random_generator() % sz;
+        auto r = _random() % sz;
         // get the list of the nodes connected to the mediator
         auto neighbors = _nodes[r].get_neighbors();
         // select one of the neighbor to connect with
-        auto r2 = _random_generator() % neighbors.size();
+        auto r2 = _random() % neighbors.size();
         selected_links.insert(neighbors[r2]);
 
         // what if I select the same mediator again or
@@ -69,8 +69,8 @@ void NetworkMDA::add_node_v1() {
     }
 
     // inserting selected links to the vector
-    _m_links.clear();
-    _m_links.insert(_m_links.end(), selected_links.begin(), selected_links.end());
+    _m_nodes.clear();
+    _m_nodes.insert(_m_nodes.end(), selected_links.begin(), selected_links.end());
 
     // adding new node
     _nodes.push_back({sz});
@@ -87,7 +87,7 @@ void NetworkMDA::connect_with_m_nodes_v0(uint sz) {
     size_t link_old_size = _links.size();
     _links.resize(link_old_size + _m);
     for(size_t k{}; k < _m; ++k){ // 0.058 sec when total time is 19.05 sec. ~0.25 % of total time
-        i = _m_links[k];
+        i = _m_nodes[k];
         _nodes[sz].addNeighbor(i);
         _nodes[i].addNeighbor(sz);
 

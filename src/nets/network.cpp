@@ -21,22 +21,10 @@ using  namespace std;
  * @param m  : number of links new nodes are born with
  */
 Network::Network(uint m0, uint m) {
-    if (m0 <= m){
-        _m0 = m + m0;
-        _m = m;
-    }else{
-        _m0 = m0;
-        _m = m;
-    }
-    if(_m0 < 3){_m0=3;}
-
-    std::random_device _random_device;
-    unsigned long random_seed  = 1;
-    random_seed  = _random_device();
-//    cerr << "automatic seeding is turned off : line " << __LINE__ << endl;
-    cout << "Random seed Network: " << random_seed << endl;
-    _random_generator.seed(random_seed); // seeding
-
+    _m0 = m0;
+    _m = m;
+    if (m0 <= m){ _m0 += m;}
+    if (_m0 < 3){_m0=3;}
 //    initialize();
     initialize_v2();
 
@@ -56,7 +44,7 @@ void Network::initialize() {
         _total_degree += 2;
         _links.push_back({k, i});
     }
-    _m_links.resize(_m);
+    _m_nodes.resize(_m);
 
 }
 /**
@@ -80,7 +68,7 @@ void Network::initialize_v2() {
             _links.push_back({i, k});
         }
     }
-    _m_links.resize(_m);
+    _m_nodes.resize(_m);
 
 }
 
@@ -135,7 +123,7 @@ void Network::add_node_v1() {
     // setting m links in the netrowk
     uint i{};
     for(uint k{}; k < _m; ++k){
-        r = _random_generator() % _node_indices.size();
+        r = _random() % _node_indices.size();
         i = _node_indices[r];
         _node_indices.erase(_node_indices.begin() + r); // so that its not get selected again
         _nodes[i].addNeighbor(sz2);
@@ -152,7 +140,7 @@ void Network::add_node_v2() {
     _nodes.push_back({sz2}); // add node with id equal to the size of the _nodes
 
     auto t0 = chrono::system_clock::now();
-    std::shuffle(_node_indices.begin(), _node_indices.end(), _random_generator);
+    std::shuffle(_node_indices.begin(), _node_indices.end(), _random);
     auto t1 = chrono::system_clock::now();
     shuffle_time += (t1-t0);
     // set m_links such that there is no repetition
@@ -303,7 +291,7 @@ double Network::size_in_MB() {
 
 
 //    sz += sizeof(std::vector<uint>) + sizeof(std::vector<uint>);
-    sz += sizeof(uint) * _node_indices.capacity() + sizeof(uint) * _m_links.capacity(); // most important
+    sz += sizeof(uint) * _node_indices.capacity() + sizeof(uint) * _m_nodes.capacity(); // most important
 //    sz += sizeof(uint)*2 + sizeof(double);
 //    sz += sizeof(std::mt19937);
 //    sz += sizeof(std::chrono::duration<double>);
@@ -326,7 +314,17 @@ void Network::shrink_to_fit() {
     }
     _links.shrink_to_fit();
     _node_indices.shrink_to_fit();
-    _m_links.shrink_to_fit();
+    _m_nodes.shrink_to_fit();
+}
+
+void Network::setRandomState(size_t seed, bool g) {
+    _random_state = seed;
+    if(g){
+        std::random_device rd;
+        _random_state = rd();
+    }
+    cout << "seed Network: " << _random_state << endl;
+    _random.seed(_random_state); // seeding
 }
 
 

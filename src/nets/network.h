@@ -36,9 +36,10 @@ protected:
     // for selecting m links
     std::vector<uint> _node_indices;
 //    std::unordered_set<uint> _m_links; // so that repetitionis automatically ignored
-    std::vector<uint> _m_links;
+    std::vector<uint> _m_nodes;
     // random engine
-    std::mt19937 _random_generator;
+    size_t _random_state{};
+    std::mt19937 _random;
     std::chrono::duration<double> shuffle_time=chrono::duration<double>(0);
 public:
     ~Network() = default;
@@ -111,6 +112,8 @@ public:
     double size_in_MB();
 
     void shrink_to_fit();
+    void setRandomState(size_t seed=0, bool g=true);
+    size_t getRandomState() {return _random_state;};
 
 };
 
@@ -120,7 +123,7 @@ public:
  */
 class NetworkBA : public Network{
     double time{};
-
+    size_t _N{}; // current network size
     // holds the index of node.
     // number of neighborCount the nodes have is the number of repetition of that index
     // helps efficiently selecting nodes preferentially
@@ -134,10 +137,10 @@ class NetworkBA : public Network{
     void add_node_v2();
     void add_node_v3();
 
-    void select_m_links_preferentially_v1(uint sz) ;
-    void select_m_links_preferentially_v2(uint sz) ;
-    void select_m_links_preferentially_v3(uint sz) ;
-    void select_m_links_preferentially_v4(uint sz) ;
+    void select_m_nodes_preferentially_v1(uint sz) ;
+    void select_m_nodes_preferentially_v2(uint sz) ;
+    void select_m_nodes_preferentially_v3(uint sz) ;
+    void select_m_nodes_preferentially_v4(uint sz) ;
 
     void connect_with_m_nodes_v1(uint sz);
     void connect_with_m_nodes_v2(uint sz);
@@ -148,7 +151,7 @@ public:
     virtual ~NetworkBA() = default;
     NetworkBA() = default;
     NetworkBA(size_t m0, size_t m):Network(m0, m) {
-
+        _N = get_m0();
         initialize_preferential();
     }
 
@@ -178,6 +181,8 @@ public:
     double size_in_MB();
 
     void shrink_to_fit(); // since pushback allocates extra memory, this function resizes it to minimum
+
+    bool grow(size_t netowk_size);
 
 };
 

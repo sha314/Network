@@ -21,21 +21,21 @@ void test_network_BA(int argc, char * argv[]){
 //    int M = atoi(argv[3]);
 
     NetworkBA net(m, m);
-
+    net.setRandomState(0, false);
+    net.grow(N);
 //    double sz = net.size_in_MB();
 //    cout << "NetworkBA size " << sz << " MB" << endl;
 //    net.viewLinks();
 
-
 //    net.viewNodes();
 //    net.view_links();
-    size_t i=0;
-
-    while(i < N) {
-        net.addNode();
-//        net.viewNodes();
-        ++i;
-    }
+//    size_t i=0;
+//
+//    while(i < N) {
+//        net.addNode();
+////        net.viewNodes();
+//        ++i;
+//    }
 //    net.shrink_to_fit();
 //    net.viewNodes();
 //    net.view_links();

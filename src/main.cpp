@@ -88,7 +88,7 @@ void run_in_main(int argc, char* argv[]){
     }
 //    test_sizes(); // 2019.05.26
 //    test_component_sizes(); // 2019.05.30
-//    test_network_BA(argc, argv);
+    test_network_BA(argc, argv);
 //    test_network_MDA();
 //    network_percolation_global();
 //    network_percolationReverse_global();
@@ -105,7 +105,7 @@ void run_in_main(int argc, char* argv[]){
 //    BA_self_jump(argc, argv);
     // 2019.07.02
 //    test_ba_v2();
-    test_ba_v2_2(argc, argv);
+//    test_ba_v2_2(argc, argv);
 //    test_ba_v2_3();
 
 }
