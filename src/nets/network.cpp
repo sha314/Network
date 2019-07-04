@@ -22,7 +22,7 @@ using  namespace std;
  */
 Network::Network(uint m0, uint m) {
     if (m0 <= m){
-        _m0 = m + 1;
+        _m0 = m + m0;
         _m = m;
     }else{
         _m0 = m0;

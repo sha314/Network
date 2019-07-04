@@ -22,8 +22,8 @@ void test_network_BA(int argc, char * argv[]){
 
     NetworkBA net(m, m);
 
-    double sz = net.size_in_MB();
-    cout << "NetworkBA size " << sz << " MB" << endl;
+//    double sz = net.size_in_MB();
+//    cout << "NetworkBA size " << sz << " MB" << endl;
 //    net.viewLinks();
 
 
@@ -36,7 +36,7 @@ void test_network_BA(int argc, char * argv[]){
 //        net.viewNodes();
         ++i;
     }
-    net.shrink_to_fit();
+//    net.shrink_to_fit();
 //    net.viewNodes();
 //    net.view_links();
 //
@@ -46,10 +46,10 @@ void test_network_BA(int argc, char * argv[]){
 //    net.viewNodes();
 //    net.addNode();
 //    net.viewNodes();
-    sz = net.size_in_MB();
-    cout << "Last NetworkBA size " << sz << " MB" << endl;
+//    sz = net.size_in_MB();
+//    cout << "Last NetworkBA size " << sz << " MB" << endl;
 //    cout << "NetworkBA " << sizeof(NetworkBA) << endl;
-    cin.get(); // pausing program
+//    cin.get(); // pausing program
 
 }
 

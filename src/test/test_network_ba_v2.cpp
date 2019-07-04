@@ -26,12 +26,16 @@ void test_ba_v2() {
 }
 
 
-void test_ba_v2_2() {
-    NetworkBA_v2 ba(5, 3);
+void test_ba_v2_2(int argc, char* argv[]) {
+
+    int m = atoi(argv[1]);
+    int N = atoi(argv[2]);
+
+    NetworkBA_v2 ba(5, m);
     ba.setRandomState(0, false);
-    ba.view();
-    ba.grow(100);
-    ba.view();
+//    ba.view();
+    ba.grow(N);
+//    ba.view();
 
 //    ba.view();
 
