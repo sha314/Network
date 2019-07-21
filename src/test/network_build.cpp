@@ -23,6 +23,7 @@ void test_network_BA(int argc, char * argv[]){
     NetworkBA net(m, m);
     net.setRandomState(0, false);
     net.grow(N);
+    net.timeElapsed();
 //    double sz = net.size_in_MB();
 //    cout << "NetworkBA size " << sz << " MB" << endl;
 //    net.viewLinks();

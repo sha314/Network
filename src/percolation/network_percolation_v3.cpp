@@ -30,11 +30,11 @@ NetworkBApercolation_v3::NetworkBApercolation_v3(size_t m0, size_t m, size_t siz
 }
 
 void NetworkBApercolation_v3::initiate(size_t m0, size_t m, size_t size) {
-    _m0 = m0;
+    _m0 = (m > m0)? m +m0 : m0;
     _m = m;
-    _network_size = size+_m0;
+    _network_size = size;
 
-    initialize_network();
+    initialize_network(); // called as a safe guard. just in case the user forgets to call it after initializing random state
     initialize_cluster();
 
     _link_count = _network_frame.getNumberOfLinks();
@@ -63,6 +63,8 @@ void NetworkBApercolation_v3::initialize_cluster() {
 void NetworkBApercolation_v3::initialize_network() {
     cout << "Initializing Network ... " << std::flush;
     _network_frame = NetworkBA(_m0, _m);
+    _m0 = _network_frame.get_m0();;
+    _m = _network_frame.get_m();
     size_t i= _m0;
     while (i < _network_size){ // sp that number of nodes is the network size
         _network_frame.addNode();

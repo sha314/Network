@@ -71,7 +71,7 @@ void NetworkBA::add_node_v1() {
 
     auto t1 = chrono::_V2::system_clock::now();
     chrono::duration<double> drtion = t1 - t0;
-    time += drtion.count();
+    time_select_m_nodes_preferentially_v3 += drtion.count();
     // adding new node
     _nodes.push_back({sz});
 
@@ -137,7 +137,7 @@ void NetworkBA::add_node_v2() {
 //    select_m_links_preferentially_v3_omp(sz);
     auto t1 = chrono::_V2::system_clock::now();
     chrono::duration<double> drtion = t1 - t0;
-    time += drtion.count();
+    time_select_m_nodes_preferentially_v3 += drtion.count();
 
     // adding new node
     _nodes.push_back({sz});
@@ -169,21 +169,25 @@ void NetworkBA::add_node_v2() {
  */
 void NetworkBA::add_node_v3() {
     uint sz = _nodes.size();
-//    auto t0 = chrono::_V2::system_clock::now();
+    auto t0 = chrono::_V2::system_clock::now();
 
     // set m_links such that there is no repetition
     // selecting m links preferentially
     select_m_nodes_preferentially_v3(sz);
 
-//    auto t1 = chrono::_V2::system_clock::now();
-//    chrono::duration<double> drtion = t1 - t0;
-//    time += drtion.count();
+    auto t1 = chrono::_V2::system_clock::now();
+    chrono::duration<double> drtion = t1 - t0;
+    time_select_m_nodes_preferentially_v3 += drtion.count();
 
     // adding new node
     _nodes.push_back({sz});
 
     // connecting new node with m preferentially selected links
+    t0 = chrono::_V2::system_clock::now();
     connect_with_m_nodes_v3(sz);
+    t1 = chrono::_V2::system_clock::now();
+    drtion = t1 - t0;
+    time_connect_with_m_nodes_v3 += drtion.count();
 
 }
 
@@ -415,4 +419,10 @@ bool NetworkBA::grow(size_t netowk_size) {
     }
     _N = netowk_size;
     return true;
+}
+
+void NetworkBA::timeElapsed() {
+    cout << "time_select_m_nodes_preferentially_v3 " << time_select_m_nodes_preferentially_v3 << " sec" << endl;
+    cout << "time_connect_with_m_nodes_v3 " << time_connect_with_m_nodes_v3 << " sec" << endl;
+    cout << "Total " << time_select_m_nodes_preferentially_v3 +  time_connect_with_m_nodes_v3 << " sec" << endl;
 }

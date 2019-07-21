@@ -122,7 +122,8 @@ public:
  *
  */
 class NetworkBA : public Network{
-    double time{};
+    double time_select_m_nodes_preferentially_v3{};
+    double time_connect_with_m_nodes_v3{};
     size_t _N{}; // current network size
     // holds the index of node.
     // number of neighborCount the nodes have is the number of repetition of that index
@@ -160,7 +161,7 @@ public:
     void reset();
 
     void addNode();
-    void timeElapsed() {std::cout << time << " sec" << std::endl;}
+    void timeElapsed() ;
     void view_preferentially();
 
     std::string get_signature() {

@@ -81,14 +81,14 @@ void test_component_sizes() {
  * @param argv
  */
 void run_in_main(int argc, char* argv[]){
-    vector<string> arguments{"m","N","M"};
+    vector<string> arguments{"m","N","M", "Ensemble"};
     cout << "Arguments " << endl;
     for(int i{1}; i < argc; ++i){
         cout << arguments[i-1] << " : " << argv[i] << endl;
     }
 //    test_sizes(); // 2019.05.26
 //    test_component_sizes(); // 2019.05.30
-    test_network_BA(argc, argv);
+//    test_network_BA(argc, argv);
 //    test_network_MDA();
 //    network_percolation_global();
 //    network_percolationReverse_global();
@@ -107,6 +107,9 @@ void run_in_main(int argc, char* argv[]){
 //    test_ba_v2();
 //    test_ba_v2_2(argc, argv);
 //    test_ba_v2_3();
+    // 2019.07.20
+//    test_NetworkBApercolationExplosive_v3(argc, argv);
+    test_NetworkBApercolationExplosive_v3_jump(argc, argv);
 
 }
 
