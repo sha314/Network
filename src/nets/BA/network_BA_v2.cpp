@@ -115,9 +115,10 @@ bool NetworkBA_v2::add_node_v2() {
 // since  each  new node  comes with  m  new links
         rnd = _random() % _preferentially.size();
         k = _preferentially[rnd];
-        m_nodes.insert(k);
+        m_nodes.insert(std::move(k));
     }
     _link_count += m_nodes.size();
+    if(degree_count.size()>= _N) degree_count.resize(_N + 10);
 // then connect the new node to the selected m_nodes
     for(int j: m_nodes){
         network_map_A.emplace_back(_node_index);
@@ -180,4 +181,10 @@ size_t NetworkBA_v2::getBlankSize() {
 
 bool NetworkBA_v2::spaceAvailable(){
     return _N_max > _N;
+}
+
+void NetworkBA_v2::reset() {
+    degree_count.clear();
+    initialize();
+
 }

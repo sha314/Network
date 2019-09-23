@@ -109,8 +109,8 @@ void run_in_main(int argc, char* argv[]){
 //    test_ba_v2_3();
     // 2019.07.20
 //    test_NetworkBApercolationExplosive_v3(argc, argv);
-    test_NetworkBApercolationExplosive_v3_jump(argc, argv);
-
+//    test_NetworkBApercolationExplosive_v3_jump(argc, argv);
+    test_v5(argc,argv);
 }
 
 /**

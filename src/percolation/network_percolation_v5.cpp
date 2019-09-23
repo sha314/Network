@@ -167,3 +167,23 @@ void NetworkBApercolation_v5::viewCLusters() {
     cout << "}" << endl;
 
 }
+
+void NetworkBApercolation_v5::initialize_network() {
+    cout << "Initializing Network ... " << std::flush;
+//    _network_frame.grow(_N);
+    cout << "done." << endl;
+}
+
+
+void NetworkBApercolation_v5::reset(int i) {
+//    cout << "reset NetworkBApercolation_v3: line " <<__LINE__ << endl;
+
+
+    if(i == 1){
+        // initialize the network again
+        _network_frame.reset(); // this will do the trick
+        _network_frame.grow(_N);
+//        initialize_network();
+    }
+
+}

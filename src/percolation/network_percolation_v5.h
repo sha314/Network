@@ -49,6 +49,7 @@ public:
     void setRandomState(size_t seed=0, bool g=true);
     size_t getRandomState() {return _random_state;};
     void init(bool g=true);
+    void reset(int i);
 
     int findRoot(int a);
     int find_root_v1(int a);
@@ -62,6 +63,12 @@ public:
     bool placeLink();
     double relativeLinkDensity() { return double(occupied_link_count)/_network_frame.getLinkCount();};
     void viewCLusters();
+
+    void initialize_network();
+    void initializeNetwork() {initialize_network();};
+
+    size_t nodeCount(){return _network_frame.getNodeCount();}
+    size_t linkCount(){return _network_frame.getLinkCount();}
 };
 
 

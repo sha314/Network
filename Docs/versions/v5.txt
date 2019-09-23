@@ -1,3 +1,17 @@
 git branch : v5
 
 digonto vai technique
+
+Faster and most importantly it is memory efficient
+
+##
+NetworkBA_v2
+for m=5 only
+
+N       Time        Mem
+50K     0.147 sec
+100K    0.305 sec
+1M      3.60  sec   ~75 MB
+
+
+##

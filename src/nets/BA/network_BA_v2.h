@@ -58,6 +58,7 @@ public:
     explicit NetworkBA_v2(size_t m0=3, size_t m=1);
     void setRandomState(size_t seed=0, bool g=true);
     size_t getRandomState() {return _random_state;};
+    void reset();
     void setMaxNetworkSize(size_t N);
     size_t getBlankSize();
     size_t get_m0()const { return  _m0;}
@@ -75,6 +76,8 @@ public:
     std::vector<double> degreeDistribution();
     int fromNetworkMapA(uint a) { return network_map_A[a];}
     int fromNetworkMapB(uint a) { return network_map_B[a];}
+
+    void clear_preferentially(){_preferentially.clear();}
 };
 
 
