@@ -1,3 +1,12 @@
 git branch : v5
 
-digonto vai technique
+digonto vai technique.
+
+Theoritically v5 is memory efficient.
+
+Size        Mem         Time
+10000
+50000
+100000
+500000
+1000000

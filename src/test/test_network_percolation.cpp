@@ -10,6 +10,7 @@
 #include "../percolation/network_percolation_template.h"
 #include "../percolation/network_percolation_v3.h"
 #include "../percolation/explosive/network_percolation_explosive.h"
+#include "../percolation/network_percolation_v5.h"
 //#include "../percolation/network_percolation2.h"
 #include <chrono>
 #include <fstream>
@@ -560,5 +561,85 @@ void test_NetworkBApercolationExplosive_v3_jump(int argc, char **argv){
         fout_jump << entropy_jump[k] << '\t' << entropy_jump_pc[k] << endl;
     }
     fout_jump.close();
+
+}
+
+
+void test_v5(int argc, char **argv) {
+    if(argc < 5 ){
+        cout << "argv[1] == m" << endl;
+        cout << "argv[2] == N" << endl;
+        cout << "argv[3] == M" << endl;
+        cout << "argv[4] == Ensemble" << endl;
+        return;
+    }
+    int m = atoi(argv[1]);
+    int N = atoi(argv[2]);
+    int M = atoi(argv[3]);
+//    int ensemble_size = atoi(argv[4]);
+
+    NetworkBA_v2 net(m, m);
+    net.setRandomState(0, false);
+
+    for(size_t i{}; i < N; ++i) {
+//        cout << "i " << i << endl;
+        net.addNode();
+    }
+//    cout << "Hi" << endl;
+    cout << net.getLinkCount() << endl;
+    cout << net.getNodeCount() << endl;
+
+
+//    NetworkBApercolation_v5 net(m, m, N, M);
+//    net.setRandomState(0, true);
+//    net.initializeNetwork();
+//
+//    cout << net.nodeCount()  << ", " << net.linkCount() << ", " << endl;
+//    vector<double> entropy_jump(ensemble_size), entropy_jump_pc(ensemble_size);
+//    for (size_t k{}; k < ensemble_size; ++k) {
+//        auto t_start= chrono::_V2::system_clock::now();
+//
+//        net.reset();
+////        _network_frame.viewNodes();
+////        _network_frame.viewLinks();
+////        _network_frame.viewClusterExtended();
+//
+//        size_t i{};
+//        while (net.occupyLink()) {
+//            net.entropy_v2();
+//            net.jump();
+//            ++i;
+////            _network_frame.viewClusterExtended();
+//        }
+//        entropy_jump[k] = net.largestEntropyJump();
+//        entropy_jump_pc[k] = net.largestEntropyJump_pc();
+////        cout << _network_frame.largestEntropyJump() << " at " << _network_frame.largestEntropyJump_pc() << endl;
+//        auto t_end= chrono::_V2::system_clock::now();
+//        chrono::duration<double> drtion = t_end - t_start;
+//        cout << "iteration " << k << " : time elapsed " << drtion.count() << " sec" << endl;
+//    }
+//
+//    auto tm = currentTime();
+//    string signature = net.get_signature();
+//    string filename_jump = signature + "_entropy_jump_" + tm;
+//    stringstream ss;
+//    ss << "{"
+//       << R"*("signature":")*" << signature << "\""
+//       << R"*(,"m":)*" << m
+//       << R"*(,"network_size":)*" << N
+//       << R"*(,"number_of_links":)*" << net.linkCount()
+//       << R"*(,"number_of_nodes":)*" << net.nodeCount()
+//       << R"*(,"M":)*" << M
+//       << R"*(,"ensemble_size":)*" << ensemble_size
+//       << R"*(,"date":")*" << tm << "\""
+//       << "}";
+//
+//    ofstream fout_jump(filename_jump);
+//    fout_jump << '#' << ss.str() << endl;
+//    fout_jump << "#<largest entropy jump>\t<p>" << endl;
+//    for(size_t k{}; k < ensemble_size ; ++k){
+//        fout_jump << entropy_jump[k] << '\t' << entropy_jump_pc[k] << endl;
+//    }
+//    fout_jump.close();
 
 }
