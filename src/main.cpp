@@ -92,6 +92,7 @@ void run_in_main(int argc, char* argv[]){
 //    degree_distribution_BA_v2(argc, argv); // 2019.05.21
 //    network_percolation(argc, argv);
 //    network_percolation_explosive(argc, argv);
+    network_percolation_explosive_v2(argc, argv); // 2019.09.25
 //
 //    cout << "cores " << thread::hardware_concurrency() << endl;
 //    explosive_percolation_sum(3, 5000, 5, 100, 0); // testing only
@@ -99,7 +100,7 @@ void run_in_main(int argc, char* argv[]){
 //    BA_order_parameter_jump(argc, argv);
 //    BA_entropy_jump_ensemble(argc, argv);
 
-    clusterSizeDistribution(argc, argv); // added 2019.06.22
+//    clusterSizeDistribution(argc, argv); // added 2019.06.22
 
 }
 

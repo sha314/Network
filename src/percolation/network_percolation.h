@@ -209,6 +209,7 @@ public:
     size_t link_for_min_cluster_product_rule(size_t start_at=0);
     size_t link_for_min_cluster_sum_product(size_t start_at=0); // both sum and product rule
     size_t link_for_min_cluster_sum_product_v2(size_t start_at=0); // both sum and product rule and randomly chooses from _randomized_link_indices
+    size_t link_for_min_cluster_sum_product_v3_adaptive(double tc, size_t start_at=0); //
     // TODO write function that take a lambda function and executes as it says
     size_t selectLink(char rule);
     size_t selectLink_v2();

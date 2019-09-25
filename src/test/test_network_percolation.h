@@ -14,6 +14,7 @@ void network_percolation(int argc, char* argv[]);
 void  explosive_percolation_sum(
         uint m, uint network_size, uint M, uint ensemble_size, size_t th_id);
 void network_percolation_explosive(int argc, char* argv[]);
+void network_percolation_explosive_v2(int argc, char** argv);
 
 void network_percolation_global();
 

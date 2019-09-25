@@ -15,9 +15,9 @@ using namespace std;
 /*************************
  * Percolation on BA network
  */
-NetworkBApercolation_v3::NetworkBApercolation_v3(size_t m0, size_t m, size_t size)
+NetworkBApercolation_v3::NetworkBApercolation_v3(size_t m0, size_t m, size_t size_max)
 {
-    initiate(m0, m, size);
+    initiate(m0, m, size_max);
 ////    size_t seed = 0;
 ////    cerr << "automatic seeding is turned off : line " << __LINE__ << endl;
 //    auto seed = _random_device();
@@ -32,7 +32,8 @@ NetworkBApercolation_v3::NetworkBApercolation_v3(size_t m0, size_t m, size_t siz
 void NetworkBApercolation_v3::initiate(size_t m0, size_t m, size_t size) {
     _m0 = m0;
     _m = m;
-    _network_size = size+_m0;
+//    _network_size = size+_m0;
+    _network_size = size;
 
     initialize_network();
     initialize_cluster();
@@ -64,6 +65,7 @@ void NetworkBApercolation_v3::initialize_network() {
     cout << "Initializing Network ... " << std::flush;
     _network_frame = NetworkBA(_m0, _m);
     uint i= _m0;
+    ++i;
     while (i < _network_size){ // sp that number of nodes is the network size
         _network_frame.addNode();
         ++i;

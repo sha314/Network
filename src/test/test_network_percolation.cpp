@@ -12,6 +12,7 @@
 #include <chrono>
 #include <fstream>
 #include <thread>
+#include <cstdlib>
 
 using namespace std;
 
@@ -107,6 +108,10 @@ void BA_order_parameter_jump(int argc, char **argv){
 void BA_entropy_jump_ensemble(int argc, char **argv){
     if(argc < 5){
         cerr << "need more argument value" << endl;
+        cout << "m = atoi(argv[1]);"<< endl;
+        cout << "N = atoi(argv[2]);"<< endl;
+        cout << "M = atoi(argv[3]);"<< endl;
+        cout << "En = atoi(argv[4]);" << endl;
         exit(1);
     }
     int m = atoi(argv[1]);
@@ -114,6 +119,7 @@ void BA_entropy_jump_ensemble(int argc, char **argv){
     int M = atoi(argv[3]);
     int En = atoi(argv[4]);
     NetworkBApercolationExplosive_v3 net(m, m, N, M);
+    net.setRandomState(0, true);
 //    NetworkBApercolation_v3 net(m, m, N);
 
 
@@ -350,6 +356,106 @@ void network_percolation_explosive(int argc, char* argv[]) {
 
 }
 
+/**
+ *
+ * @param argc
+ * @param argv
+ */
+void network_percolation_explosive_v2(int argc, char** argv){
+    if(argc < 5){
+        cerr << "need more argument value" << endl;
+        cout << "m = atoi(argv[1]);"<< endl;
+        cout << "N = atoi(argv[2]);"<< endl;
+        cout << "M = atoi(argv[3]);"<< endl;
+        cout << "En = atoi(argv[4]);" << endl;
+        exit(1);
+    }
+    int m = atoi(argv[1]);
+    int N = atoi(argv[2]);
+    int M = atoi(argv[3]);
+    int En = atoi(argv[4]);
+    NetworkBApercolationExplosive_v3 net(m, m, N, M);
+//    cout << net.nodeCount() << endl;
+//    cout << net.getNetworkSize() << endl;
+    net.setRandomState(0, true);
+//    NetworkBApercolation_v3 net(m, m, N);
+
+
+    double t;
+    double P{}, P_old{}, dP;
+    bool c{false};
+
+    vector<double> entropy(net.linkCount()), order_parameter(net.linkCount());
+    double entropy_jmp{0}, entropy_jmp_avg{}, H{}, tmp_old{};
+    double delta_H, previous_entropy;
+
+    size_t i{},k{};
+    for(size_t en{1}; en <= En; ++en) {
+        cout << "iteration " << en ;
+        auto t_start = chrono::_V2::system_clock::now();
+        net.reset(en % 20 == 0); // reset network in every 20 interval
+
+        net.occupyLink();
+
+        entropy_jmp = 0;
+        k = 0;
+        previous_entropy = net.maxEntropy();
+        while (net.occupyLink()) {
+//        cout << " ************* **************** *************" << endl;
+            H = net.entropy_v2();
+            entropy[k] += H;
+            order_parameter[k] += net.largestClusterSize();
+            delta_H = previous_entropy - H;
+            previous_entropy = H; // be ready for next step
+
+            if(abs(delta_H) > abs(entropy_jmp)){
+                entropy_jmp = delta_H;
+            }
+
+            ++k;
+        }
+        entropy_jmp_avg += entropy_jmp;
+
+
+        auto t_end = chrono::_V2::system_clock::now();
+        chrono::duration<double> drtion = t_end - t_start;
+        cout << " : time elapsed " << drtion.count() << " sec";
+        cout << endl;
+    }
+
+    string signature = net.get_signature();
+    string filename_jump = signature + "entropy-jump-" + currentTime() + ".txt";
+    string filename = signature + "entropy-order_param-" + currentTime() + ".txt";
+
+    ofstream fout_jump(filename_jump);
+    ofstream fout(filename);
+    stringstream ss;
+    ss   << "{\"signature\":" << "\"" << signature << "\""
+         << ",\"m\":" << m << ",\"network_size\":" << N
+         << ",\"M\":" << M  // in case of explosive percolation
+         << ",\"linkCount\":" << net.linkCount()
+         << ",\"random_state\":" << net.getRandomState()
+         << ",\"nodeCount\":" << net.nodeCount();
+
+
+    fout_jump << "#" << ss.str() << ",\"entropy_jump_avg\":" << entropy_jmp_avg/En
+              << ",\"cols\":" << "[\"N\", \"m\", \"M\", \"jump\"]" << "}" << endl;
+    fout_jump << "#n = number of occupied links" << endl;
+    fout_jump << "#t = n / N" << endl;
+    fout_jump << "#cluster size = number of nodes in the cluster" << endl;
+    fout_jump << net.nodeCount() << "\t" << m << "\t" << M << "\t" << entropy_jmp_avg/En << endl;
+    fout_jump.close();
+
+
+    fout << "#" << ss.str() << ",\"cols\":" << "[\"t\", \"H\", \"P\"]" << "}" << endl;
+    fout << "#n = number of occupied links" << endl;
+    fout << "#t = n / N" << endl;
+    fout << "#cluster size = number of nodes in the cluster" << endl;
+    for(size_t i{};i < entropy.size(); ++i){
+        fout << (i+1)/double(N) << "\t" << entropy[i]/En << "\t" << order_parameter[i]/(En*N) << endl;
+    }
+    fout.close();
+}
 /*
  * m0=3
  * m=1
