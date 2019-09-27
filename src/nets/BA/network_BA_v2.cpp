@@ -19,7 +19,7 @@ bool NetworkBA_v2::grow(size_t netowk_size) {
     for(size_t i{_N}; i < netowk_size; ++i){
         addNode();
     }
-    _N = netowk_size;
+    N = netowk_size;
 
     return true;
 }
@@ -30,7 +30,7 @@ NetworkBA_v2::NetworkBA_v2(size_t m0, size_t m) {
     if(m0 < m){
         _m0 += m;
     }
-    _N = _m0;
+    N = _m0;
     _N_max = _N;
     _node_index = _N-1;
     initialize();
@@ -95,7 +95,7 @@ bool NetworkBA_v2::add_node_v1() {
     _preferentially.insert(_preferentially.end(),
                            tmp.begin(), tmp.end());
     ++_node_index;
-    ++_N; // increase network size by 1 node
+    ++N; // increase network size by 1 node
     return true;
 }
 
@@ -130,7 +130,7 @@ bool NetworkBA_v2::add_node_v2() {
         _c += 1;
     }
     ++_node_index;
-    ++_N; // increase network size by 1 node
+    ++N; // increase network size by 1 node
     return true;
 }
 

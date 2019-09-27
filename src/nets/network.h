@@ -124,7 +124,7 @@ public:
 class NetworkBA : public Network{
     double time_select_m_nodes_preferentially_v3{};
     double time_connect_with_m_nodes_v3{};
-    size_t _N{}; // current network size
+    size_t N = 0; // current network size
     // holds the index of node.
     // number of neighborCount the nodes have is the number of repetition of that index
     // helps efficiently selecting nodes preferentially
@@ -152,7 +152,7 @@ public:
     virtual ~NetworkBA() = default;
     NetworkBA() = default;
     NetworkBA(size_t m0, size_t m):Network(m0, m) {
-        _N = get_m0();
+        N = get_m0();
         initialize_preferential();
     }
 

@@ -9,7 +9,7 @@ using namespace std;
 
 NetworkBApercolation_v5::NetworkBApercolation_v5(size_t m0, size_t m, size_t size) {
     _network_frame = NetworkBA_v2(m0, m);
-    _N = size;
+    N = size;
     one_by_size = 1.0/_N;
     log_1_by_size = log(one_by_size);
 }

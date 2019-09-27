@@ -21,7 +21,7 @@ class NetworkBApercolation_v5 { // TODO
 
     double log_1_by_size{}; // to make calculations easier
     double one_by_size{};
-    size_t _N;
+    size_t N;
     //time measurement variables
     double _time_placeSelectedLink{};
     size_t _random_state{};

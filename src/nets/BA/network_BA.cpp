@@ -417,7 +417,7 @@ bool NetworkBA::grow(size_t netowk_size) {
     for(size_t i{_N}; i < netowk_size; ++i){
         addNode();
     }
-    _N = netowk_size;
+    N = netowk_size;
     return true;
 }
 
