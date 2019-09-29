@@ -11,15 +11,15 @@ using namespace std;
 
 
 bool NetworkBA_v2::grow(size_t netowk_size) {
-    if(netowk_size <= _N){
+    if(netowk_size <= N_size){
         cout << "cannot grow" << endl;
         return false;
     }
     setMaxNetworkSize(netowk_size);
-    for(size_t i{_N}; i < netowk_size; ++i){
+    for(size_t i{N_size}; i < netowk_size; ++i){
         addNode();
     }
-    _N = netowk_size;
+    N_size = netowk_size;
 
     return true;
 }
@@ -30,9 +30,9 @@ NetworkBA_v2::NetworkBA_v2(size_t m0, size_t m) {
     if(m0 < m){
         _m0 += m;
     }
-    _N = _m0;
-    _N_max = _N;
-    _node_index = _N-1;
+    N_size = _m0;
+    _N_max = N_size;
+    _node_index = N_size-1;
     initialize();
 }
 
@@ -73,10 +73,10 @@ bool NetworkBA_v2::addNode() {
  */
 bool NetworkBA_v2::add_node_v1() {
 // version 1 : chances of repetition when m is large
-    _nodes.emplace_back(_N);
+    _nodes.emplace_back(N_size);
     vector<int> tmp;
     size_t rnd;
-    if(degree_count.size()>= _N) degree_count.resize(_N + 10);
+    if(degree_count.size()>= N_size) degree_count.resize(N_size + 10);
     for (size_t k{}; k <= _m; ++k) {
 // # each    node    comes    with    two    new link
         rnd = _random() % _preferentially.size();
@@ -87,7 +87,7 @@ bool NetworkBA_v2::add_node_v1() {
 //# store it in a temporary location first
         tmp.emplace_back(_node_index);
         tmp.emplace_back(j);
-        degree_count[_N] += 1;
+        degree_count[N_size] += 1;
         degree_count[j] += 1;
         ++_c;
         ++_link_count;
@@ -95,7 +95,7 @@ bool NetworkBA_v2::add_node_v1() {
     _preferentially.insert(_preferentially.end(),
                            tmp.begin(), tmp.end());
     ++_node_index;
-    ++_N; // increase network size by 1 node
+    ++N_size; // increase network size by 1 node
     return true;
 }
 
@@ -108,7 +108,7 @@ bool NetworkBA_v2::add_node_v1() {
 bool NetworkBA_v2::add_node_v2() {
 // first select m_nodes preferentially with no repetition
 // to prevent self connection
-    _nodes.emplace_back(_N); // add one new node
+    _nodes.emplace_back(N_size); // add one new node
     std::set<int> m_nodes;
     size_t rnd, k;
     while (m_nodes.size() < _m) {
@@ -118,7 +118,7 @@ bool NetworkBA_v2::add_node_v2() {
         m_nodes.insert(std::move(k));
     }
     _link_count += m_nodes.size();
-    if(degree_count.size()>= _N) degree_count.resize(_N + 10);
+    if(degree_count.size()>= N_size) degree_count.resize(N_size + 10);
 // then connect the new node to the selected m_nodes
     for(int j: m_nodes){
         network_map_A.emplace_back(_node_index);
@@ -130,7 +130,7 @@ bool NetworkBA_v2::add_node_v2() {
         _c += 1;
     }
     ++_node_index;
-    ++_N; // increase network size by 1 node
+    ++N_size; // increase network size by 1 node
     return true;
 }
 
@@ -165,7 +165,7 @@ void NetworkBA_v2::view() {
     for(size_t i{}; i < network_map_A.size(); ++i){
         cout << network_map_A[i] << " - " << network_map_B[i] << endl;
     }
-    cout << "Netowrk size " << _N << " max size " << _N_max << endl;
+    cout << "Netowrk size " << N_size << " max size " << _N_max << endl;
 
 }
 
@@ -176,11 +176,11 @@ void NetworkBA_v2::setMaxNetworkSize(size_t N) {
 }
 
 size_t NetworkBA_v2::getBlankSize() {
-    return _N_max - _N;
+    return _N_max - N_size;
 }
 
 bool NetworkBA_v2::spaceAvailable(){
-    return _N_max > _N;
+    return _N_max > N_size;
 }
 
 void NetworkBA_v2::reset() {

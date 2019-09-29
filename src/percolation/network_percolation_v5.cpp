@@ -9,8 +9,8 @@ using namespace std;
 
 NetworkBApercolation_v5::NetworkBApercolation_v5(size_t m0, size_t m, size_t size) {
     _network_frame = NetworkBA_v2(m0, m);
-    _N = size;
-    one_by_size = 1.0/_N;
+    N_size = size;
+    one_by_size = 1.0/N_size;
     log_1_by_size = log(one_by_size);
 }
 
@@ -26,7 +26,7 @@ void NetworkBApercolation_v5::setRandomState(size_t seed, bool g) {
 void NetworkBApercolation_v5::init(bool g) {
     // only need to do once
     _network_frame.setRandomState(_random_state, g);
-    _network_frame.grow(_N); // network construction
+    _network_frame.grow(N_size); // network construction
 
     list_of_link_indices.resize(_network_frame.getLinkCount());
     for(uint i{}; i < list_of_link_indices.size(); ++i){
@@ -34,7 +34,7 @@ void NetworkBApercolation_v5::init(bool g) {
     }
 
     // need to do when resetting
-    _clusters = vector<int>(_N, -1);
+    _clusters = vector<int>(N_size, -1);
     occupied_link_count = 0;
     // shuffle the value of the list
     shuffle(list_of_link_indices.begin(), list_of_link_indices.end(), _random);
@@ -132,7 +132,7 @@ int NetworkBApercolation_v5::clusterSize(int a) {
     return _clusters[root] * -1;
 }
 
-bool NetworkBApercolation_v5::placeLink() {
+bool NetworkBApercolation_v5::occupyLink() {
     if(occupied_link_count >= _network_frame.getLinkCount()) return false;
     uint i = list_of_link_indices[occupied_link_count];
 
@@ -146,7 +146,10 @@ bool NetworkBApercolation_v5::placeLink() {
 // node a and b will be connected together
     int root_a = findRoot(a);
     int root_b = findRoot(b);
+    subtract_entropy(root_a, root_b);
     mergeClusters(root_a, root_b);
+    add_entropy(root_a);
+    track_largest_cluster(root_a);
     occupied_link_count++;
 // make both cluster point to root cluster. so that search can be faster later
 //     print(clusters)
@@ -156,8 +159,8 @@ bool NetworkBApercolation_v5::placeLink() {
 /**
  * View the clusters
  */
-void NetworkBApercolation_v5::viewCLusters() {
-    cout << "{";
+void NetworkBApercolation_v5::viewClusters() {
+    cout << "clusters : (index) -> ((-size) or (ref to root)) (root or not?){" << endl;
 //    copy(_clusters.begin(), _clusters.end(), ostream_iterator<int>(cout, ","));
     for(size_t i{}; i < _clusters.size(); ++i){
         cout << i << " -> " << _clusters[i];
@@ -170,20 +173,95 @@ void NetworkBApercolation_v5::viewCLusters() {
 
 void NetworkBApercolation_v5::initialize_network() {
     cout << "Initializing Network ... " << std::flush;
-//    _network_frame.grow(_N);
+    _network_frame.grow(N_size);
+    // initialize link indices
+    list_of_link_indices.resize(_network_frame.getLinkCount());
+    for(uint i{}; i < list_of_link_indices.size(); ++i) {
+        list_of_link_indices[i]=i;
+    }
+    // initialize cluster
+    _clusters.resize(N_size);
+    initialize_cluster();
     cout << "done." << endl;
+}
+
+void NetworkBApercolation_v5::initialize_cluster() {
+    for(size_t i{}; i < N_size; ++i){
+        _clusters[i] = -1; // all clusters are of size 1 and all of them are root cluster
+    }
 }
 
 
 void NetworkBApercolation_v5::reset(int i) {
 //    cout << "reset NetworkBApercolation_v3: line " <<__LINE__ << endl;
 
-
+    occupied_link_count = 0;
+    _entropy_val = log(N_size);// initial entropy
     if(i == 1){
         // initialize the network again
         _network_frame.reset(); // this will do the trick
-        _network_frame.grow(_N);
-//        initialize_network();
+        _network_frame.grow(N_size);
     }
+    randomize_indices(list_of_link_indices);
+    initialize_cluster();
+}
 
+double NetworkBApercolation_v5::entropy_v1() {
+    double mu{}, H{};
+    for(size_t i{}; i < _clusters.size(); ++i){
+        mu = -1*_clusters[i]/double(N_size); // negative values of a clusters are sizes
+        if(mu > 0){
+            H += mu * log(mu);
+        }
+    }
+    _entropy_val = -H;
+    return _entropy_val;
+}
+
+void NetworkBApercolation_v5::viewListOfLinkIndices() {
+    cout <<"Link indices : {";
+    for(size_t i{}; i < list_of_link_indices.size(); ++i){
+        cout << list_of_link_indices[i] <<",";
+    }
+    cout <<"}" << endl;
+}
+
+void NetworkBApercolation_v5::randomize_indices(std::vector<uint>& a) {
+    std::shuffle(a.begin(), a.end(), _random);
+}
+
+void NetworkBApercolation_v5::subtract_entropy(int root_a, int root_b) {
+    double mu_a = -_clusters[root_a]/double(N_size);
+    double mu_b = -_clusters[root_b]/double(N_size);
+    double H{};
+    if(mu_a > 0){
+        H += mu_a * log(mu_a);
+    }
+    if(mu_b > 0){
+        H += mu_b * log(mu_b);
+    }
+    _entropy_val += H; // since subtracting
+}
+
+void NetworkBApercolation_v5::add_entropy(int root_a) {
+    double mu_a = -_clusters[root_a]/double(N_size);
+    double H{};
+    if(mu_a > 0){
+        H += mu_a * log(mu_a);
+    }
+    _entropy_val += -H; // since adding
+}
+
+double NetworkBApercolation_v5::entropy_v2() {
+    return _entropy_val;
+}
+
+void NetworkBApercolation_v5::track_largest_cluster(int a) {
+    if (a == largest_cluster_index) {
+        return;// old cluster is the root
+    }
+    if(-_clusters[a] > largest_cluster_size){
+        largest_cluster_size = -_clusters[a];
+        largest_cluster_index = a;
+    }
 }

@@ -45,9 +45,9 @@ void test_ba_v2_3() {
     NetworkBApercolation_v5 net(3, 1, 100);
     net.setRandomState(0, false);
     net.init(false);
-    while(net.placeLink()){
+    while(net.occupyLink()){
 
     }
-    net.viewCLusters();
+    net.viewClusters();
 
 }
