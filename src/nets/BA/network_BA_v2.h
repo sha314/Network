@@ -78,6 +78,9 @@ public:
     int fromNetworkMapB(uint a) { return network_map_B[a];}
 
     void clear_preferentially(){_preferentially.clear();}
+
+    int getNodeA(int link){return network_map_A[link];}
+    int getNodeB(int link){return network_map_B[link];}
 };
 
 

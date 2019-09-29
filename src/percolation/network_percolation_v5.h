@@ -18,14 +18,11 @@
  *
  */
 class NetworkBApercolation_v5 { // TODO
-
-    double log_1_by_size{}; // to make calculations easier
-    double one_by_size{};
-    size_t N_size;
+protected:
     //time measurement variables
     double _time_placeSelectedLink{};
     size_t _random_state{};
-    std::mt19937 _random;
+
 
     /*
      * cluster sizes and roots are here
@@ -37,11 +34,18 @@ class NetworkBApercolation_v5 { // TODO
     std::vector<int> _clusters;
 
     std::vector<uint> list_of_link_indices; // from zero to N-1
-    size_t occupied_link_count{};
+
     double _entropy_val{};
     size_t largest_cluster_size{};
     int largest_cluster_index{};
-protected:
+
+    std::vector<uint> _randomized_indices;
+    std::mt19937 _random;
+    size_t occupied_link_count{};
+    double log_1_by_size{}; // to make calculations easier
+    double one_by_size{};
+    size_t N_size{1};
+    size_t _link_count{};
     NetworkBA_v2 _network_frame;
 
 public:
@@ -80,11 +84,14 @@ public:
     void subtract_entropy(int a, int b);
     void add_entropy(int a);
     void track_largest_cluster(int a);
-    size_t largestCluster() const {return largest_cluster_size;}
+    size_t largestClusterSize() const {return largest_cluster_size;}
 
     void initialize_cluster();
 
     void randomize_indices(std::vector<uint>&);
+
+    bool placeSelectedLink(uint i);
+//    uint getLinkIndex(uint a){return list_of_link_indices[a];}
 };
 
 

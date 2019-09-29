@@ -10,9 +10,8 @@
 #include "../percolation/network_percolation_template.h"
 #include "../percolation/network_percolation_v3.h"
 #include "../percolation/explosive/network_percolation_explosive.h"
-#include "../nets/BA/network_BA_v2.h"
 #include "../percolation/network_percolation_v5.h"
-//#include "../percolation/network_percolation2.h"
+#include "../percolation/explosive/network_percolation_explosive_v5.h"
 #include <chrono>
 #include <fstream>
 #include <thread>
@@ -580,7 +579,8 @@ void test_v5(int argc, char **argv) {
     int ensemble_size = atoi(argv[4]);
 
 
-    NetworkBApercolation_v5 net(m, m, N);
+//    NetworkBApercolation_v5 net(m, m, N);
+    NetworkBApercolationExplosive_v5 net(m, m, N, M);
     net.setRandomState(0, true);
     net.initializeNetwork();
 
@@ -601,7 +601,7 @@ void test_v5(int argc, char **argv) {
 //            cout << "i " << i  << endl;
 //            net.viewClusters();
             cout << net.entropy_v1() << "\t" << net.entropy_v2() << endl;
-//            cout << net.largestCluster() << endl;
+            cout << net.largestClusterSize() << endl;
 //            net.jump();
             ++i;
 //            _network_frame.viewClusterExtended();

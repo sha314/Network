@@ -3,7 +3,6 @@
 //
 
 #include "network_percolation_v5.h"
-#include <algorithm>
 
 using namespace std;
 
@@ -29,6 +28,7 @@ void NetworkBApercolation_v5::init(bool g) {
     _network_frame.grow(N_size); // network construction
 
     list_of_link_indices.resize(_network_frame.getLinkCount());
+    _link_count = _network_frame.getLinkCount();
     for(uint i{}; i < list_of_link_indices.size(); ++i){
         list_of_link_indices[i] = i;
     }
@@ -38,6 +38,7 @@ void NetworkBApercolation_v5::init(bool g) {
     occupied_link_count = 0;
     // shuffle the value of the list
     shuffle(list_of_link_indices.begin(), list_of_link_indices.end(), _random);
+    _randomized_indices = list_of_link_indices;
 }
 
 int NetworkBApercolation_v5::findRoot(int a) {
@@ -135,8 +136,11 @@ int NetworkBApercolation_v5::clusterSize(int a) {
 bool NetworkBApercolation_v5::occupyLink() {
     if(occupied_link_count >= _network_frame.getLinkCount()) return false;
     uint i = list_of_link_indices[occupied_link_count];
+    return placeSelectedLink(i);
+//     print(clusters)
+}
 
-// selecting sequentially from suffled list_of_link_indices is like selecting randomly
+bool NetworkBApercolation_v5::placeSelectedLink(uint i) {// selecting sequentially from suffled list_of_link_indices is like selecting randomly
 //     print(i)
 //     print("number of remaining clusters", clusterCount(clusters))
     int a = _network_frame.fromNetworkMapA(i);
@@ -152,7 +156,6 @@ bool NetworkBApercolation_v5::occupyLink() {
     track_largest_cluster(root_a);
     occupied_link_count++;
 // make both cluster point to root cluster. so that search can be faster later
-//     print(clusters)
     return true;
 }
 
@@ -175,7 +178,8 @@ void NetworkBApercolation_v5::initialize_network() {
     cout << "Initializing Network ... " << std::flush;
     _network_frame.grow(N_size);
     // initialize link indices
-    list_of_link_indices.resize(_network_frame.getLinkCount());
+    _link_count = _network_frame.getLinkCount();
+    list_of_link_indices.resize(_link_count);
     for(uint i{}; i < list_of_link_indices.size(); ++i) {
         list_of_link_indices[i]=i;
     }
@@ -203,6 +207,7 @@ void NetworkBApercolation_v5::reset(int i) {
         _network_frame.grow(N_size);
     }
     randomize_indices(list_of_link_indices);
+    _randomized_indices = list_of_link_indices;
     initialize_cluster();
 }
 
