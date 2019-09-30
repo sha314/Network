@@ -35,6 +35,7 @@ public:
         ss << _network_frame.get_m0() << "_m_" << _network_frame.get_m() << "_size_" << N_size << "_M_" << _M << '-';
         return ss.str();
     }
+    std::string getClassName(){return "NetworkBApercolationExplosive_v5";}
 
     /**
      * Sum rule and Product rule

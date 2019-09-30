@@ -588,7 +588,7 @@ void test_v5(int argc, char **argv) {
 //    net.viewNetwork();
 //    net.viewListOfLinkIndices();
     vector<double> entropy_jump(ensemble_size), entropy_jump_pc(ensemble_size);
-    for (size_t k{1}; k <= ensemble_size; ++k) {
+    for (size_t k{0}; k < ensemble_size; ++k) {
         auto t_start= chrono::_V2::system_clock::now();
 
         net.reset(1);
@@ -600,30 +600,30 @@ void test_v5(int argc, char **argv) {
         while (net.occupyLink()) {
 //            cout << "i " << i  << endl;
 //            net.viewClusters();
-            cout << net.entropy_v1() << "\t" << net.entropy_v2() << endl;
-            cout << net.largestClusterSize() << endl;
-//            net.jump();
+//            cout << net.entropy_v1() << "\t" << net.entropy_v2() << endl;
+//            cout << net.largestClusterSize() << endl;
+            net.jump();
             ++i;
 //            _network_frame.viewClusterExtended();
             if ( i >= 6){
 //                break;
             }
         }
-//        entropy_jump[k] = net.largestEntropyJump();
-//        entropy_jump_pc[k] = net.largestEntropyJump_pc();
-//        cout << _network_frame.largestEntropyJump() << " at " << _network_frame.largestEntropyJump_pc() << endl;
+        entropy_jump[k] = net.largestEntropyJump();
+        entropy_jump_pc[k] = net.largestEntropyJump_pc();
+        cout << entropy_jump[k] << " at " << entropy_jump_pc[k] << endl;
         auto t_end= chrono::_V2::system_clock::now();
         chrono::duration<double> drtion = t_end - t_start;
         cout << "iteration " << k << " : time elapsed " << drtion.count() << " sec" << endl;
     }
 
     auto tm = currentTime();
-//    string signature = net.get_signature();
-    string signature = "???";
+    string signature = net.get_signature();
     string filename_jump = signature + "_entropy_jump_" + tm;
     stringstream ss;
     ss << "{"
        << R"*("signature":")*" << signature << "\""
+       << R"*(,"class":")*" << net.getClassName() << "\""
        << R"*(,"m":)*" << m
        << R"*(,"network_size":)*" << N
        << R"*(,"number_of_links":)*" << net.linkCount()

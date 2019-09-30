@@ -201,6 +201,9 @@ void NetworkBApercolation_v5::reset(int i) {
 
     occupied_link_count = 0;
     _entropy_val = log(N_size);// initial entropy
+    _largest_jump_entropy=0;
+    _previous_entropy=0;
+    _entropy_jump_pc=0;
     if(i == 1){
         // initialize the network again
         _network_frame.reset(); // this will do the trick
@@ -269,4 +272,22 @@ void NetworkBApercolation_v5::track_largest_cluster(int a) {
         largest_cluster_size = -_clusters[a];
         largest_cluster_index = a;
     }
+}
+
+/**
+ * Must be called after entropy is calculated each time. If not then this function will not work.
+ */
+void NetworkBApercolation_v5::jump() {
+    double delta_H{};
+    if(occupied_link_count == 1){
+        _previous_entropy = _entropy_val;
+    }else{
+        delta_H = _entropy_val - _previous_entropy;
+        _previous_entropy = _entropy_val; // be ready for next step
+    }
+    if(abs(delta_H) > abs(_largest_jump_entropy)){
+        _largest_jump_entropy = delta_H;
+        _entropy_jump_pc = relativeOccupationProbability();
+    }
+
 }

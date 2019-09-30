@@ -17,7 +17,7 @@
  * used classes : NetworkBA_v2
  *
  */
-class NetworkBApercolation_v5 { // TODO
+class NetworkBApercolation_v5 {
 protected:
     //time measurement variables
     double _time_placeSelectedLink{};
@@ -35,7 +35,7 @@ protected:
 
     std::vector<uint> list_of_link_indices; // from zero to N-1
 
-    double _entropy_val{};
+    double _entropy_val{},    _largest_jump_entropy{}, _previous_entropy{}, _entropy_jump_pc{};
     size_t largest_cluster_size{};
     int largest_cluster_index{};
 
@@ -83,6 +83,10 @@ public:
     double entropy_v2();
     void subtract_entropy(int a, int b);
     void add_entropy(int a);
+    void jump();
+    double largestEntropyJump()const{return _largest_jump_entropy;};
+    double largestEntropyJump_pc()const{return _entropy_jump_pc;};
+    double relativeOccupationProbability()const {return occupied_link_count/double(N_size);};
     void track_largest_cluster(int a);
     size_t largestClusterSize() const {return largest_cluster_size;}
 
@@ -92,6 +96,14 @@ public:
 
     bool placeSelectedLink(uint i);
 //    uint getLinkIndex(uint a){return list_of_link_indices[a];}
+
+    std::string get_signature() {
+        std::stringstream ss;
+        ss << "netrowk_BA_percolation_m0_";
+        ss << _network_frame.get_m0() << "_m_" << _network_frame.get_m() << "_size_" << N_size;
+        return ss.str();
+    }
+    std::string getClassName(){return "NetworkBApercolation_v5";}
 };
 
 
