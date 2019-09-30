@@ -581,17 +581,18 @@ void test_v5(int argc, char **argv) {
 
 //    NetworkBApercolation_v5 net(m, m, N);
     NetworkBApercolationExplosive_v5 net(m, m, N, M);
-    net.setRandomState(0, true);
+    net.setRandomState(0, false);
     net.initializeNetwork();
 
     cout << net.nodeCount()  << ", " << net.linkCount() << ", " << endl;
 //    net.viewNetwork();
 //    net.viewListOfLinkIndices();
     vector<double> entropy_jump(ensemble_size), entropy_jump_pc(ensemble_size);
+    vector<double> entropy(net.linkCount()), order_param(net.linkCount()); // entropy and order parameter
     for (size_t k{0}; k < ensemble_size; ++k) {
         auto t_start= chrono::_V2::system_clock::now();
 
-        net.reset(1);
+        net.reset(k%25 == 0); // every 25 step. reset the network
 
         size_t i{};
 //        net.viewClusters();
@@ -599,15 +600,16 @@ void test_v5(int argc, char **argv) {
         cout << "entering to while" << endl;
         while (net.occupyLink()) {
 //            cout << "i " << i  << endl;
+            entropy[i] += net.entropy();
+            order_param[i] += net.largestClusterSize();
 //            net.viewClusters();
-//            cout << net.entropy_v1() << "\t" << net.entropy_v2() << endl;
+//            cout << net.entropy_v1()  << "\t";
+//            cout << net.entropy_v2() << endl;
 //            cout << net.largestClusterSize() << endl;
             net.jump();
-            ++i;
 //            _network_frame.viewClusterExtended();
-            if ( i >= 6){
-//                break;
-            }
+            ++i;
+//            if (i == 7) break;
         }
         entropy_jump[k] = net.largestEntropyJump();
         entropy_jump_pc[k] = net.largestEntropyJump_pc();
@@ -640,5 +642,16 @@ void test_v5(int argc, char **argv) {
         fout_jump << entropy_jump[k] << '\t' << entropy_jump_pc[k] << endl;
     }
     fout_jump.close();
+
+
+    string filename = signature + "_entropy-order_" + tm;
+    ofstream fout(filename);
+    fout << '#' << ss.str() << endl;
+    fout << "# t=relative link density" << endl;
+    fout << "#<t>\t<H>\t<P>" << endl;
+    for(size_t k{}; k < entropy.size() ; ++k){
+        fout << (k+1)/double(N) << "\t" << entropy[k]/ensemble_size << '\t' << order_param[k]/(ensemble_size * double(N)) << endl;
+    }
+    fout.close();
 
 }

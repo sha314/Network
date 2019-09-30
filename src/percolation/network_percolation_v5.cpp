@@ -203,7 +203,7 @@ void NetworkBApercolation_v5::reset(int i) {
     _entropy_val = log(N_size);// initial entropy
     _largest_jump_entropy=0;
     _previous_entropy=0;
-    _entropy_jump_pc=0;
+    _entropy_jump_tc=0;
     if(i == 1){
         // initialize the network again
         _network_frame.reset(); // this will do the trick
@@ -222,8 +222,9 @@ double NetworkBApercolation_v5::entropy_v1() {
             H += mu * log(mu);
         }
     }
-    _entropy_val = -H;
-    return _entropy_val;
+    return  -H;
+//    _entropy_val = -H;
+//    return _entropy_val;
 }
 
 void NetworkBApercolation_v5::viewListOfLinkIndices() {
@@ -238,14 +239,21 @@ void NetworkBApercolation_v5::randomize_indices(std::vector<uint>& a) {
     std::shuffle(a.begin(), a.end(), _random);
 }
 
+/**
+ * root index must be provided
+ * @param root_a
+ * @param root_b
+ */
 void NetworkBApercolation_v5::subtract_entropy(int root_a, int root_b) {
     double mu_a = -_clusters[root_a]/double(N_size);
     double mu_b = -_clusters[root_b]/double(N_size);
-    double H{};
-    if(mu_a > 0){
-        H += mu_a * log(mu_a);
+    if(mu_a < 0 || mu_b < 0){
+        cerr << "one of the root is not a root : line " << __LINE__ << endl;
     }
-    if(mu_b > 0){
+    double H{};
+
+    H += mu_a * log(mu_a);
+    if (root_a != root_b){
         H += mu_b * log(mu_b);
     }
     _entropy_val += H; // since subtracting
@@ -287,7 +295,7 @@ void NetworkBApercolation_v5::jump() {
     }
     if(abs(delta_H) > abs(_largest_jump_entropy)){
         _largest_jump_entropy = delta_H;
-        _entropy_jump_pc = relativeOccupationProbability();
+        _entropy_jump_tc = relativeLinkDensity();
     }
 
 }

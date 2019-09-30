@@ -35,7 +35,7 @@ protected:
 
     std::vector<uint> list_of_link_indices; // from zero to N-1
 
-    double _entropy_val{},    _largest_jump_entropy{}, _previous_entropy{}, _entropy_jump_pc{};
+    double _entropy_val{},    _largest_jump_entropy{}, _previous_entropy{}, _entropy_jump_tc{};
     size_t largest_cluster_size{};
     int largest_cluster_index{};
 
@@ -67,7 +67,7 @@ public:
     int clusterSize(int a);
 
     bool occupyLink();
-    double relativeLinkDensity() { return double(occupied_link_count)/_network_frame.getLinkCount();};
+    double relativeLinkDensity() { return double(occupied_link_count)/double(N_size);};
     void viewClusters();
     void viewListOfLinkIndices();
     void viewNetwork(){_network_frame.view();}
@@ -85,8 +85,7 @@ public:
     void add_entropy(int a);
     void jump();
     double largestEntropyJump()const{return _largest_jump_entropy;};
-    double largestEntropyJump_pc()const{return _entropy_jump_pc;};
-    double relativeOccupationProbability()const {return occupied_link_count/double(N_size);};
+    double largestEntropyJump_pc()const{return _entropy_jump_tc;};
     void track_largest_cluster(int a);
     size_t largestClusterSize() const {return largest_cluster_size;}
 
