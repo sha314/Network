@@ -581,7 +581,7 @@ void test_v5(int argc, char **argv) {
 
 //    NetworkBApercolation_v5 net(m, m, N);
     NetworkBApercolationExplosive_v5 net(m, m, N, M);
-    net.setRandomState(0, false);
+    net.setRandomState(0, true);
     net.initializeNetwork();
 
     cout << net.nodeCount()  << ", " << net.linkCount() << ", " << endl;
@@ -605,7 +605,7 @@ void test_v5(int argc, char **argv) {
 //            net.viewClusters();
 //            cout << net.entropy_v1()  << "\t";
 //            cout << net.entropy_v2() << endl;
-//            cout << net.largestClusterSize() << endl;
+            cout << net.largestClusterSize() << endl;
             net.jump();
 //            _network_frame.viewClusterExtended();
             ++i;
@@ -619,39 +619,39 @@ void test_v5(int argc, char **argv) {
         cout << "iteration " << k << " : time elapsed " << drtion.count() << " sec" << endl;
     }
 
-    auto tm = currentTime();
-    string signature = net.get_signature();
-    string filename_jump = signature + "_entropy_jump_" + tm;
-    stringstream ss;
-    ss << "{"
-       << R"*("signature":")*" << signature << "\""
-       << R"*(,"class":")*" << net.getClassName() << "\""
-       << R"*(,"m":)*" << m
-       << R"*(,"network_size":)*" << N
-       << R"*(,"number_of_links":)*" << net.linkCount()
-       << R"*(,"number_of_nodes":)*" << net.nodeCount()
-       << R"*(,"M":)*" << M
-       << R"*(,"ensemble_size":)*" << ensemble_size
-       << R"*(,"date":")*" << tm << "\""
-       << "}";
-
-    ofstream fout_jump(filename_jump);
-    fout_jump << '#' << ss.str() << endl;
-    fout_jump << "#<largest entropy jump>\t<p>" << endl;
-    for(size_t k{}; k < ensemble_size ; ++k){
-        fout_jump << entropy_jump[k] << '\t' << entropy_jump_pc[k] << endl;
-    }
-    fout_jump.close();
-
-
-    string filename = signature + "_entropy-order_" + tm;
-    ofstream fout(filename);
-    fout << '#' << ss.str() << endl;
-    fout << "# t=relative link density" << endl;
-    fout << "#<t>\t<H>\t<P>" << endl;
-    for(size_t k{}; k < entropy.size() ; ++k){
-        fout << (k+1)/double(N) << "\t" << entropy[k]/ensemble_size << '\t' << order_param[k]/(ensemble_size * double(N)) << endl;
-    }
-    fout.close();
+//    auto tm = currentTime();
+//    string signature = net.get_signature();
+//    string filename_jump = signature + "_entropy_jump_" + tm;
+//    stringstream ss;
+//    ss << "{"
+//       << R"*("signature":")*" << signature << "\""
+//       << R"*(,"class":")*" << net.getClassName() << "\""
+//       << R"*(,"m":)*" << m
+//       << R"*(,"network_size":)*" << N
+//       << R"*(,"number_of_links":)*" << net.linkCount()
+//       << R"*(,"number_of_nodes":)*" << net.nodeCount()
+//       << R"*(,"M":)*" << M
+//       << R"*(,"ensemble_size":)*" << ensemble_size
+//       << R"*(,"date":")*" << tm << "\""
+//       << "}";
+//
+//    ofstream fout_jump(filename_jump);
+//    fout_jump << '#' << ss.str() << endl;
+//    fout_jump << "#<largest entropy jump>\t<p>" << endl;
+//    for(size_t k{}; k < ensemble_size ; ++k){
+//        fout_jump << entropy_jump[k] << '\t' << entropy_jump_pc[k] << endl;
+//    }
+//    fout_jump.close();
+//
+//
+//    string filename = signature + "_entropy-order_" + tm;
+//    ofstream fout(filename);
+//    fout << '#' << ss.str() << endl;
+//    fout << "# t=relative link density" << endl;
+//    fout << "#<t>\t<H>\t<P>" << endl;
+//    for(size_t k{}; k < entropy.size() ; ++k){
+//        fout << (k+1)/double(N) << "\t" << entropy[k]/ensemble_size << '\t' << order_param[k]/(ensemble_size * double(N)) << endl;
+//    }
+//    fout.close();
 
 }

@@ -31,7 +31,7 @@ protected:
      * if i-th element of _clusters is positive then it the value is
      *      the index of a node that is closer to the root node
      */
-    std::vector<int> _clusters;
+    std::vector<int> _cluster_info;
 
     std::vector<uint> list_of_link_indices; // from zero to N-1
 

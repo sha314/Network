@@ -34,7 +34,7 @@ void NetworkBApercolation_v5::init(bool g) {
     }
 
     // need to do when resetting
-    _clusters = vector<int>(N_size, -1);
+    _cluster_info = vector<int>(N_size, -1);
     occupied_link_count = 0;
     // shuffle the value of the list
     shuffle(list_of_link_indices.begin(), list_of_link_indices.end(), _random);
@@ -56,12 +56,12 @@ int NetworkBApercolation_v5::find_root_v1(int a) {
     //a        : the point where finding starts.
 
 
-    if (_clusters[a] < 0){return a;}
+    if (_cluster_info[a] < 0){return a;}
 //    cout << "starting loop, a = " <<  a << endl;
 //    copy(_clusters.begin(), _clusters.end(), ostream_iterator<int>(cout, ","));
     int b;
-    while(!(_clusters[a] < 0)) {
-        b = _clusters[a];
+    while(!(_cluster_info[a] < 0)) {
+        b = _cluster_info[a];
 //        cout << a << ", " << b << endl;
 //        copy(_clusters.begin(), _clusters.end(), ostream_iterator<int>(cout, ","));
         a = b;
@@ -80,18 +80,18 @@ int NetworkBApercolation_v5::find_root_v1(int a) {
  */
 int NetworkBApercolation_v5::find_root_v2(int a) {
 
-    if (_clusters[a] < 0){   return a;}
+    if (_cluster_info[a] < 0){   return a;}
     vector<int> redirecting_indices;
     int b;
-    while (!(_clusters[a] < 0)) {
+    while (!(_cluster_info[a] < 0)) {
         redirecting_indices.emplace_back(a);
-        b = _clusters[a];
+        b = _cluster_info[a];
         a = b;
 
     }
 //# so that next time search is at least one step lesser
     for (auto ri : redirecting_indices) {
-        _clusters[ri] = a;
+        _cluster_info[ri] = a;
     }
     return a;
 }
@@ -102,8 +102,8 @@ void  NetworkBApercolation_v5::mergeClusters(int root_a, int root_b) {
 //# join two roots
 //#     print("before merging ")
 //#     print(clusters)
-    _clusters[root_a] = _clusters[root_a] + _clusters[root_b]; //# sizes must add up
-    _clusters[root_b] = root_a; //# now clusters[b] points to a
+    _cluster_info[root_a] = _cluster_info[root_a] + _cluster_info[root_b]; //# sizes must add up
+    _cluster_info[root_b] = root_a; //# now clusters[b] points to a
 //#     print("after merging ")
 //#     print(clusters)
 }
@@ -113,7 +113,7 @@ void  NetworkBApercolation_v5::mergeClusters(int root_a, int root_b) {
  */
 size_t NetworkBApercolation_v5::clusterCount(){
     size_t sm = 0;
-    for (auto i : _clusters) {
+    for (auto i : _cluster_info) {
         if (i < 0) sm += 1;
     }
     return sm;
@@ -122,7 +122,7 @@ size_t NetworkBApercolation_v5::clusterCount(){
 
 size_t NetworkBApercolation_v5::clusterSizeSum(){
     size_t sm = 0;
-    for (auto i : _clusters) {
+    for (auto i : _cluster_info) {
         if (i < 0) sm += -i;
     }
     return sm;
@@ -130,7 +130,7 @@ size_t NetworkBApercolation_v5::clusterSizeSum(){
 
 int NetworkBApercolation_v5::clusterSize(int a) {
     int root = findRoot(a);
-    return _clusters[root] * -1;
+    return _cluster_info[root] * -1;
 }
 
 bool NetworkBApercolation_v5::occupyLink() {
@@ -150,6 +150,7 @@ bool NetworkBApercolation_v5::placeSelectedLink(uint i) {// selecting sequential
 // node a and b will be connected together
     int root_a = findRoot(a);
     int root_b = findRoot(b);
+//    cout << "roots " << root_a << ", " << root_b << endl;
     subtract_entropy(root_a, root_b);
     mergeClusters(root_a, root_b);
     add_entropy(root_a);
@@ -165,9 +166,9 @@ bool NetworkBApercolation_v5::placeSelectedLink(uint i) {// selecting sequential
 void NetworkBApercolation_v5::viewClusters() {
     cout << "clusters : (index) -> ((-size) or (ref to root)) (root or not?){" << endl;
 //    copy(_clusters.begin(), _clusters.end(), ostream_iterator<int>(cout, ","));
-    for(size_t i{}; i < _clusters.size(); ++i){
-        cout << i << " -> " << _clusters[i];
-        if(_clusters[i] < 0) cout << " *";// root cluster
+    for(size_t i{}; i < _cluster_info.size(); ++i){
+        cout << "[" << i << "] -> " << _cluster_info[i];
+        if(_cluster_info[i] < 0) cout << " *";// root cluster
         cout << endl;
     }
     cout << "}" << endl;
@@ -184,14 +185,14 @@ void NetworkBApercolation_v5::initialize_network() {
         list_of_link_indices[i]=i;
     }
     // initialize cluster
-    _clusters.resize(N_size);
+    _cluster_info.resize(N_size);
     initialize_cluster();
     cout << "done." << endl;
 }
 
 void NetworkBApercolation_v5::initialize_cluster() {
     for(size_t i{}; i < N_size; ++i){
-        _clusters[i] = -1; // all clusters are of size 1 and all of them are root cluster
+        _cluster_info[i] = -1; // all clusters are of size 1 and all of them are root cluster
     }
 }
 
@@ -216,8 +217,8 @@ void NetworkBApercolation_v5::reset(int i) {
 
 double NetworkBApercolation_v5::entropy_v1() {
     double mu{}, H{};
-    for(size_t i{}; i < _clusters.size(); ++i){
-        mu = -1*_clusters[i]/double(N_size); // negative values of a clusters are sizes
+    for(size_t i{}; i < _cluster_info.size(); ++i){
+        mu = -1*_cluster_info[i]/double(N_size); // negative values of a clusters are sizes
         if(mu > 0){
             H += mu * log(mu);
         }
@@ -245,8 +246,8 @@ void NetworkBApercolation_v5::randomize_indices(std::vector<uint>& a) {
  * @param root_b
  */
 void NetworkBApercolation_v5::subtract_entropy(int root_a, int root_b) {
-    double mu_a = -_clusters[root_a]/double(N_size);
-    double mu_b = -_clusters[root_b]/double(N_size);
+    double mu_a = -_cluster_info[root_a]/double(N_size);
+    double mu_b = -_cluster_info[root_b]/double(N_size);
     if(mu_a < 0 || mu_b < 0){
         cerr << "one of the root is not a root : line " << __LINE__ << endl;
     }
@@ -260,7 +261,7 @@ void NetworkBApercolation_v5::subtract_entropy(int root_a, int root_b) {
 }
 
 void NetworkBApercolation_v5::add_entropy(int root_a) {
-    double mu_a = -_clusters[root_a]/double(N_size);
+    double mu_a = -_cluster_info[root_a]/double(N_size);
     double H{};
     if(mu_a > 0){
         H += mu_a * log(mu_a);
@@ -273,11 +274,10 @@ double NetworkBApercolation_v5::entropy_v2() {
 }
 
 void NetworkBApercolation_v5::track_largest_cluster(int a) {
-    if (a == largest_cluster_index) {
-        return;// old cluster is the root
-    }
-    if(-_clusters[a] > largest_cluster_size){
-        largest_cluster_size = -_clusters[a];
+    int sz = -_cluster_info[a];
+    if( sz > largest_cluster_size){
+//        cout << "new largest [" << a << "] -> " << sz << endl;
+        largest_cluster_size = sz;
         largest_cluster_index = a;
     }
 }

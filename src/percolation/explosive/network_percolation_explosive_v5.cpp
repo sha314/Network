@@ -81,10 +81,10 @@ uint NetworkBApercolationExplosive_v5::link_for_min_cluster_sum_product_v2(size_
 
         if(root1 == root2){
             // if they belong to same cluster. adding new link does not increase cluster size.
-            n_nodes = -_clusters[root1]; // value of clusters element is negative if it is the size
+            n_nodes = -_cluster_info[root1]; // value of clusters element is negative if it is the size
 //            cout << "same cluster " << endl;
         }else {
-            n_nodes = _clusters[root1] * _clusters[root2]; // product rule
+            n_nodes = _cluster_info[root1] * _cluster_info[root2]; // product rule
 //            n_nodes = _cluster[index1].numberOfNodes() + _cluster[index2].numberOfNodes(); // sum rule
         }
         if(n_nodes < prod_sum ) { // since we are minimizing cluster sizes
