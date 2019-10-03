@@ -385,20 +385,23 @@ void network_percolation_explosive_v2(int argc, char** argv){
     double P{}, P_old{}, dP;
     bool c{false};
 
-    vector<double> entropy(net.linkCount()), order_parameter(net.linkCount());
+    size_t linkCount = net.linkCount();
+    vector<double> entropy(linkCount), order_parameter(linkCount);
     double entropy_jmp{0}, entropy_jmp_avg{}, H{}, tmp_old{};
     double delta_H, previous_entropy;
 
-    size_t i{},k{};
+    size_t k{};
     for(size_t en{1}; en <= En; ++en) {
         cout << "iteration " << en ;
         auto t_start = chrono::_V2::system_clock::now();
-        net.reset(en % 20 == 0); // reset network in every 20 interval
+        net.reset(en % 25 == 0); // reset network in every 20 interval
 
-        net.occupyLink();
-
-        entropy_jmp = 0;
         k = 0;
+        net.occupyLink();
+        entropy[k] += net.entropy_v2();
+        order_parameter[k] += net.largestClusterSize();
+        ++k;
+        entropy_jmp = 0;
         previous_entropy = net.maxEntropy();
         while (net.occupyLink()) {
 //        cout << " ************* **************** *************" << endl;
@@ -430,12 +433,12 @@ void network_percolation_explosive_v2(int argc, char** argv){
     ofstream fout_jump(filename_jump);
     ofstream fout(filename);
     stringstream ss;
-    ss   << "{\"signature\":" << "\"" << signature << "\""
-         << ",\"m\":" << m << ",\"network_size\":" << N
-         << ",\"M\":" << M  // in case of explosive percolation
-         << ",\"linkCount\":" << net.linkCount()
-         << ",\"random_state\":" << net.getRandomState()
-         << ",\"nodeCount\":" << net.nodeCount();
+    ss << "{\"signature\":" << "\"" << signature << "\""
+       << ",\"m\":" << m << ",\"network_size\":" << N
+       << ",\"M\":" << M  // in case of explosive percolation
+         << ",\"linkCount\":" << linkCount
+       << ",\"random_state\":" << net.getRandomState()
+       << ",\"nodeCount\":" << net.nodeCount();
 
 
     fout_jump << "#" << ss.str() << ",\"entropy_jump_avg\":" << entropy_jmp_avg/En
