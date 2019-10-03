@@ -34,22 +34,23 @@ protected:
     std::vector<int> _cluster_info;
 
     std::vector<uint> list_of_link_indices; // from zero to N-1
+    std::vector<uint> _randomized_indices;
 
     double _entropy_val{},    _largest_jump_entropy{}, _previous_entropy{}, _entropy_jump_tc{};
     size_t largest_cluster_size{};
     int largest_cluster_index{};
 
-    std::vector<uint> _randomized_indices;
+
     std::mt19937 _random;
     size_t occupied_link_count{};
     double log_1_by_size{}; // to make calculations easier
     double one_by_size{};
-    size_t N_size{1};
+    size_t _N_size{1};
     size_t _link_count{};
     NetworkBA_v2 _network_frame;
 
 public:
-    virtual ~NetworkBApercolation_v5()  = default;
+    ~NetworkBApercolation_v5();
     NetworkBApercolation_v5()           = default;
     NetworkBApercolation_v5(size_t m0, size_t m, size_t size);
     void setRandomState(size_t seed=0, bool g=true);
@@ -67,7 +68,7 @@ public:
     int clusterSize(int a);
 
     bool occupyLink();
-    double relativeLinkDensity() { return double(occupied_link_count)/double(N_size);};
+    double relativeLinkDensity() { return double(occupied_link_count)/double(_N_size);};
     void viewClusters();
     void viewListOfLinkIndices();
     void viewNetwork(){_network_frame.view();}
@@ -99,7 +100,7 @@ public:
     std::string get_signature() {
         std::stringstream ss;
         ss << "netrowk_BA_percolation_m0_";
-        ss << _network_frame.get_m0() << "_m_" << _network_frame.get_m() << "_size_" << N_size;
+        ss << _network_frame.get_m0() << "_m_" << _network_frame.get_m() << "_size_" << _N_size;
         return ss.str();
     }
     std::string getClassName(){return "NetworkBApercolation_v5";}

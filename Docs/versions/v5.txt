@@ -14,4 +14,26 @@ N       Time        Mem
 1M      3.60  sec   ~75 MB
 
 
+##***
+Percolation time is counted after network is initialized
+
 ##
+NetworkBApercolation_v5
+m=5
+
+N       Time        Mem
+50k     0.09 sec
+100k    0.2 sec     45 MB
+1M      3.2 sec     242 MB
+
+
+##
+NetworkBApercolationExplosive_v5
+m=5
+M=2
+
+N       Time        Mem
+50k     0.19 sec
+100k    0.45 sec
+1M      7.4 sec
+2M      16.45 sec   464 MB

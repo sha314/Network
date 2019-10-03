@@ -16,13 +16,13 @@
 class NetworkBA_v2{
     // constant properties
     size_t _m0{3}; // seed
-    size_t _m{}; // number of new nodes each node comes with
+    size_t _m{2}; // number of new nodes each node comes with
 
     // variable properties
     std::vector<int> _nodes;
-    size_t N_size{3}; // network size = number of nodes
+    size_t _N_size{3}; // network size = number of nodes
     size_t _N_max;
-    int _node_index; // 1 less _N
+    int _node_index; // 1 less _N_size
     size_t _link_count{}; // number of links
 
     /*
@@ -63,7 +63,7 @@ public:
     size_t getBlankSize();
     size_t get_m0()const { return  _m0;}
     size_t get_m() const { return  _m;}
-    size_t getNodeCount() const { return  _N;}
+    size_t getNodeCount() const { return  _N_size;}
     size_t getLinkCount() const { return  _link_count;}
     bool spaceAvailable();
     bool grow(size_t netowk_size);

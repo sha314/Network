@@ -27,5 +27,6 @@ void test_NetworkBApercolationExplosive_v3(int argc, char **argv);
 void test_NetworkBApercolationExplosive_v3_jump(int argc, char **argv);
 
 void test_v5(int argc, char **argv);
+void test_NetworkBA_v2(int argc, char **argv);
 
 #endif //NETWORK_NETWORK_PERCOLATION_H
