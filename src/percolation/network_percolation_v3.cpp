@@ -30,8 +30,9 @@ NetworkBApercolation_v3::NetworkBApercolation_v3(size_t m0, size_t m, size_t siz
 }
 
 void NetworkBApercolation_v3::initiate(size_t m0, size_t m, size_t size) {
-    _m0 = (m > m0)? m +m0 : m0;
+    _m0 = m0;
     _m = m;
+    if(_m0 <= m){_m0 += m;}
     _network_size = size;
 
     initialize_network(); // called as a safe guard. just in case the user forgets to call it after initializing random state

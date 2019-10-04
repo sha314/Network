@@ -93,6 +93,7 @@ public:
         ss << _network_frame.get_m0() << "_m_" << _network_frame.get_m() << "_size_" << _network_size << "-";
         return ss.str();
     }
+    virtual std::string getClassName(){return "NetworkBApercolation_v3";}
 
     /***********************************************
      * Properties and Informations
@@ -108,7 +109,7 @@ public:
 
     double entropy_v1();
     double entropy_v2();
-
+    double entropy(){return entropy_v2();}
     void subtract_entropy(Link& lnk);
     void add_entropy(Link& lnk);
 

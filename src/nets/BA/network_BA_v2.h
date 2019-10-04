@@ -20,11 +20,7 @@ class NetworkBA_v2{
 
     // variable properties
     std::vector<int> _nodes;
-<<<<<<< HEAD
-    size_t N{3}; // network size = number of nodes
-=======
     size_t _N_size{3}; // network size = number of nodes
->>>>>>> v5
     size_t _N_max;
     int _node_index; // 1 less _N_size
     size_t _link_count{}; // number of links

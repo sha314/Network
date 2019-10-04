@@ -17,16 +17,10 @@
  * used classes : NetworkBA_v2
  *
  */
-<<<<<<< HEAD
-class NetworkBApercolation_v5 { // TODO
 
-    double log_1_by_size{}; // to make calculations easier
-    double one_by_size{};
-    size_t N;
-=======
 class NetworkBApercolation_v5 {
 protected:
->>>>>>> v5
+
     //time measurement variables
     double _time_placeSelectedLink{};
     size_t _random_state{};
