@@ -410,14 +410,18 @@ void NetworkBA::shrink_to_fit() { // frequently calling this function will reduc
 
 
 bool NetworkBA::grow(size_t netowk_size) {
-    if(netowk_size <= _N){
+    if(netowk_size <= _N_size){
         cout << "cannot grow" << endl;
         return false;
     }
-    for(size_t i{_N}; i < netowk_size; ++i){
+    for(size_t i{_N_size}; i < netowk_size; ++i){
         addNode();
     }
+<<<<<<< HEAD
     N = netowk_size;
+=======
+    _N_size = netowk_size;
+>>>>>>> v5
     return true;
 }
 

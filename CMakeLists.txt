@@ -41,6 +41,16 @@ set(SOURCE_FILES
         src/percolation/explosive/network_percolation_explosive.h
         src/percolation/network_percolation_template.h
         src/percolation/explosive/network_percolation_explosive.cpp
-        src/percolation/network_percolation_v3.h src/percolation/network_percolation_v2.h src/percolation/network_percolation_v4.h src/percolation/network_percolation_v5.cpp src/percolation/network_percolation_v5.h src/nets/BA/network_BA_v2.cpp src/nets/BA/network_BA_v2.h src/test/test_network_ba_v2.cpp src/test/test_network_ba_v2.h)
+        src/percolation/network_percolation_v3.h
+        src/percolation/network_percolation_v2.h
+        src/percolation/network_percolation_v4.h
+        src/percolation/network_percolation_v5.cpp
+        src/percolation/network_percolation_v5.h
+        src/nets/BA/network_BA_v2.cpp
+        src/nets/BA/network_BA_v2.h
+        src/test/test_network_ba_v2.cpp
+        src/test/test_network_ba_v2.h
+        src/percolation/explosive/network_percolation_explosive_v5.cpp
+        src/percolation/explosive/network_percolation_explosive_v5.h)
 
 add_executable(networks ${SOURCE_FILES})

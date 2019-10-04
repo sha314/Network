@@ -83,7 +83,7 @@ public:
     NetworkBApercolation_v3()           = default;
     NetworkBApercolation_v3(size_t m0, size_t m, size_t size);
     void initialize_network();
-    void initializeNetwork(){initialize_network();};
+    void initializeNetwork() {initialize_network();};
 
     void reset(int i=0);
 
