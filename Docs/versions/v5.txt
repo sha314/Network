@@ -38,3 +38,15 @@ N       Time        Mem
 1M      7.4 sec
 2M      16.45 sec   464 MB
 
+**************************************************
+## with recursive root finding method (idea copied from Digonto vai code)(Date : 2019.10.04)
+NetworkBApercolationExplosive_v5
+m=5
+M=2
+
+N       Time        Mem
+50k     0.05 sec
+100k    0.127 sec
+1M      2.67 sec
+2M      6.35 sec   400 MB
+

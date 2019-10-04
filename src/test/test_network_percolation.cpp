@@ -596,8 +596,8 @@ void test_v5(int argc, char **argv) {
     int ensemble_size = atoi(argv[4]);
 
 
-    NetworkBApercolation_v5 net(m, m, N);
-//    NetworkBApercolationExplosive_v5 net(m, m, N, M);
+//    NetworkBApercolation_v5 net(m, m, N);
+    NetworkBApercolationExplosive_v5 net(m, m, N, M);
     net.setRandomState(0, true);
     net.initializeNetwork();
 

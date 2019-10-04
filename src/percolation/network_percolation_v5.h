@@ -63,6 +63,7 @@ public:
     int findRoot(int a);
     int find_root_v1(int a);
     int find_root_v2(int a);
+    int find_root_v3(int i); // recursive method
 
     void mergeClusters(int root_a, int root_b);
     size_t clusterCount();
@@ -99,13 +100,13 @@ public:
     bool placeSelectedLink(uint i);
 //    uint getLinkIndex(uint a){return list_of_link_indices[a];}
 
-    std::string get_signature() {
+    virtual std::string get_signature() {
         std::stringstream ss;
         ss << "netrowk_BA_percolation_m0_";
         ss << _network_frame.get_m0() << "_m_" << _network_frame.get_m() << "_size_" << _N_size;
         return ss.str();
     }
-    std::string getClassName(){return "NetworkBApercolation_v5";}
+    virtual std::string getClassName(){return "NetworkBApercolation_v5";}
 };
 
 

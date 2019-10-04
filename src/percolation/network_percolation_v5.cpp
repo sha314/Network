@@ -42,10 +42,19 @@ void NetworkBApercolation_v5::init(bool g) {
     _randomized_indices = list_of_link_indices;
 }
 
+/**
+ * Negative value in _cluster_info element means that element is the size of the cluster and
+ *      index of that element is the root index.
+ * Positive value in _cluster_info element means that this element is not root but the value
+ *      of the element will get you one step closer to root
+ * @param a
+ * @return
+ */
 int NetworkBApercolation_v5::findRoot(int a) {
     int b = 0;
 //    b = find_root_v1(a);
-    b = find_root_v2(a);
+//    b = find_root_v2(a);
+    b = find_root_v3(a);
     return b;
 }
 
@@ -95,6 +104,30 @@ int NetworkBApercolation_v5::find_root_v2(int a) {
         _cluster_info[ri] = a;
     }
     return a;
+}
+/**
+ * Find root recursively
+ * Since we never need to traverse more than a few hundreds
+ * loop if we keep assiging roor index to all
+ * cluster encountered, recursive approach might be better
+ *
+ * This method is copied from Digonto vai codes
+ *
+ * @param ptr1
+ * @param i
+ * @return
+ */
+//int find_root(int ptr1[],int i)
+//{
+//    if(ptr1[i]<0) return i;
+//
+//    return ptr1[i]=find_root_v3(ptr1,ptr1[i]);
+//}
+int NetworkBApercolation_v5::find_root_v3(int i)
+{
+    if(_cluster_info[i]<0) return i;
+
+    return _cluster_info[i]=find_root_v3(_cluster_info[i]);
 }
 
 void  NetworkBApercolation_v5::mergeClusters(int root_a, int root_b) {

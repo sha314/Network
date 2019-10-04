@@ -11,4 +11,19 @@ m | N | NetworkBA | NetworkBA_v2 |
 
 
 
+# Digonto vai codes
+Explosive percolation on BA network with
+m = 5
+M=2
+
+N        Time (sec)   Mem
+50k      0.17 
+100k     0.379
+1M       4.7 
+2M       9.5          250 MB
+
+
+
+
+
 
