@@ -612,7 +612,7 @@ void NetworkBApercolation_v3::jump() {
     }
     if(abs(delta_H) > abs(_largest_jump_entropy)){
         _largest_jump_entropy = delta_H;
-        _entropy_jump_pc = occupationProbability();
+        _entropy_jump_tc = relativeLinkDensity();
     }
 
 }

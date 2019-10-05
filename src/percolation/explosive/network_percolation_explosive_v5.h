@@ -31,7 +31,7 @@ public:
 
     std::string get_signature() {
         std::stringstream ss;
-        ss << "netrowk_BA_percolation_explosive_m0_";
+        ss << "network_BA_percolation_explosive_m0_";
         ss << _network_frame.get_m0() << "_m_" << _network_frame.get_m() << "_size_" << _N_size << "_M_" << _M << '-';
         return ss.str();
     }
@@ -41,6 +41,7 @@ public:
      * Sum rule and Product rule
      */
     uint link_for_min_cluster_sum_product_v2(size_t start_at=0); // both sum and product rule and randomly chooses from _randomized_link_indices
+    uint link_for_min_cluster_sum_product_v3_adaptive(double tc, size_t start_at);
     uint selectLink_v2();
 
     void time_summary();

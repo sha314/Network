@@ -757,7 +757,7 @@ void test_v5(int argc, char **argv) {
        << R"*("signature":")*" << signature << "\""
        << R"*(,"class":")*" << net.getClassName() << "\""
        << R"*(,"m":)*" << m
-       << R"*(,"network_size":)*" << N
+       << R"*(,"N":)*" << N
        << R"*(,"number_of_links":)*" << net.linkCount()
        << R"*(,"number_of_nodes":)*" << net.nodeCount()
        << R"*(,"M":)*" << M
@@ -854,7 +854,7 @@ void test_v3(int argc, char **argv) {
        << R"*("signature":")*" << signature << "\""
        << R"*(,"class":")*" << net.getClassName() << "\""
        << R"*(,"m":)*" << m
-       << R"*(,"network_size":)*" << N
+       << R"*(,"N":)*" << N
        << R"*(,"number_of_links":)*" << net.linkCount()
        << R"*(,"number_of_nodes":)*" << net.nodeCount()
        << R"*(,"M":)*" << M

@@ -52,6 +52,6 @@ set(SOURCE_FILES
         src/test/test_network_ba_v2.h
         src/percolation/explosive/network_percolation_explosive_v5.cpp
         src/percolation/explosive/network_percolation_explosive_v5.h
-        src/percolation/explosive/network_percolation_explosive_v3.cpp)
+        src/percolation/explosive/network_percolation_explosive_v3.cpp src/percolation/explosive/network_percolation_explosive_inverted.cpp src/percolation/explosive/network_percolation_explosive_inverted.h)
 
 add_executable(networks ${SOURCE_FILES})

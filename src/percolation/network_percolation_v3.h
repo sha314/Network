@@ -58,7 +58,7 @@ protected:
     double _current_entropy{};
     double _previous_entropy{};
     double _largest_jump_entropy{}; // todo
-    double _entropy_jump_pc{};
+    double _entropy_jump_tc{};
 //    size_t _last_cluster_size{};
 //    size_t _previous_cluster_size{};
 //    size_t _largest_jump_cluster_size{}; //todo
@@ -117,7 +117,7 @@ public:
     double maxEntropy(){return log(_network_size);} // TODO check if it actually works
     void jump(); // calculates jump of entropy and
     double largestEntropyJump()     const { return _largest_jump_entropy;}
-    double largestEntropyJump_pc()  const { return _entropy_jump_pc;} // occupation probability at largest jump of entropy
+    double largestEntropyJump_pc()  const { return _entropy_jump_tc;} // occupation probability at largest jump of entropy
 
     virtual bool occupyLink();
 
