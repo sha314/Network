@@ -126,8 +126,13 @@ int NetworkBApercolation_v5::find_root_v2(int a) {
 int NetworkBApercolation_v5::find_root_v3(int i)
 {
     if(_cluster_info[i]<0) return i;
-
-    return _cluster_info[i]=find_root_v3(_cluster_info[i]);
+//    _cluster_info[i]=find_root_v3(_cluster_info[i]);
+//    return _cluster_info[i];
+    /*
+     * int a = 2;
+     * cout << (a=10) << endl; // this will print 10
+     */
+    return _cluster_info[i]=find_root_v3(_cluster_info[i]); // assign and return at the same time
 }
 
 void  NetworkBApercolation_v5::mergeClusters(int root_a, int root_b) {
