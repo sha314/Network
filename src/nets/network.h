@@ -38,9 +38,11 @@ protected:
 //    std::unordered_set<uint> _m_links; // so that repetitionis automatically ignored
     std::vector<uint> _m_nodes;
     // random engine
+
     size_t _random_state{};
     std::mt19937 _random;
     std::chrono::duration<double> shuffle_time=chrono::duration<double>(0);
+
 public:
     ~Network() = default;
     explicit Network(uint m0=0, uint m=1);
@@ -81,11 +83,11 @@ public:
 
     std::vector<size_t> degrees();
     double clusteringCoefficient() const {
-        cout << "TODO : line " << __LINE__ << endl;
+        std::cout << "TODO : line " << __LINE__ << std::endl;
         return 0;
     }
     double clusteringCoefficient(size_t i) const {
-        cout << "TODO : line " << __LINE__ << endl;
+        std::cout << "TODO : line " << __LINE__ << std::endl;
         return 0;
     }
     void initialize();
@@ -107,7 +109,7 @@ public:
     void activateLink(size_t pos);
     void activateNode(size_t pos);
 
-    void getTime() const {cout << "shuffle time " << shuffle_time.count() << endl;}
+    void getTime() const {std::cout << "shuffle time " << shuffle_time.count() << std::endl;}
 
     double size_in_MB();
 
@@ -217,7 +219,7 @@ public:
     virtual ~NetworkMDA() = default;
     NetworkMDA() = default;
     NetworkMDA(size_t m0, size_t m):Network(m0, m) {
-        cout << "MDA network" << endl;
+        std::cout << "MDA network" << std::endl;
     }
 
     // methods

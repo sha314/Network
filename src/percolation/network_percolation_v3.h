@@ -29,7 +29,7 @@
  *  5   4000000     2399 MB
  */
 class NetworkBApercolation_v3 {
-    size_t _m0, _m;
+    size_t _m0{3}, _m{1};
 
     double one_by_N{};
     double log_1_by_size{}; // to make calculations easier
@@ -86,7 +86,8 @@ public:
     void initializeNetwork() {initialize_network();};
 
     void reset(int i=0);
-
+    size_t get_m0() const {return _m0;}
+    size_t get_m() const {return _m;}
     virtual std::string get_signature() {
         std::stringstream ss;
         ss << "netrowk_BA_percolation_m0_";
@@ -105,6 +106,7 @@ public:
     int largestClusterID()          const {return _last_largest_cluster_id;}
     size_t linkCount()              const { return _network_frame.number_of_links();}
     size_t nodeCount()              const { return _network_frame.number_of_nodes();}
+    size_t getNetworkSize()         const {return _network_size;}
     Link lastLink()                 const {return _last_lnk;}
 
     double entropy_v1();
@@ -112,7 +114,7 @@ public:
     double entropy(){return entropy_v2();}
     void subtract_entropy(Link& lnk);
     void add_entropy(Link& lnk);
-
+    double maxEntropy(){return log(_network_size);} // TODO check if it actually works
     void jump(); // calculates jump of entropy and
     double largestEntropyJump()     const { return _largest_jump_entropy;}
     double largestEntropyJump_pc()  const { return _entropy_jump_pc;} // occupation probability at largest jump of entropy
@@ -164,6 +166,7 @@ public:
 
     const std::vector<double> clusterPickingProbability();
     void setRandomState(size_t seed, bool g) ;
+    size_t getRandomState() {return _random_state;}
     std::vector<double> clusterSizeDistribution();
 };
 

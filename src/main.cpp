@@ -10,6 +10,7 @@
 #include "percolation/network_percolation_v4.h"
 #include "percolation/explosive/network_percolation_explosive.h"
 #include "test/test_network_ba_v2.h"
+#include "percolation/explosive/network_percolation_explosive_v3.h"
 //#include "percolation/network_percolation2.h"
 #include <algorithm>
 #include <fstream>
@@ -31,7 +32,7 @@ void network_percolation_to_file(int argc, char* argv[]){
     uint network_size = atoi(argv[2]);
     uint ensemble_size = atoi(argv[3]);
 
-    NetworkBApercolation net(3, m, network_size);
+    NetworkBApercolation_v3 net(3, m, network_size);
     net.reset();
     net.viewNodes();
     net.viewLinks();
@@ -58,7 +59,6 @@ void test_sizes()
     cout << "size of a Network " << sizeof(Network) << " bytes" << endl;
     cout << "size of a NetworkBA " << sizeof(NetworkBA) << " bytes" << endl;
     cout << "size of a NetworkBApercolation_v3 " << sizeof(NetworkBApercolation_v3) << " bytes" << endl;
-    cout << "size of a NetworkBApercolation_v4 " << sizeof(NetworkBApercolation_v4) << " bytes" << endl;
 
     cout << "size of a NetworkBApercolationExplosive_v3 " << sizeof(NetworkBApercolationExplosive_v3) << " bytes" << endl;
 
@@ -83,6 +83,7 @@ void test_component_sizes() {
  * @param argv
  */
 void run_in_main(int argc, char* argv[]){
+
 //    vector<string> arguments{"m","N","M", "Ensemble"};
 //    cout << "Arguments " << endl;
 //    for(int i{1}; i < argc; ++i){
@@ -101,6 +102,7 @@ void run_in_main(int argc, char* argv[]){
 //    degree_distribution_BA_v2(argc, argv); // 2019.05.21
 //    network_percolation(argc, argv);
 //    network_percolation_explosive(argc, argv);
+//    network_percolation_explosive_v2(argc, argv); // 2019.09.25
 //
 //    cout << "cores " << thread::hardware_concurrency() << endl;
 //    explosive_percolation_sum(3, 5000, 5, 100, 0); // testing only
@@ -116,7 +118,11 @@ void run_in_main(int argc, char* argv[]){
 //    test_NetworkBApercolationExplosive_v3_jump(argc, argv);
     test_v5(argc,argv);
 //    test_NetworkBA_v2(argc, argv);
-//    test_v3(argc, argv);
+    test_v3(argc, argv);
+//    BA_order_parameter_jump(argc, argv);
+//    BA_entropy_jump_ensemble(argc, argv);
+
+//    clusterSizeDistribution(argc, argv); // added 2019.06.22
 
 }
 

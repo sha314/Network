@@ -6,6 +6,7 @@
 #define PERCOLATION_PRINTER_H
 
 #include <ostream>
+#include <map>
 #include <unordered_map>
 #include <set>
 #include <unordered_set>
