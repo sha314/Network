@@ -19,9 +19,9 @@ NetworkBApercolationExplosive_v5::NetworkBApercolationExplosive_v5(size_t m0, si
     if (M > 2) {
         if(M > MAX_M_VALUE){
             cout << "M exceeds maximum allowed value : line " << __LINE__ << endl;
-            _M = MAX_M_VALUE;
+            _M_link = MAX_M_VALUE;
         }
-        _M = M;
+        _M_link = M;
     }
 }
 
@@ -38,8 +38,7 @@ uint NetworkBApercolationExplosive_v5::selectLink_v2() {
     }
     auto start = std::chrono::system_clock::now(); // time measurement
 
-//    uint pos = link_for_min_cluster_sum_product_v2(occupied_link_count);
-    uint pos = link_for_min_cluster_sum_product_v3_adaptive(0.733484, occupied_link_count);
+    uint pos = link_for_min_cluster_sum_product_v2(occupied_link_count);
     auto end = std::chrono::system_clock::now(); // time measurement
     std::chrono::duration<double> elapsed_seconds = end-start; // time measurement
     _time_selectLink += elapsed_seconds.count();
@@ -62,10 +61,10 @@ uint NetworkBApercolationExplosive_v5::link_for_min_cluster_sum_product_v2(size_
     int  n_nodes;
     size_t prod_sum = 2* largestClusterSize()*largestClusterSize() + 100; // so that it is very big before going into the loop
 //    cout << "prod_sum " << prod_sum << endl;
-    size_t limit = start_at + _M;
+    size_t limit = start_at + _M_link;
     size_t r{};
 //    cout << "randomly between ("<< start_at <<"," << _link_count << ")={";
-    for(size_t i{0}; i < _M; ++i){
+    for(size_t i{0}; i < _M_link; ++i){
         // todo : what happens when start_at is near to the size of _randomized_link_indices.
         // random number between a and b or rand(a,b) = a + r%(b-a); where r is an arbitrary random number
         r = start_at + _random() % (_link_count-start_at);
@@ -132,7 +131,7 @@ uint NetworkBApercolationExplosive_v5::link_for_min_cluster_sum_product_v2(size_
 uint NetworkBApercolationExplosive_v5::link_for_min_cluster_sum_product_v3_adaptive(double tc, size_t start_at) {
     size_t index_randomized_link{0};
     double t = relativeLinkDensity();
-    int tmp_lnk_index, index1, index2;
+    int tmp_lnk_index, root1, root2;
     int id1{-1}, id2{-1};
     size_t prod_sum, n_nodes;
     if (t < tc) {
@@ -142,10 +141,10 @@ uint NetworkBApercolationExplosive_v5::link_for_min_cluster_sum_product_v3_adapt
         prod_sum = 1; // smallest possible value for both sum and product
     }
 //    cout << "prod_sum " << prod_sum << endl;
-    size_t limit = start_at + _M;
+    size_t limit = start_at + _M_link;
     size_t r{};
 //    cout << "randomly between ("<< start_at <<"," << _link_count << ")={";
-    for(size_t i{0}; i < _M; ++i){
+    for(size_t i{0}; i < _M_link; ++i){
         // what happens when start_at is near to the size of _randomized_link_indices. ???
         // random number between a and b or rand(a,b) = a + r%(b-a); where r is an arbitrary random number
         r = start_at + _random() % (_link_count-start_at);
@@ -155,14 +154,14 @@ uint NetworkBApercolationExplosive_v5::link_for_min_cluster_sum_product_v3_adapt
 
         id1 = _network_frame.getNodeA(tmp_lnk_index);
         id2 = _network_frame.getNodeB(tmp_lnk_index);
-        index1 = findRoot(id1);
-        index2 = findRoot(id2);
-        if(id1 == id2){
+        root1 = findRoot(id1);
+        root2 = findRoot(id2);
+        if(root1 == root2){
             // if they belong to same cluster. adding new link does not increase cluster size.
-            n_nodes = -_cluster_info[index1];
+            n_nodes = -_cluster_info[root1];
 //            cout << "same cluster " << endl;
         }else {
-            n_nodes = _cluster_info[index1] * _cluster_info[index2]; // product rule
+            n_nodes = _cluster_info[root1] * _cluster_info[root2]; // product rule
 //            n_nodes = -(_cluster_info[index1] + _cluster_info[index2]); // sum rule
         }
 

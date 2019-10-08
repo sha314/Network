@@ -49,7 +49,7 @@ protected:
     size_t _link_count;
     std::vector<uint> _link_indices;  // size in Bytes = number of links * 4
     std::vector<uint> _randomized_indices;  // size in Bytes = number of links * 4
-    size_t _number_of_occupied_links{};
+    size_t occupied_link_count{};
     size_t _number_of_connected_nodes{}; // not isolated
     size_t _number_of_nodes_in_the_largest_cluster{0};
     int _last_largest_cluster_id{0};
@@ -100,8 +100,8 @@ public:
      * Properties and Informations
      * Information about the state of network
      ***********************************************/
-    double occupationProbability()  const { return double(_number_of_occupied_links) / _link_count;}
-    double relativeLinkDensity()    const { return double(_number_of_occupied_links) / _network_size;}
+    double occupationProbability()  const { return double(occupied_link_count) / _link_count;}
+    double relativeLinkDensity()    const { return double(occupied_link_count) / _network_size;}
     size_t largestClusterSize()     const {return _number_of_nodes_in_the_largest_cluster;}
     int largestClusterID()          const {return _last_largest_cluster_id;}
     size_t linkCount()              const { return _network_frame.number_of_links();}

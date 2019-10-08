@@ -13,6 +13,7 @@
 #include "../percolation/network_percolation_v5.h"
 #include "../percolation/explosive/network_percolation_explosive_v5.h"
 #include "../percolation/explosive/network_percolation_explosive_v3.h"
+#include "../percolation/explosive/network_percolation_explosive_inverted.h"
 #include <chrono>
 #include <fstream>
 #include <thread>
@@ -708,6 +709,8 @@ void test_v5(int argc, char **argv) {
 
 //    NetworkBApercolation_v5 net(m, m, N);
     NetworkBApercolationExplosive_v5 net(m, m, N, M);
+//    NetworkBApercolationExplosive_Inverted_v5 net(m,m,N,M);
+
     net.setRandomState(0, true);
     net.initializeNetwork();
 
@@ -804,7 +807,8 @@ void test_v3(int argc, char **argv) {
 
 
 //    NetworkBApercolation_v3 net(m, m, N);
-    NetworkBApercolationExplosive_v3 net(m, m, N, M);
+     NetworkBApercolationExplosive_v3 net(m, m, N, M);
+//   NetworkBApercolationExplosive_Inverted_v3 net(m, m, N, M);
     net.setRandomState(0, true);
     net.initializeNetwork();
 
@@ -824,11 +828,16 @@ void test_v3(int argc, char **argv) {
 //        net.viewClusters();
 //        net.viewListOfLinkIndices();
 //        net.viewNetwork();
+//        double t{};
 //        cout << "entering to while" << endl;
         while (net.occupyLink()) {
 //            cout << "i " << i  << endl;
+//            t = net.relativeLinkDensity();
             entropy[i] += net.entropy();
             order_param[i] += net.largestClusterSize();
+//            if(t > 0.733484){
+//                net.viewCluster();
+//            }
 //            net.viewClusters();
 //            cout << net.entropy_v1()  << "\t";
 //            cout << net.entropy_v2() << endl;

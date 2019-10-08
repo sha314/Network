@@ -9,8 +9,8 @@ using namespace std;
 NetworkBApercolation_v5::NetworkBApercolation_v5(size_t m0, size_t m, size_t size) {
 //    cout << m0 << ", " << m << endl;
     _network_frame = NetworkBA_v2(m0, m);
-    _N_size = size;
-    one_by_size = 1.0/_N_size;
+    _network_size = size;
+    one_by_size = 1.0/_network_size;
     log_1_by_size = log(one_by_size);
 }
 
@@ -26,7 +26,7 @@ void NetworkBApercolation_v5::setRandomState(size_t seed, bool g) {
 void NetworkBApercolation_v5::init(bool g) {
     // only need to do once
     _network_frame.setRandomState(_random_state, g);
-    _network_frame.grow(_N_size); // network construction
+    _network_frame.grow(_network_size); // network construction
 
     list_of_link_indices.resize(_network_frame.getLinkCount());
     _link_count = _network_frame.getLinkCount();
@@ -35,7 +35,7 @@ void NetworkBApercolation_v5::init(bool g) {
     }
 
     // need to do when resetting
-    _cluster_info = vector<int>(_N_size, -1);
+    _cluster_info = vector<int>(_network_size, -1);
     occupied_link_count = 0;
     // shuffle the value of the list
     shuffle(list_of_link_indices.begin(), list_of_link_indices.end(), _random);
@@ -216,7 +216,7 @@ void NetworkBApercolation_v5::viewClusters() {
 
 void NetworkBApercolation_v5::initialize_network() {
     cout << "Initializing Network ... " << std::flush;
-    _network_frame.grow(_N_size);
+    _network_frame.grow(_network_size);
     // initialize link indices
     _link_count = _network_frame.getLinkCount();
     list_of_link_indices.resize(_link_count);
@@ -224,11 +224,11 @@ void NetworkBApercolation_v5::initialize_network() {
         list_of_link_indices[i]=i;
     }
     // initialize cluster
-    _cluster_info.resize(_N_size);
+    _cluster_info.resize(_network_size);
     initialize_cluster();
     cout << "done." << endl;
     occupied_link_count = 0;
-    _entropy_val = log(_N_size);// initial entropy
+    _entropy_val = log(_network_size);// initial entropy
     _largest_jump_entropy=0;
     _previous_entropy=0;
     _entropy_jump_tc=0;
@@ -238,7 +238,7 @@ void NetworkBApercolation_v5::initialize_network() {
 }
 
 void NetworkBApercolation_v5::initialize_cluster() {
-    for(size_t i{}; i < _N_size; ++i){
+    for(size_t i{}; i < _network_size; ++i){
         _cluster_info[i] = -1; // all clusters are of size 1 and all of them are root cluster
     }
 }
@@ -248,7 +248,7 @@ void NetworkBApercolation_v5::reset(int i) {
 //    cout << "reset NetworkBApercolation_v3: line " <<__LINE__ << endl;
 
     occupied_link_count = 0;
-    _entropy_val = log(_N_size);// initial entropy
+    _entropy_val = log(_network_size);// initial entropy
     _largest_jump_entropy=0;
     _previous_entropy=0;
     _entropy_jump_tc=0;
@@ -258,7 +258,7 @@ void NetworkBApercolation_v5::reset(int i) {
         // initialize the network again
         _network_frame.reset(); // this will do the trick
 //        viewNetwork();
-        _network_frame.grow(_N_size);
+        _network_frame.grow(_network_size);
     }
 //    viewNetwork();
     randomize_indices(list_of_link_indices);
@@ -269,7 +269,7 @@ void NetworkBApercolation_v5::reset(int i) {
 double NetworkBApercolation_v5::entropy_v1() {
     double mu{}, H{};
     for(size_t i{}; i < _cluster_info.size(); ++i){
-        mu = -1*_cluster_info[i]/double(_N_size); // negative values of a clusters are sizes
+        mu = -1*_cluster_info[i]/double(_network_size); // negative values of a clusters are sizes
         if(mu > 0){
             H += mu * log(mu);
         }
@@ -297,8 +297,8 @@ void NetworkBApercolation_v5::randomize_indices(std::vector<uint>& a) {
  * @param root_b
  */
 void NetworkBApercolation_v5::subtract_entropy(int root_a, int root_b) {
-    double mu_a = -_cluster_info[root_a]/double(_N_size);
-    double mu_b = -_cluster_info[root_b]/double(_N_size);
+    double mu_a = -_cluster_info[root_a]/double(_network_size);
+    double mu_b = -_cluster_info[root_b]/double(_network_size);
     if(mu_a < 0 || mu_b < 0){
         cerr << "one of the root is not a root : line " << __LINE__ << endl;
     }
@@ -312,7 +312,12 @@ void NetworkBApercolation_v5::subtract_entropy(int root_a, int root_b) {
 }
 
 void NetworkBApercolation_v5::add_entropy(int root_a) {
-    double mu_a = -_cluster_info[root_a]/double(_N_size);
+    double mu_a = -_cluster_info[root_a]/double(_network_size);
+//    if(mu_a < 0){
+//        cerr << "not root" << endl;
+//        root_a = findRoot(root_a);
+//        mu_a = -_cluster_info[root_a]/double(_network_size);
+//    }
     double H{};
     if(mu_a > 0){
         H += mu_a * log(mu_a);

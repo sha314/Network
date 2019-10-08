@@ -95,7 +95,7 @@ bool NetworkBApercolation_v3::occupyLink(){
 }
 
 bool NetworkBApercolation_v3::placeLink() {
-    if (_number_of_occupied_links >= _link_count){
+    if (occupied_link_count >= _link_count){
         return false;
     }
 //    cout << index_var << " ==? " << _randomized_link_indices.size();
@@ -106,7 +106,7 @@ bool NetworkBApercolation_v3::placeLink() {
     _network_frame.activateLink(last_link_pos_in_randomized); // activating the link
 
     // occupy that link
-    ++_number_of_occupied_links;
+    ++occupied_link_count;
 
     // cluster management
     subtract_entropy(_last_lnk);
@@ -554,12 +554,12 @@ bool NetworkBApercolation_v3::placeSelectedLink(size_t link_pos) {
 //        cout << "link_pos > link_count : line " << __LINE__ << endl;
         return false;
     }
-    auto start = std::chrono::system_clock::now(); // time measurement
+//    auto start = std::chrono::system_clock::now(); // time measurement
     _last_lnk = _network_frame.getLink(link_pos);
     _network_frame.activateLink(link_pos); // activating the link
 
     // occupy that link
-    ++_number_of_occupied_links;
+    ++occupied_link_count;
 
     // cluster management
     subtract_entropy(_last_lnk);
@@ -568,15 +568,15 @@ bool NetworkBApercolation_v3::placeSelectedLink(size_t link_pos) {
     track_cluster_v2();
 
     auto end = std::chrono::system_clock::now(); // time measurement
-    std::chrono::duration<double> elapsed_seconds = end-start; // time measurement
-    _time_placeSelectedLink += elapsed_seconds.count();
+//    std::chrono::duration<double> elapsed_seconds = end-start; // time measurement
+//    _time_placeSelectedLink += elapsed_seconds.count();
     return true;
 }
 
 void NetworkBApercolation_v3::reset(int i) {
 //    cout << "reset NetworkBApercolation_v3: line " <<__LINE__ << endl;
     index_var = 0;
-    _number_of_occupied_links = 0;
+    occupied_link_count = 0;
     _number_of_connected_nodes = 0;
     _number_of_nodes_in_the_largest_cluster = 0;
     _entropy = 0;
@@ -604,7 +604,7 @@ void NetworkBApercolation_v3::reset(int i) {
  */
 void NetworkBApercolation_v3::jump() {
     double delta_H{};
-    if(_number_of_occupied_links == 1){
+    if(occupied_link_count == 1){
         _previous_entropy = _current_entropy;
     }else{
         delta_H = _current_entropy - _previous_entropy;

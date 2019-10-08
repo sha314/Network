@@ -19,7 +19,7 @@ private:
     double _time_selectLink{}, _time_link_for_min_cluster_sum_rule {};
     size_t _count_link_for_min_cluster_sum_rule_a{}, _count_link_for_min_cluster_sum_rule_b{}, _count_link_for_min_cluster_sum_rule_c{};
 protected:
-    uint _M{2}; // number of link to choose for product rule or sum rule
+    uint _M_link{2}; // number of link to choose for product rule or sum rule
 public:
     static const int MAX_M_VALUE = 20;
 
@@ -27,12 +27,12 @@ public:
     NetworkBApercolationExplosive_v5() = default;
     NetworkBApercolationExplosive_v5(size_t m0, size_t m, size_t size, uint M);
 
-    bool occupyLink();
+    virtual bool occupyLink();
 
     std::string get_signature() {
         std::stringstream ss;
         ss << "network_BA_percolation_explosive_m0_";
-        ss << _network_frame.get_m0() << "_m_" << _network_frame.get_m() << "_size_" << _N_size << "_M_" << _M << '-';
+        ss << _network_frame.get_m0() << "_m_" << _network_frame.get_m() << "_size_" << _network_size << "_M_" << _M_link << '-';
         return ss.str();
     }
     std::string getClassName(){return "NetworkBApercolationExplosive_v5";}

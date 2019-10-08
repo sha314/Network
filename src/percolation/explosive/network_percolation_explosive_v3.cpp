@@ -22,14 +22,14 @@ NetworkBApercolationExplosive_v3::NetworkBApercolationExplosive_v3(size_t m0, si
     if (M > 2) {
         if(M > MAX_M_VALUE){
             cout << "M exceeds maximum allowed value : line " << __LINE__ << endl;
-            _M = MAX_M_VALUE;
+            _M_link = MAX_M_VALUE;
         }
-        _M = M;
+        _M_link = M;
     }
 }
 
 bool NetworkBApercolationExplosive_v3::placeLink() {
-    if (_number_of_occupied_links >= _link_count){
+    if (occupied_link_count >= _link_count){
         return false;
     }
 //    cout << index_var << " ==? " << _randomized_link_indices.size();
@@ -39,7 +39,7 @@ bool NetworkBApercolationExplosive_v3::placeLink() {
     _network_frame.activateLink(pos); // activating the link
 
     // occupy that link
-    ++_number_of_occupied_links;
+    ++occupied_link_count;
 
     // cluster management
     manage_cluster_v0(pos);
@@ -54,15 +54,15 @@ bool NetworkBApercolationExplosive_v3::placeLink() {
  * @return
  */
 size_t NetworkBApercolationExplosive_v3::selectLink(char rule ) {
-    if(_number_of_occupied_links >= _link_count){
+    if(occupied_link_count >= _link_count){
         return _link_count+1;
     }
     auto start = std::chrono::system_clock::now(); // time measurement
     size_t r{};
     if(rule == 's'){
-        r = link_for_min_cluster_sum_rule(_number_of_occupied_links);
+        r = link_for_min_cluster_sum_rule(occupied_link_count);
     }else if(rule =='p'){
-        r = link_for_min_cluster_product_rule(_number_of_occupied_links);
+        r = link_for_min_cluster_product_rule(occupied_link_count);
     }else{
         cerr << "bad argument : line " << __LINE__ << endl;
         return _link_count + 1; // to terminate the program
@@ -76,7 +76,7 @@ size_t NetworkBApercolationExplosive_v3::selectLink(char rule ) {
     // 2019.05.20 better idea is just to replace the used value of _randomized_link_indices
     // by the first unused value, i.e., value at _number_of_occupied_links
 
-    _randomized_indices[r] = _randomized_indices[_number_of_occupied_links];
+    _randomized_indices[r] = _randomized_indices[occupied_link_count];
 
     auto end = std::chrono::system_clock::now(); // time measurement
     std::chrono::duration<double> elapsed_seconds = end-start; // time measurement
@@ -91,13 +91,13 @@ size_t NetworkBApercolationExplosive_v3::selectLink(char rule ) {
  * @return
  */
 size_t NetworkBApercolationExplosive_v3::selectLink_v2() {
-    if(_number_of_occupied_links >= _link_count){
+    if(occupied_link_count >= _link_count){
         return _link_count+1;
     }
     auto start = std::chrono::system_clock::now(); // time measurement
 
-    size_t pos = link_for_min_cluster_sum_product_v2(_number_of_occupied_links);
-//    size_t pos = link_for_min_cluster_sum_product_v3_adaptive(0.733484, _number_of_occupied_links); // for M=2
+    size_t pos = link_for_min_cluster_sum_product_v2(occupied_link_count);
+//    size_t pos = link_for_min_cluster_sum_product_v3_adaptive(0.733484, occupied_link_count); // for M=2
     auto end = std::chrono::system_clock::now(); // time measurement
     std::chrono::duration<double> elapsed_seconds = end-start; // time measurement
     _time_selectLink += elapsed_seconds.count();
@@ -121,7 +121,7 @@ size_t NetworkBApercolationExplosive_v3::link_for_min_cluster_sum_rule(size_t st
     int id1, id2;
     size_t sum{}, n_nodes;
     Link tmp_lnk;
-    size_t limit = _M + start_at;
+    size_t limit = _M_link + start_at;
 //    cout << "checking link indices {";
     for(size_t i{start_at}; i < limit; ++i){
         if(i >= _randomized_indices.size()){
@@ -212,7 +212,7 @@ size_t NetworkBApercolationExplosive_v3::link_for_min_cluster_product_rule(size_
     int id1, id2;
     size_t prod{1}, n_nodes;
     Link tmp_lnk;
-    size_t limit = start_at + _M;
+    size_t limit = start_at + _M_link;
     for(size_t i{start_at}; i < limit; ++i){
         if(i >= _randomized_indices.size()){
             cout << "not enough free link : line " << __LINE__ << endl;
@@ -294,7 +294,7 @@ size_t NetworkBApercolationExplosive_v3::link_for_min_cluster_sum_product(size_t
     prod_sum = 2*largestClusterSize()*largestClusterSize() + 100; // so that it is very big before going into the loop
 //    cout << "prod_sum " << prod_sum << endl;
     Link tmp_lnk;
-    size_t limit = start_at + _M;
+    size_t limit = start_at + _M_link;
     for(size_t i{start_at}; i < limit; ++i){
         if(i >= _randomized_indices.size()){
 //            cout << "not enough free link : line " << __LINE__ << endl;
@@ -338,8 +338,8 @@ size_t NetworkBApercolationExplosive_v3::link_for_min_cluster_sum_product(size_t
 
     // 2019.05.20 better idea is just to replace the used value of _randomized_link_indices
     // by the first unused value, i.e., value at _number_of_occupied_links
-    _randomized_indices[index_randomized_link] = _randomized_indices[_number_of_occupied_links];
-    _randomized_indices[_number_of_occupied_links] = 0; // does not affect the result. use only when debugging so that we can identify easily
+    _randomized_indices[index_randomized_link] = _randomized_indices[occupied_link_count];
+    _randomized_indices[occupied_link_count] = 0; // does not affect the result. use only when debugging so that we can identify easily
     return tmp;
 }
 
@@ -359,10 +359,10 @@ size_t NetworkBApercolationExplosive_v3::link_for_min_cluster_sum_product_v2(siz
     prod_sum = 2*largestClusterSize()*largestClusterSize() + 100; // so that it is very big before going into the loop
 //    cout << "prod_sum " << prod_sum << endl;
     Link tmp_lnk;
-    size_t limit = start_at + _M;
+    size_t limit = start_at + _M_link;
     size_t r{};
 //    cout << "randomly between ("<< start_at <<"," << _link_count << ")={";
-    for(size_t i{0}; i < _M; ++i){
+    for(size_t i{0}; i < _M_link; ++i){
         // todo : what happens when start_at is near to the size of _randomized_link_indices.
         // random number between a and b or rand(a,b) = a + r%(b-a); where r is an arbitrary random number
         r = start_at + _random_generator() % (_link_count-start_at);
@@ -408,9 +408,9 @@ size_t NetworkBApercolationExplosive_v3::link_for_min_cluster_sum_product_v2(siz
     // 2019.05.20 better idea is just to replace the used value of _randomized_link_indices
     // by the first unused value, i.e., value at _number_of_occupied_links
 
-    _randomized_indices[index_randomized_link] = _randomized_indices[_number_of_occupied_links];
+    _randomized_indices[index_randomized_link] = _randomized_indices[occupied_link_count];
 
-    _randomized_indices[_number_of_occupied_links] = 0; // does not affect the result. use only when debugging so that we can identify easily
+    _randomized_indices[occupied_link_count] = 0; // does not affect the result. use only when debugging so that we can identify easily
 
     return pos;
 }
@@ -426,8 +426,9 @@ size_t NetworkBApercolationExplosive_v3::link_for_min_cluster_sum_product_v2(siz
  * @return value of the link in the _randomized_indices for which cluster size become minimum
  */
 size_t NetworkBApercolationExplosive_v3::link_for_min_cluster_sum_product_v3_adaptive(double tc, size_t start_at) {
+//    cout << "entered NetworkBApercolationExplosive_v3::link_for_min_cluster_sum_product_v3_adaptive : line " << __LINE__ << endl;
     size_t index_randomized_link{0};
-    double t = occupationProbability();
+    double t = relativeLinkDensity();
     size_t tmp_lnk_index, index1, index2;
     int id1{-1}, id2{-1};
     size_t prod_sum, n_nodes;
@@ -436,19 +437,20 @@ size_t NetworkBApercolationExplosive_v3::link_for_min_cluster_sum_product_v3_ada
                    100; // so that it is very big before going into the loop
     }else{
         prod_sum = 1; // smallest possible value for both sum and product
+//        viewCluster();
     }
 //    cout << "prod_sum " << prod_sum << endl;
     Link tmp_lnk;
-    size_t limit = start_at + _M;
+    size_t limit = start_at + _M_link;
     size_t r{};
 //    cout << "randomly between ("<< start_at <<"," << _link_count << ")={";
-    for(size_t i{0}; i < _M; ++i){
+    for(size_t i{0}; i < _M_link; ++i){
         // todo : what happens when start_at is near to the size of _randomized_link_indices.
         // random number between a and b or rand(a,b) = a + r%(b-a); where r is an arbitrary random number
         r = start_at + _random_generator() % (_link_count-start_at);
 
         tmp_lnk_index = _randomized_indices[r];
-//        cout << r << ":" << tmp_lnk_index << ",";
+//        cout << r << ":" << tmp_lnk_index << "," << endl;
         tmp_lnk = _network_frame.getLink(tmp_lnk_index);
 
         id1 = _network_frame.get_node_group_id(tmp_lnk.get_a());
@@ -497,15 +499,15 @@ size_t NetworkBApercolationExplosive_v3::link_for_min_cluster_sum_product_v3_ada
     // 2019.05.20 better idea is just to replace the used value of _randomized_link_indices
     // by the first unused value, i.e., value at _number_of_occupied_links
 
-    _randomized_indices[index_randomized_link] = _randomized_indices[_number_of_occupied_links];
+    _randomized_indices[index_randomized_link] = _randomized_indices[occupied_link_count];
 
-    _randomized_indices[_number_of_occupied_links] = 0; // does not affect the result. use only when debugging so that we can identify easily
-
+    _randomized_indices[occupied_link_count] = 0; // does not affect the result. use only when debugging so that we can identify easily
+//    cout << "exiting NetworkBApercolationExplosive_v3::link_for_min_cluster_sum_product_v3_adaptive : line " << __LINE__ << endl;
     return pos;
 }
 
 bool NetworkBApercolationExplosive_v3::occupyLink() {
-    if (_number_of_occupied_links >= _link_count){
+    if (occupied_link_count >= _link_count){
         return false;
     }
 //    size_t pos = selectLink('s');
