@@ -20,10 +20,10 @@ void network_percolation_global();
 
 void network_percolationReverse_global();
 
-void BA_order_parameter_jump(int argc, char **argv); // for demarcation line
+//void demarcationLine(int argc, char **argv); // for demarcation line
 void BA_entropy_jump_ensemble(int argc, char **argv);
 
-void clusterSizeDistribution(int argc, char **argv);// added 2019.06.22
+//void clusterSizeDistribution(int argc, char **argv);// added 2019.06.22
 
 
 void test_NetworkBApercolationExplosive_v3(int argc, char **argv);

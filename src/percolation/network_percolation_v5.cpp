@@ -253,6 +253,8 @@ void NetworkBApercolation_v5::reset(int i) {
     _previous_entropy=0;
     _entropy_jump_tc=0;
     largest_cluster_size=0;
+    largest_jump_cluster_size=0;
+    _previous_cluster_size=0;
 //    viewNetwork();
     if(i == 1){
         // initialize the network again
@@ -329,6 +331,9 @@ double NetworkBApercolation_v5::entropy_v2() {
     return _entropy_val;
 }
 
+/**
+ * @param a : root index of any cluster
+ */
 void NetworkBApercolation_v5::track_largest_cluster(int a) {
     int sz = -_cluster_info[a];
     if( sz > largest_cluster_size){
@@ -339,9 +344,34 @@ void NetworkBApercolation_v5::track_largest_cluster(int a) {
 }
 
 /**
+ * This method includes self cluster jump tracking
+ * @param a : root index of any cluster
+ */
+void NetworkBApercolation_v5::track_largest_cluster_v2(int a) {
+    int sz = -_cluster_info[a];
+    if( sz > largest_cluster_size){
+//        cout << "new largest [" << a << "] -> " << sz << endl;
+        largest_cluster_size = sz;
+        _self_cluster_jump = (largest_cluster_index == a); // true only in case of self jump
+        largest_cluster_index = a; // now largest_cluster_index
+    }
+}
+
+/**
  * Must be called after entropy is calculated each time. If not then this function will not work.
  */
 void NetworkBApercolation_v5::jump() {
+//    jump_v1();
+    jump_v2();
+}
+
+NetworkBApercolation_v5::~NetworkBApercolation_v5() {
+    cout << "destructor" << endl;
+}
+/**
+ * Only entropy jump
+ */
+void NetworkBApercolation_v5::jump_v1() {
     double delta_H{};
     if(occupied_link_count == 1){
         _previous_entropy = _entropy_val;
@@ -353,9 +383,24 @@ void NetworkBApercolation_v5::jump() {
         _largest_jump_entropy = delta_H;
         _entropy_jump_tc = relativeLinkDensity();
     }
-
 }
-
-NetworkBApercolation_v5::~NetworkBApercolation_v5() {
-    cout << "destructor" << endl;
+/**
+ * Entropy and Order parameter jump
+ */
+void NetworkBApercolation_v5::jump_v2() {
+    double delta_H{};
+    size_t delta_P{};
+    if(occupied_link_count > 1){
+        delta_H = _entropy_val - _previous_entropy;
+        delta_P = largest_cluster_size - _previous_cluster_size;
+    }
+    _previous_entropy = _entropy_val; // be ready for next step
+    _previous_cluster_size = largest_cluster_size;
+    if(abs(delta_H) > abs(_largest_jump_entropy)){
+        _largest_jump_entropy = delta_H;
+        _entropy_jump_tc = relativeLinkDensity();
+    }
+    if(delta_P > largest_jump_cluster_size){
+        largest_jump_cluster_size = delta_P;
+    }
 }

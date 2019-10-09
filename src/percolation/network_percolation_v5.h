@@ -39,7 +39,7 @@ protected:
     std::vector<uint> _randomized_indices;
 
     double _entropy_val{},    _largest_jump_entropy{}, _previous_entropy{}, _entropy_jump_tc{};
-    size_t largest_cluster_size{};
+    size_t largest_cluster_size{}, largest_jump_cluster_size{},_previous_cluster_size{};
     int largest_cluster_index{};
 
 
@@ -50,6 +50,8 @@ protected:
     size_t _network_size{1};
     size_t _link_count{};
     NetworkBA_v2 _network_frame;
+
+    bool _self_cluster_jump{false};
 
 public:
     ~NetworkBApercolation_v5();
@@ -88,9 +90,13 @@ public:
     void subtract_entropy(int a, int b);
     void add_entropy(int a);
     void jump();
+    void jump_v1();
+    void jump_v2();
     double largestEntropyJump()const{return _largest_jump_entropy;};
     double largestEntropyJump_pc()const{return _entropy_jump_tc;};
+    double largestOrderJump() const { return largest_jump_cluster_size/double(_network_size);}
     void track_largest_cluster(int a);
+    void track_largest_cluster_v2(int a);
     size_t largestClusterSize() const {return largest_cluster_size;}
 
     void initialize_cluster();
@@ -107,6 +113,8 @@ public:
         return ss.str();
     }
     virtual std::string getClassName(){return "NetworkBApercolation_v5";}
+
+    bool isSelfClusterJump() {return _self_cluster_jump;}
 };
 
 

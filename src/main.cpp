@@ -11,6 +11,7 @@
 #include "percolation/explosive/network_percolation_explosive.h"
 #include "test/test_network_ba_v2.h"
 #include "percolation/explosive/network_percolation_explosive_v3.h"
+#include "test/run_network_ba.h"
 //#include "percolation/network_percolation2.h"
 #include <algorithm>
 #include <fstream>
@@ -19,7 +20,7 @@
 
 void test_component_sizes();
 
-void test_v5(int argc, char **pString);
+void run_v5(int argc, char **pString);
 
 using namespace std;
 
@@ -83,7 +84,16 @@ void test_component_sizes() {
  * @param argv
  */
 void run_in_main(int argc, char* argv[]){
-
+    if(argc < 5 ){
+        cout << "argv[1] == m" << endl;
+        cout << "argv[2] == N" << endl;
+        cout << "argv[3] == M" << endl;
+        cout << "argv[4] == Ensemble" << endl;
+        return;
+    }
+    /**
+     * Testing methods
+     */
 //    vector<string> arguments{"m","N","M", "Ensemble"};
 //    cout << "Arguments " << endl;
 //    for(int i{1}; i < argc; ++i){
@@ -116,13 +126,18 @@ void run_in_main(int argc, char* argv[]){
 
 //    test_NetworkBApercolationExplosive_v3(argc, argv);
 //    test_NetworkBApercolationExplosive_v3_jump(argc, argv);
-    test_v5(argc,argv);
+    test_v5(argc, argv);
 //    test_NetworkBA_v2(argc, argv);
 //    test_v3(argc, argv);
 //    BA_order_parameter_jump(argc, argv);
 //    BA_entropy_jump_ensemble(argc, argv);
 
+    /**
+     * Corrected method for final run
+     */
 //    clusterSizeDistribution(argc, argv); // added 2019.06.22
+//    demarcationLine(argc, argv);
+//    run_BA_percolation(argc, argv);
 
 }
 
