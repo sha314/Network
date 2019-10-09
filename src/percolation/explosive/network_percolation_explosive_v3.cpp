@@ -19,6 +19,7 @@ using namespace std;
 NetworkBApercolationExplosive_v3::NetworkBApercolationExplosive_v3(size_t m0, size_t m, size_t size_max, uint M)
         : NetworkBApercolation_v3(m0, m, size_max)
 {
+    cout << "class NetworkBApercolationExplosive_v3" << endl;
     if (M > 2) {
         if(M > MAX_M_VALUE){
             cout << "M exceeds maximum allowed value : line " << __LINE__ << endl;

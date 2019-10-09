@@ -126,7 +126,7 @@ void run_in_main(int argc, char* argv[]){
 
 //    test_NetworkBApercolationExplosive_v3(argc, argv);
 //    test_NetworkBApercolationExplosive_v3_jump(argc, argv);
-    test_v5(argc, argv);
+//    test_v5(argc, argv);
 //    test_NetworkBA_v2(argc, argv);
 //    test_v3(argc, argv);
 //    BA_order_parameter_jump(argc, argv);
@@ -137,7 +137,7 @@ void run_in_main(int argc, char* argv[]){
      */
 //    clusterSizeDistribution(argc, argv); // added 2019.06.22
 //    demarcationLine(argc, argv);
-//    run_BA_percolation(argc, argv);
+    run_BA_percolation(argc, argv);
 
 }
 

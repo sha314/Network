@@ -16,6 +16,7 @@
 NetworkBApercolationExplosive_v5::NetworkBApercolationExplosive_v5(size_t m0, size_t m, size_t size, uint M)
         : NetworkBApercolation_v5(m0, m, size)
 {
+    std::cout << "class NetworkBApercolationExplosive_v5" << std::endl;
     if (M > 2) {
         if(M > MAX_M_VALUE){
             cout << "M exceeds maximum allowed value : line " << __LINE__ << endl;

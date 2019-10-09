@@ -8,6 +8,7 @@
 #include "../percolation/explosive/network_percolation_explosive_v3.h"
 #include "../util/time_tracking.h"
 #include "../percolation/explosive/network_percolation_explosive_v5.h"
+#include "../percolation/explosive/network_percolation_explosive_inverted.h"
 
 using namespace std;
 
@@ -125,8 +126,8 @@ void run_BA_percolation(int argc, char **argv) {
 //   NetworkBApercolationExplosive_Inverted_v3 net(m, m, N, M);
 
 //    NetworkBApercolation_v5 net(m, m, N);
-    NetworkBApercolationExplosive_v5 net(m, m, N, M);
-//    NetworkBApercolationExplosive_Inverted_v5 net(m,m,N,M);
+//    NetworkBApercolationExplosive_v5 net(m, m, N, M);
+    NetworkBApercolationExplosive_Inverted_v5 net(m,m,N,M);
 
     net.setRandomState(0, true);
     net.initializeNetwork();
@@ -188,11 +189,9 @@ void run_BA_percolation(int argc, char **argv) {
 
     ofstream fout_jump(filename_jump);
     fout_jump << '#' << ss.str() << endl;
-    fout_jump << "#<m><N><M><En><largest entropy jump><larget order parameter jump>" << endl;
-    for(size_t k{}; k < ensemble_size ; ++k){
-        fout_jump << m << "\t" << N << "\t" << M << "\t" << ensemble_size
-                  << "\t" << entropy_jump/ensemble_size << '\t' << order_jump/ensemble_size << endl;
-    }
+    fout_jump << "#<m><N><M><En><largest entropy jump><largest order parameter jump>" << endl;
+    fout_jump << m << "\t" << N << "\t" << M << "\t" << ensemble_size
+              << "\t" << abs(entropy_jump)/ensemble_size << '\t' << order_jump/ensemble_size << endl;
     fout_jump.close();
 
 

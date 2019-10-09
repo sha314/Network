@@ -17,6 +17,7 @@ using namespace std;
  */
 NetworkBApercolation_v3::NetworkBApercolation_v3(size_t m0, size_t m, size_t size)
 {
+    cout << "class NetworkBApercolation_v3" << endl;
     initiate(m0, m, size);
 ////    size_t seed = 0;
 ////    cerr << "automatic seeding is turned off : line " << __LINE__ << endl;
@@ -583,6 +584,8 @@ void NetworkBApercolation_v3::reset(int i) {
     _largest_jump_entropy =0;
     _previous_entropy = 0;
     _current_entropy = 0;
+    _previous_cluster_size=0;
+    largest_jump_cluster_size=0;
     group_id_count = 0;
     _last_lnk = {};
     _cluster.clear();
@@ -599,10 +602,14 @@ void NetworkBApercolation_v3::reset(int i) {
 }
 
 
+void NetworkBApercolation_v3::jump() {
+//    jump_v1();
+    jump_v2();
+}
 /**
  * Must be called after entropy is calculated each time. If not then this function will not work.
  */
-void NetworkBApercolation_v3::jump() {
+void NetworkBApercolation_v3::jump_v1() {
     double delta_H{};
     if(occupied_link_count == 1){
         _previous_entropy = _current_entropy;
@@ -612,7 +619,31 @@ void NetworkBApercolation_v3::jump() {
     }
     if(abs(delta_H) > abs(_largest_jump_entropy)){
         _largest_jump_entropy = delta_H;
-        _entropy_jump_tc = relativeLinkDensity();
+        _jump_tc = relativeLinkDensity();
+    }
+
+}
+
+/**
+ * Must be called after entropy is calculated each time. If not then this function will not work.
+ */
+void NetworkBApercolation_v3::jump_v2() {
+
+    double delta_H{};
+    size_t delta_P{};
+    if(occupied_link_count > 1){
+        delta_H = _current_entropy - _previous_entropy;
+        delta_P = largestClusterSize() - _previous_cluster_size;
+    }
+    _previous_entropy = _current_entropy; // be ready for next step
+    _previous_cluster_size = largestClusterSize();
+    if(abs(delta_H) > abs(_largest_jump_entropy)){
+        _largest_jump_entropy = delta_H;
+//        _jump_tc = relativeLinkDensity();
+    }
+    if(delta_P > largest_jump_cluster_size){
+        largest_jump_cluster_size = delta_P;
+//        _jump_tc = relativeLinkDensity();
     }
 
 }

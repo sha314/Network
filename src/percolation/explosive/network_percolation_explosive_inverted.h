@@ -25,7 +25,9 @@ class NetworkBApercolationExplosive_Inverted_v3 : public NetworkBApercolationExp
 
 public:
     NetworkBApercolationExplosive_Inverted_v3(size_t m0, size_t m, size_t size, uint M)
-            : NetworkBApercolationExplosive_v3(m0, m, size, M){};
+            : NetworkBApercolationExplosive_v3(m0, m, size, M){
+        cout << "class NetworkBApercolationExplosive_Inverted_v3" << endl;
+    };
 
 
     bool occupyLink() override;
@@ -48,7 +50,9 @@ class NetworkBApercolationExplosive_Inverted_v5 : public NetworkBApercolationExp
     std::vector<double> tc_values={0,0,0.733484,0.888528,0.946605,0.972533,0.985232,0.991819,0.99538,0.997349,0.998465};
 public:
     NetworkBApercolationExplosive_Inverted_v5(size_t m0, size_t m, size_t size, uint M)
-    : NetworkBApercolationExplosive_v5(m0, m, size, M){};
+    : NetworkBApercolationExplosive_v5(m0, m, size, M){
+        std::cout << "class NetworkBApercolationExplosive_Inverted_v5" << std::endl;
+    };
 
 
     bool occupyLink() override;

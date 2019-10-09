@@ -7,6 +7,7 @@
 using namespace std;
 
 NetworkBApercolation_v5::NetworkBApercolation_v5(size_t m0, size_t m, size_t size) {
+    std::cout << "class NetworkBApercolation_v5" << std::endl;
 //    cout << m0 << ", " << m << endl;
     _network_frame = NetworkBA_v2(m0, m);
     _network_size = size;
