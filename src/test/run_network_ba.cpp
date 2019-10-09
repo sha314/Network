@@ -173,7 +173,7 @@ void run_BA_percolation(int argc, char **argv) {
 
     auto tm = currentTime();
     string signature = net.get_signature();
-    string filename_jump = signature + "_entropy_jump_" + tm;
+    string filename_jump = signature + "_entropy_jump_" + tm + ".txt";
     stringstream ss;
     ss << "{"
        << R"*("signature":")*" << signature << "\""
@@ -195,7 +195,7 @@ void run_BA_percolation(int argc, char **argv) {
     fout_jump.close();
 
 
-    string filename = signature + "_entropy-order_" + tm;
+    string filename = signature + "_entropy-order_" + tm + ".txt";
     ofstream fout(filename);
     fout << '#' << ss.str() << endl;
     fout << "# t=relative link density" << endl;
