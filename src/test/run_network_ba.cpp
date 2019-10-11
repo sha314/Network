@@ -209,6 +209,77 @@ void run_BA_percolation(int argc, char **argv) {
 
 }
 
+// only jump data
+void run_BA_jump_percolation(int argc, char **argv) {
+    if(argc < 5 ){
+        cout << "argv[1] == m" << endl;
+        cout << "argv[2] == N" << endl;
+        cout << "argv[3] == M" << endl;
+        cout << "argv[4] == Ensemble" << endl;
+        return;
+    }
+    int m = atoi(argv[1]);
+    int N = atoi(argv[2]);
+    int M = atoi(argv[3]);
+
+    int ensemble_size = atoi(argv[4]);
+
+
+    //    NetworkBApercolation_v3 net(m, m, N);
+//    NetworkBApercolationExplosive_v3 net(m, m, N, M);
+//   NetworkBApercolationExplosive_Inverted_v3 net(m, m, N, M);
+
+//    NetworkBApercolation_v5 net(m, m, N);
+//    NetworkBApercolationExplosive_v5 net(m, m, N, M);
+    NetworkBApercolationExplosive_Inverted_v5 net(m,m,N,M);
+
+    net.setRandomState(0, true);
+    net.initializeNetwork();
+
+    double entropy_jump{}, order_jump{};
+    for (size_t k{0}; k < ensemble_size; ++k) {
+        auto t_start= chrono::_V2::system_clock::now();
+        net.reset(k%25 == 0); // every 25 step. reset the network
+
+        size_t i{};
+        while (net.occupyLink()) {
+            net.jump();
+            ++i;
+        }
+        entropy_jump += net.largestEntropyJump();
+        order_jump += net.largestOrderJump();
+
+//        cout << entropy_jump[k] << " at " << entropy_jump_pc[k] << endl;
+        auto t_end= chrono::_V2::system_clock::now();
+        chrono::duration<double> drtion = t_end - t_start;
+        cout << "iteration " << k << " : time elapsed " << drtion.count() << " sec" << endl;
+    }
+
+    auto tm = currentTime();
+    string signature = net.get_signature();
+    string filename_jump = signature + "_entropy_jump_" + tm + ".txt";
+    stringstream ss;
+    ss << "{"
+       << R"*("signature":")*" << signature << "\""
+       << R"*(,"class":")*" << net.getClassName() << "\""
+       << R"*(,"m":)*" << m
+       << R"*(,"N":)*" << N
+       << R"*(,"number_of_links":)*" << net.linkCount()
+       << R"*(,"number_of_nodes":)*" << net.nodeCount()
+       << R"*(,"M":)*" << M
+       << R"*(,"ensemble_size":)*" << ensemble_size
+       << R"*(,"date":")*" << tm << "\""
+       << "}";
+
+    ofstream fout_jump(filename_jump);
+    fout_jump << '#' << ss.str() << endl;
+    fout_jump << "#<m><N><M><En><largest entropy jump><largest order parameter jump>" << endl;
+    fout_jump << m << "\t" << N << "\t" << M << "\t" << ensemble_size
+              << "\t" << abs(entropy_jump)/ensemble_size << '\t' << order_jump/ensemble_size << endl;
+    fout_jump.close();
+
+}
+
 
 void clusterSizeDistribution(int argc, char **argv) {
 //    size_t m0 = size_t(atoi(argv[1]));

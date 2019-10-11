@@ -60,7 +60,7 @@ void NetworkBA_v2::initialize() {
             }
         }
     }
-    cout << "Links in seed " << _link_count << endl;
+//    cout << "Links in seed " << _link_count << endl;
     _node_index = _m0;
 //    view();
 }

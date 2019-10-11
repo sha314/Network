@@ -366,9 +366,7 @@ void NetworkBApercolation_v5::jump() {
     jump_v2();
 }
 
-NetworkBApercolation_v5::~NetworkBApercolation_v5() {
-    cout << "destructor" << endl;
-}
+
 /**
  * Only entropy jump
  */

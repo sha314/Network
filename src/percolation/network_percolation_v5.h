@@ -54,7 +54,7 @@ protected:
     bool _self_cluster_jump{false};
 
 public:
-    ~NetworkBApercolation_v5();
+    ~NetworkBApercolation_v5()          = default;
     NetworkBApercolation_v5()           = default;
     NetworkBApercolation_v5(size_t m0, size_t m, size_t size);
     void setRandomState(size_t seed=0, bool g=true);
