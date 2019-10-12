@@ -119,7 +119,7 @@ void run_BA_percolation(int argc, char **argv) {
     int M = atoi(argv[3]);
 
     int ensemble_size = atoi(argv[4]);
-
+    cout << "m=" << m << ",N="<< N << ",M=" << M << ",En="<<ensemble_size << endl;
 
     //    NetworkBApercolation_v3 net(m, m, N);
 //    NetworkBApercolationExplosive_v3 net(m, m, N, M);
@@ -224,14 +224,14 @@ void run_BA_jump_percolation(int argc, char **argv) {
 
     int ensemble_size = atoi(argv[4]);
 
-
-    //    NetworkBApercolation_v3 net(m, m, N);
+    cout << "m=" << m << ",N="<< N << ",M=" << M << ",En="<<ensemble_size << endl;
+//        NetworkBApercolation_v3 net(m, m, N);
 //    NetworkBApercolationExplosive_v3 net(m, m, N, M);
 //   NetworkBApercolationExplosive_Inverted_v3 net(m, m, N, M);
 
 //    NetworkBApercolation_v5 net(m, m, N);
-//    NetworkBApercolationExplosive_v5 net(m, m, N, M);
-    NetworkBApercolationExplosive_Inverted_v5 net(m,m,N,M);
+    NetworkBApercolationExplosive_v5 net(m, m, N, M);
+//    NetworkBApercolationExplosive_Inverted_v5 net(m,m,N,M);
 
     net.setRandomState(0, true);
     net.initializeNetwork();
@@ -294,8 +294,7 @@ void clusterSizeDistribution(int argc, char **argv) {
     size_t N = size_t(atoi(argv[2]));
     size_t En = size_t(atoi(argv[3]));
 
-    cout << "network size " << N << endl;
-    cout << "ensemble size " << En << endl;
+    cout << "m=" << m << ",N="<< N  << ",En="<< En << endl;
 
     NetworkBApercolation_v3 net(m*2, m, N);
     net.setRandomState(0, true);

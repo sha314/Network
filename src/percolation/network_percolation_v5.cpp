@@ -22,6 +22,7 @@ void NetworkBApercolation_v5::setRandomState(size_t seed, bool g) {
         _random_state = rd();
     }
     _random.seed(_random_state);
+    cout << "random seed NetworkBApercolation_v5 " << _random_state << endl;
 }
 
 void NetworkBApercolation_v5::init(bool g) {
