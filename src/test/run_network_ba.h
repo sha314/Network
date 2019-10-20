@@ -16,4 +16,6 @@ void clusterSizeDistribution(int argc, char **argv);// added 2019.06.22
 void run_BA_percolation(int argc, char **argv);
 void run_BA_jump_percolation(int argc, char **argv);
 
+void degreeDistribution(int argc, char **argv);
+
 #endif //NETWORK_RUN_NETWORK_BA_H

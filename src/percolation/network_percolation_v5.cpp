@@ -21,7 +21,7 @@ void NetworkBApercolation_v5::setRandomState(size_t seed, bool g) {
         std::random_device rd;
         _random_state = rd();
     }
-    _random.seed(_random_state);
+    _random_generator.seed(_random_state);
     cout << "random seed NetworkBApercolation_v5 " << _random_state << endl;
 }
 
@@ -40,7 +40,7 @@ void NetworkBApercolation_v5::init(bool g) {
     _cluster_info = vector<int>(_network_size, -1);
     occupied_link_count = 0;
     // shuffle the value of the list
-    shuffle(list_of_link_indices.begin(), list_of_link_indices.end(), _random);
+    shuffle(list_of_link_indices.begin(), list_of_link_indices.end(), _random_generator);
     _randomized_indices = list_of_link_indices;
 }
 
@@ -49,15 +49,29 @@ void NetworkBApercolation_v5::init(bool g) {
  *      index of that element is the root index.
  * Positive value in _cluster_info element means that this element is not root but the value
  *      of the element will get you one step closer to root
+ *
+     //// directly find_root_v3 is implemented for better performance
  * @param a
  * @return
  */
-int NetworkBApercolation_v5::findRoot(int a) {
-    int b = 0;
+int NetworkBApercolation_v5::findRoot(int k) {
+//    auto start = std::chrono::system_clock::now(); // time measurement
+//    int b = 0;
 //    b = find_root_v1(a);
+//    b = find_root_v2_test(a);
 //    b = find_root_v2(a);
-    b = find_root_v3(a);
-    return b;
+//    b = find_root_v3_test(a, 0);
+//    b = find_root_v3(a);
+
+    if(_cluster_info[k]<0) return k;
+//    _cluster_info[i]=find_root_v3(_cluster_info[i]);
+//    return _cluster_info[i];
+    /*
+     * int a = 2;
+     * cout << (a=10) << endl; // this will print 10
+     */
+    return _cluster_info[k]=find_root_v3(_cluster_info[k]); // assign and return at the same time
+//    return b;
 }
 
 int NetworkBApercolation_v5::find_root_v1(int a) {
@@ -107,6 +121,26 @@ int NetworkBApercolation_v5::find_root_v2(int a) {
     }
     return a;
 }
+
+int NetworkBApercolation_v5::find_root_v2_test(int a) {
+
+    if (_cluster_info[a] < 0){   return a;}
+    vector<int> redirecting_indices;
+    int b;
+    int depth=0;
+    while (!(_cluster_info[a] < 0)) {
+        redirecting_indices.emplace_back(a);
+        b = _cluster_info[a];
+        a = b;
+        ++depth;
+    }
+    if(depth > _max_recursion_depth) _max_recursion_depth = depth;
+//# so that next time search is at least one step lesser
+    for (auto ri : redirecting_indices) {
+        _cluster_info[ri] = a;
+    }
+    return a;
+}
 /**
  * Find root recursively
  * Since we never need to traverse more than a few hundreds
@@ -137,12 +171,38 @@ int NetworkBApercolation_v5::find_root_v3(int i)
     return _cluster_info[i]=find_root_v3(_cluster_info[i]); // assign and return at the same time
 }
 
+/*
+ * Testing for max recursion depth.
+ * Result: in terms of depth find_root_v2_test and find_root_v3_test are pretty much the same.
+ * but recursive method is faster because we don't need another list to hold and assign values
+ * separately
+ */
+int NetworkBApercolation_v5::find_root_v3_test(int i, int depth)
+{
+    if(_cluster_info[i]<0) {
+        if (depth > _max_recursion_depth)  _max_recursion_depth = depth;
+//        cout << "max depth " << depth << endl;
+        return i;
+    }
+    /*
+    _cluster_info[i]=find_root_v3(_cluster_info[i]);
+    return _cluster_info[i];
+     */
+    /*
+     * int a = 2;
+     * cout << (a=10) << endl; // this will print 10
+     */
+    return _cluster_info[i]=find_root_v3_test(_cluster_info[i],depth+1); // assign and return at the same time
+}
+
 void  NetworkBApercolation_v5::mergeClusters(int root_a, int root_b) {
 //#     print("both are roots, ", root_a, ", ", root_b)
     if (root_a == root_b) return;
 //# join two roots
 //#     print("before merging ")
-//#     print(clusters)
+#ifdef DEBUG_FLAG
+    cout << "cluster size increasing " << endl;
+#endif
     _cluster_info[root_a] = _cluster_info[root_a] + _cluster_info[root_b]; //# sizes must add up
     _cluster_info[root_b] = root_a; //# now clusters[b] points to a
 //#     print("after merging ")
@@ -191,7 +251,9 @@ bool NetworkBApercolation_v5::placeSelectedLink(uint i) {// selecting sequential
 // node a and b will be connected together
     int root_a = findRoot(a);
     int root_b = findRoot(b);
-//    cout << "roots " << root_a << ", " << root_b << endl;
+#ifdef DEBUG_FLAG
+    cout << "roots " << root_a << ", " << root_b << endl;
+#endif
     subtract_entropy(root_a, root_b);
     mergeClusters(root_a, root_b);
     add_entropy(root_a);
@@ -216,6 +278,9 @@ void NetworkBApercolation_v5::viewClusters() {
 
 }
 
+/**
+ * TODO : group together assignment that must be done once and that must be done every time
+ */
 void NetworkBApercolation_v5::initialize_network() {
     cout << "Initializing Network ... " << std::flush;
     _network_frame.grow(_network_size);
@@ -225,6 +290,7 @@ void NetworkBApercolation_v5::initialize_network() {
     for(uint i{}; i < list_of_link_indices.size(); ++i) {
         list_of_link_indices[i]=i;
     }
+    max_link_index = _link_count - 1;
     // initialize cluster
     _cluster_info.resize(_network_size);
     initialize_cluster();
@@ -257,6 +323,8 @@ void NetworkBApercolation_v5::reset(int i) {
     largest_cluster_size=0;
     largest_jump_cluster_size=0;
     _previous_cluster_size=0;
+    _max_recursion_depth = 0;
+    _findRoot_time=0;
 //    viewNetwork();
     if(i == 1){
         // initialize the network again
@@ -271,6 +339,7 @@ void NetworkBApercolation_v5::reset(int i) {
 }
 
 double NetworkBApercolation_v5::entropy_v1() {
+    cout << "NetworkBApercolation_v5::entropy_v1" << endl;
     double mu{}, H{};
     for(size_t i{}; i < _cluster_info.size(); ++i){
         mu = -1*_cluster_info[i]/double(_network_size); // negative values of a clusters are sizes
@@ -289,10 +358,15 @@ void NetworkBApercolation_v5::viewListOfLinkIndices() {
         cout << list_of_link_indices[i] <<",";
     }
     cout <<"}" << endl;
+    cout <<"Randomized   : (" << _randomized_indices.size() << "):{";
+    for(size_t i{}; i < _randomized_indices.size(); ++i){
+        cout << _randomized_indices[i] <<",";
+    }
+    cout <<"}" << endl;
 }
 
 void NetworkBApercolation_v5::randomize_indices(std::vector<uint>& a) {
-    std::shuffle(a.begin(), a.end(), _random);
+    std::shuffle(a.begin(), a.end(), _random_generator);
 }
 
 /**
@@ -326,6 +400,7 @@ void NetworkBApercolation_v5::add_entropy(int root_a) {
     if(mu_a > 0){
         H += mu_a * log(mu_a);
     }
+//    cout << "add entropy " << H << endl;
     _entropy_val += -H; // since adding
 }
 
@@ -391,16 +466,27 @@ void NetworkBApercolation_v5::jump_v2() {
     double delta_H{};
     size_t delta_P{};
     if(occupied_link_count > 1){
-        delta_H = _entropy_val - _previous_entropy;
+        delta_H = abs(_entropy_val - _previous_entropy);
         delta_P = largest_cluster_size - _previous_cluster_size;
     }
     _previous_entropy = _entropy_val; // be ready for next step
     _previous_cluster_size = largest_cluster_size;
-    if(abs(delta_H) > abs(_largest_jump_entropy)){
+//    cout << "jump_v2 delta_H " << delta_H << endl;
+    if(delta_H > _largest_jump_entropy){
         _largest_jump_entropy = delta_H;
-        _entropy_jump_tc = relativeLinkDensity();
+//        _entropy_jump_tc = relativeLinkDensity();
     }
     if(delta_P > largest_jump_cluster_size){
         largest_jump_cluster_size = delta_P;
     }
+}
+
+double NetworkBApercolation_v5::entropy() {
+//    return entropy_v1();
+    return entropy_v2();
+}
+
+void NetworkBApercolation_v5::summary() {
+    cout << "_max_recursion_depth " << _max_recursion_depth << endl;
+    cout << "_findRoot_time " << _findRoot_time << " sec" << endl;
 }

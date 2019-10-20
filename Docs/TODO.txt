@@ -1,2 +1,4 @@
 
 1. Find the maximum recursion depth for the find_root_v3 method.
+
+2. jump method can be hard coded into occupy method ??

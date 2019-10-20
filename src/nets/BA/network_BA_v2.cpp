@@ -169,7 +169,7 @@ std::vector<double> NetworkBA_v2::degreeDistribution() {
 void NetworkBA_v2::view() {
     cout << "NetworkBA_v2::view __LINE__" << __LINE__ << endl;
     for(size_t i{}; i < network_map_A.size(); ++i){
-        cout << network_map_A[i] << " - " << network_map_B[i] << endl;
+        cout << "Link[" << i << "] => " << network_map_A[i] << " - " << network_map_B[i] << endl;
     }
     cout << "Netowrk size " << _N_size << " max size " << _N_max << endl;
     cout << "Link count " << network_map_A.size() << endl;

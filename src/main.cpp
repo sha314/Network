@@ -29,9 +29,9 @@ using namespace std;
 
 
 void network_percolation_to_file(int argc, char* argv[]){
-    uint m = atoi(argv[1]);
-    uint network_size = atoi(argv[2]);
-    uint ensemble_size = atoi(argv[3]);
+    int m = atoi(argv[1]);
+    int network_size = atoi(argv[2]);
+//    int ensemble_size = atoi(argv[3]);
 
     NetworkBApercolation_v3 net(3, m, network_size);
     net.reset();
@@ -139,6 +139,8 @@ void run_in_main(int argc, char* argv[]){
 //    demarcationLine(argc, argv);
 //    run_BA_percolation(argc, argv);
     run_BA_jump_percolation(argc, argv);
+
+//    degreeDistribution(argc, argv);
 
 }
 

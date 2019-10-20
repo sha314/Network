@@ -41,7 +41,9 @@ public:
     /**
      * Sum rule and Product rule
      */
+    [[deprecated("Do not use")]]
     size_t link_for_min_cluster_sum_rule(size_t start_at=0);
+    [[deprecated("Do not use")]]
     size_t link_for_min_cluster_product_rule(size_t start_at=0);
     size_t link_for_min_cluster_sum_product(size_t start_at=0); // both sum and product rule
     size_t link_for_min_cluster_sum_product_v2(size_t start_at=0); // both sum and product rule and randomly chooses from _randomized_link_indices

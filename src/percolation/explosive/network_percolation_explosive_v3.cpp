@@ -309,14 +309,10 @@ size_t NetworkBApercolationExplosive_v3::link_for_min_cluster_sum_product(size_t
         id2 = _network_frame.get_node_group_id(tmp_lnk.get_b());
         index1 = size_t(id1);
         index2 = size_t(id2);
-        if(id1 == id2){
-            // if they belong to same cluster. adding new link does not increase cluster size.
-            n_nodes = _cluster[index1].numberOfNodes();
-//            cout << "same cluster " << endl;
-        }else {
-            n_nodes = _cluster[index1].numberOfNodes() * _cluster[index2].numberOfNodes(); // product rule
+
+        n_nodes = _cluster[index1].numberOfNodes() * _cluster[index2].numberOfNodes(); // product rule
 //            n_nodes = _cluster[index1].numberOfNodes() + _cluster[index2].numberOfNodes(); // sum rule
-        }
+
         if(n_nodes < prod_sum ) { // since we are minimizing cluster sizes
             prod_sum = n_nodes;
             index_randomized_link = i;
@@ -376,14 +372,10 @@ size_t NetworkBApercolationExplosive_v3::link_for_min_cluster_sum_product_v2(siz
         id2 = _network_frame.get_node_group_id(tmp_lnk.get_b());
         index1 = size_t(id1);
         index2 = size_t(id2);
-        if(id1 == id2){
-            // if they belong to same cluster. adding new link does not increase cluster size.
-            n_nodes = _cluster[index1].numberOfNodes();
-//            cout << "same cluster " << endl;
-        }else {
-            n_nodes = _cluster[index1].numberOfNodes() * _cluster[index2].numberOfNodes(); // product rule
+
+        n_nodes = _cluster[index1].numberOfNodes() * _cluster[index2].numberOfNodes(); // product rule
 //            n_nodes = _cluster[index1].numberOfNodes() + _cluster[index2].numberOfNodes(); // sum rule
-        }
+
         if(n_nodes < prod_sum ) { // since we are minimizing cluster sizes
             prod_sum = n_nodes;
             index_randomized_link = r;
@@ -458,14 +450,9 @@ size_t NetworkBApercolationExplosive_v3::link_for_min_cluster_sum_product_v3_ada
         id2 = _network_frame.get_node_group_id(tmp_lnk.get_b());
         index1 = size_t(id1);
         index2 = size_t(id2);
-        if(id1 == id2){
-            // if they belong to same cluster. adding new link does not increase cluster size.
-            n_nodes = _cluster[index1].numberOfNodes();
-//            cout << "same cluster " << endl;
-        }else {
-            n_nodes = _cluster[index1].numberOfNodes() * _cluster[index2].numberOfNodes(); // product rule
+
+        n_nodes = _cluster[index1].numberOfNodes() * _cluster[index2].numberOfNodes(); // product rule
 //            n_nodes = _cluster[index1].numberOfNodes() + _cluster[index2].numberOfNodes(); // sum rule
-        }
 
         if(t < tc){
             if(n_nodes < prod_sum){

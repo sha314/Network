@@ -7,6 +7,7 @@
 
 #include <vector>
 #include <random>
+#include <sstream>
 
 /**
  * There is a list of nodes called (@var _nodes).
@@ -15,8 +16,8 @@
  */
 class NetworkBA_v2{
     // constant properties
-    size_t _m0{3}; // seed
-    size_t _m{2}; // number of new nodes each node comes with
+    uint _m0{3}; // seed
+    uint _m{2}; // number of new nodes each node comes with
 
     // variable properties
     std::vector<int> _nodes;
@@ -41,7 +42,7 @@ class NetworkBA_v2{
      * Counts the degree of node
      * i-th element = number of connection i-th node have
      */
-    std::vector<int> degree_count;
+    std::vector<uint> degree_count;
 
     size_t _random_state{};
     std::mt19937 _random;
@@ -61,8 +62,8 @@ public:
     void reset();
     void setMaxNetworkSize(size_t N);
     size_t getBlankSize();
-    size_t get_m0()const { return  _m0;}
-    size_t get_m() const { return  _m;}
+    uint get_m0()const { return  _m0;}
+    uint get_m() const { return  _m;}
     size_t getNodeCount() const { return  _N_size;}
     size_t getLinkCount() const { return  _link_count;}
     bool spaceAvailable();
@@ -74,13 +75,25 @@ public:
 
 
     std::vector<double> degreeDistribution();
-    int fromNetworkMapA(uint a) { return network_map_A[a];}
-    int fromNetworkMapB(uint a) { return network_map_B[a];}
+    int fromNetworkMapA(uint a) const { return network_map_A[a];}
+    int fromNetworkMapB(uint a) const { return network_map_B[a];}
+
+    void fromNetworkMapAB(int& A, int& B, uint i) const { A=network_map_A[i];B=network_map_B[i];}
 
     void clear_preferentially(){_preferentially.clear();}
 
-    int getNodeA(int link){return network_map_A[link];}
-    int getNodeB(int link){return network_map_B[link];}
+    int getNodeA(int link) const {return network_map_A[link];}
+    int getNodeB(int link) const {return network_map_B[link];}
+
+    std::string get_signature() {
+        std::stringstream ss;
+        ss << "netrowk_BA_v2_m0_";
+        ss << _m0 << "_m_" << _m << "-";
+        return ss.str();
+    }
+
+
+    std::vector<uint> degrees() { return degree_count;}
 };
 
 

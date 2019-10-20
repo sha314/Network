@@ -2,6 +2,7 @@
 // Created by shahnoor on 9/29/2019.
 //
 
+#include <climits>
 #include "network_percolation_explosive_v5.h"
 
 
@@ -24,6 +25,8 @@ NetworkBApercolationExplosive_v5::NetworkBApercolationExplosive_v5(size_t m0, si
         }
         _M_link = M;
     }
+    M_sum_products.resize(_M_link);
+    M_link_indices.resize(_M_link);
 }
 
 
@@ -52,56 +55,70 @@ uint NetworkBApercolationExplosive_v5::selectLink_v2() {
  * version 1:
  *  (a) this function starts to read _M values of _randomized_indices array starting at start_at
  *  (b) both sum rule and product rule is present here but one of them is commented
+ *
+ *  product of two cluster, each of a million in size, can be very large. for example : 10^6 * 10^6 = 10^12
+ *  so use size_t variable type for storing products
+ *
+ * TODO The link with the smaller value of the products is occupied; in case of products being equal one of the corresponding links is selected randomly.
+ *
  * @return value of the link in the _randomized_indices for which cluster size become minimum
  */
 uint NetworkBApercolationExplosive_v5::link_for_min_cluster_sum_product_v2(size_t start_at) {
+//    auto start = std::chrono::system_clock::now(); // time measurement
     size_t index_randomized_link{0};
 
-    int tmp_lnk_index;
+    uint tmp_lnk_index;
     int id1{-1}, id2{-1}, root1, root2;
-    int  n_nodes;
-    size_t prod_sum = 2* largestClusterSize()*largestClusterSize() + 100; // so that it is very big before going into the loop
-//    cout << "prod_sum " << prod_sum << endl;
-    size_t limit = start_at + _M_link;
+    long n_nodes, prod_sum = LONG_MAX; // so that it is very big before going into the loop
+//    cout << LONG_MAX << " vs " << prod_sum << endl;
+//    cout << ULONG_MAX << " vs " << prod_sum << endl;
+//    size_t limit = start_at + _M_link;
     size_t r{};
 //    cout << "randomly between ("<< start_at <<"," << _link_count << ")={";
+
     for(size_t i{0}; i < _M_link; ++i){
-        // todo : what happens when start_at is near to the size of _randomized_link_indices.
+
+
+        // >>>>>> START A takes ~24 % of total runtime
         // random number between a and b or rand(a,b) = a + r%(b-a); where r is an arbitrary random number
-        r = start_at + _random() % (_link_count-start_at);
-
+        // TODO : must select radnomly with uniform probability
+        // use std::uniform_int_distribution<int> distribution(0,9);
+        r = start_at + _random_generator() % (_link_count-start_at);
         tmp_lnk_index = _randomized_indices[r];
+        // <<<<< END A
 
 
-        id1 = _network_frame.getNodeA(tmp_lnk_index);
-        id2 = _network_frame.getNodeB(tmp_lnk_index);
+        // >>>>>> START B takes ~26 % of total runtime
+        id1 = _network_frame.fromNetworkMapA(tmp_lnk_index);
+        id2 = _network_frame.fromNetworkMapB(tmp_lnk_index);
+//        id1 = getNodeA(tmp_lnk_index);
+//        id2 = getNodeB(tmp_lnk_index);
+//        _network_frame.fromNetworkMapAB(id1, id2, tmp_lnk_index); // slower a bit
+        // <<<<< END B
 
         root1 = findRoot(id1);
         root2 = findRoot(id2);
 
-        if(root1 == root2){
-            // if they belong to same cluster. adding new link does not increase cluster size.
-            n_nodes = -_cluster_info[root1]; // value of clusters element is negative if it is the size
-//            cout << "same cluster " << endl;
-        }else {
-            n_nodes = _cluster_info[root1] * _cluster_info[root2]; // product rule
-//            n_nodes = _cluster[index1].numberOfNodes() + _cluster[index2].numberOfNodes(); // sum rule
-        }
+        n_nodes = _cluster_info[root1] * _cluster_info[root2]; // product rule. automatically becomes positive
+//            n_nodes = abs(_cluster_info[root1] + _cluster_info[root2]); // sum rule
         if(n_nodes < prod_sum ) { // since we are minimizing cluster sizes
             prod_sum = n_nodes;
             index_randomized_link = r;
         }
-
-//        cout << "checking link " << _network_frame.getLink(_randomized_link_indices[i])
-//             << " id = " << id1 << " and " << id2 << " prod_sum= " << prod_sum << endl;
+#ifdef DEBUG_FLAG
+        cout << "checking link _randomized_indices[" << r << "]=" << tmp_lnk_index << endl;
+        cout << " out of  id = " << id1 << " and " << id2 << " prod_sum = " << prod_sum << endl;
+#endif
     }
+
     if(index_randomized_link >= _randomized_indices.size()){
         cout << "out of bound : line " << __LINE__ << endl;
     }
 //    cout << "}" << endl;
-//    cout << "selected link " << _network_frame.getLink(_randomized_link_indices[index_randomized_link])
-//         << " id = " << id1 << " and " << id2 << " prod_sum= " << prod_sum << endl;
-//    cout << " at " << index_randomized_link  << " value " << _randomized_link_indices[index_randomized_link] << endl;
+#ifdef DEBUG_FLAG
+    cout << "selected _randomized_indices[" << index_randomized_link << "] = "
+         << _randomized_indices[index_randomized_link] << endl;
+#endif
 
     size_t pos = _randomized_indices[index_randomized_link];
     // must assign to a temp variable, otherwise it is replaced before retrurn
@@ -115,7 +132,9 @@ uint NetworkBApercolationExplosive_v5::link_for_min_cluster_sum_product_v2(size_
     _randomized_indices[index_randomized_link] = _randomized_indices[occupied_link_count];
 
     _randomized_indices[occupied_link_count] = 0; // does not affect the result. use only when debugging so that we can identify easily
-
+//    auto end = std::chrono::system_clock::now(); // time measurement
+//    std::chrono::duration<double> elapsed_seconds = end-start; // time measurement
+//    _time_selectLink += elapsed_seconds.count(); // time measurement
     return pos;
 }
 
@@ -126,6 +145,8 @@ uint NetworkBApercolationExplosive_v5::link_for_min_cluster_sum_product_v2(size_
  *  (b) before tc we do explosive (join two cluster for which sum or product is minimum)
  *      and after tc we do inverted explosive (join two cluster for which sum or product is maximum).
  *
+ *  product of two cluster, each of a million in size, can be very large. for example : 10^6 * 10^6 = 10^12
+ *  so use size_t variable type for storing products
  *
  * @return value of the link in the _randomized_indices for which cluster size become minimum
  */
@@ -134,37 +155,34 @@ uint NetworkBApercolationExplosive_v5::link_for_min_cluster_sum_product_v3_adapt
     double t = relativeLinkDensity();
     int tmp_lnk_index, root1, root2;
     int id1{-1}, id2{-1};
-    size_t prod_sum, n_nodes;
+    long n_nodes, prod_sum = LONG_MAX; // so that it is very big before going into the loop
+//    cout << LONG_MAX << " vs " << prod_sum << endl;
     if (t < tc) {
-        prod_sum = 2 * largestClusterSize() * largestClusterSize() +
-                   100; // so that it is very big before going into the loop
+        prod_sum = LONG_MAX; // so that it is very big before going into the loop
     }else{
         prod_sum = 1; // smallest possible value for both sum and product
     }
 //    cout << "prod_sum " << prod_sum << endl;
-    size_t limit = start_at + _M_link;
+//    size_t limit = start_at + _M_link;
     size_t r{};
 //    cout << "randomly between ("<< start_at <<"," << _link_count << ")={";
     for(size_t i{0}; i < _M_link; ++i){
         // what happens when start_at is near to the size of _randomized_link_indices. ???
         // random number between a and b or rand(a,b) = a + r%(b-a); where r is an arbitrary random number
-        r = start_at + _random() % (_link_count-start_at);
+        r = start_at + _random_generator() % (_link_count-start_at);
 
         tmp_lnk_index = _randomized_indices[r];
 //        cout << r << ":" << tmp_lnk_index << ",";
 
         id1 = _network_frame.getNodeA(tmp_lnk_index);
         id2 = _network_frame.getNodeB(tmp_lnk_index);
+//        id1 = getNodeA(tmp_lnk_index);
+//        id2 = getNodeB(tmp_lnk_index);
+
         root1 = findRoot(id1);
         root2 = findRoot(id2);
-        if(root1 == root2){
-            // if they belong to same cluster. adding new link does not increase cluster size.
-            n_nodes = -_cluster_info[root1];
-//            cout << "same cluster " << endl;
-        }else {
-            n_nodes = _cluster_info[root1] * _cluster_info[root2]; // product rule
-//            n_nodes = -(_cluster_info[index1] + _cluster_info[index2]); // sum rule
-        }
+        n_nodes = _cluster_info[root1] * _cluster_info[root2]; // product rule. automatically becomes positive
+//            n_nodes = abs(_cluster_info[root1] + _cluster_info[root2]); // sum rule
 
         if(t < tc){
             if(n_nodes < prod_sum){
@@ -207,22 +225,143 @@ uint NetworkBApercolationExplosive_v5::link_for_min_cluster_sum_product_v3_adapt
 //    return 0;
 }
 
+
+/**
+ * For minimizing cluster sizes using sum rule
+ * version 4:
+ *  (a) this function starts to read _M values of _randomized_indices array starting at start_at
+ *  (b) both sum rule and product rule is present here but one of them is commented
+ *  (c) uses two additional array to store and retrieve the sum (or product) information and link index
+ *
+ *  product of two cluster, each of a million in size, can be very large. for example : 10^6 * 10^6 = 10^12
+ *  so use size_t variable type for storing products
+ *
+ * TODO The link with the smaller value of the products is occupied; in case of products being equal one of the corresponding links is selected randomly.
+ *
+ * @return value of the link in the _randomized_indices for which cluster size become minimum
+ */
+uint NetworkBApercolationExplosive_v5::link_for_min_cluster_sum_product_v4(uint start_at) {
+//    auto start = std::chrono::system_clock::now(); // time measurement
+    uint index_randomized_link{0};
+
+    uint tmp_lnk_index;
+    int id1{-1}, id2{-1}, root1, root2;
+    long n_nodes, prod_sum ; // so that it is very big before going into the loop
+    int r{};
+//    long M_sum_products[_M_link];
+//    int M_link_indices[_M_link];
+
+//    cout << "randomly between ("<< start_at <<"," << _link_count << ")={";
+//    std::uniform_int_distribution<uint> distribution(start_at, max_link_index);
+
+    for(size_t i{0}; i < _M_link; ++i){
+        // random number between a and b or rand(a,b) = a + r%(b-a); where r is an arbitrary random number
+        r = start_at + _random_generator() % (_link_count-start_at);
+//        r = distribution(_random_generator);
+        M_link_indices[i] = r;
+        tmp_lnk_index = _randomized_indices[r];
+#ifdef DEBUG_FLAG
+        cout << "random " << r << endl;
+#endif
+        // >>>>>> START B takes ~26 % of total runtime
+        id1 = _network_frame.fromNetworkMapA(tmp_lnk_index);
+        id2 = _network_frame.fromNetworkMapB(tmp_lnk_index);
+//        id1 = getNodeA(tmp_lnk_index);
+//        id2 = getNodeB(tmp_lnk_index);
+        // <<<<< END B
+
+        root1 = findRoot(id1);
+        root2 = findRoot(id2);
+
+        n_nodes = _cluster_info[root1] * _cluster_info[root2]; // product rule. automatically becomes positive
+//            n_nodes = abs(_cluster_info[root1] + _cluster_info[root2]); // sum rule
+        M_sum_products[i] = n_nodes;
+
+//        if(n_nodes < prod_sum ) { // since we are minimizing cluster sizes
+//            prod_sum = n_nodes;
+//            index_randomized_link = r;
+//        }
+#ifdef DEBUG_FLAG
+        cout << "checking link _randomized_indices[" << r << "]=" << tmp_lnk_index << endl;
+        cout << " out of  id = " << id1 << " and " << id2 << " prod_sum = " << n_nodes << endl;
+#endif
+    }
+    prod_sum = M_sum_products[0];
+    index_randomized_link = M_link_indices[0];
+#ifdef DEBUG_FLAG
+    cout << "random indices {" << M_link_indices[0] << ",";
+#endif
+    for(size_t i{1}; i < _M_link; ++i){
+#ifdef DEBUG_FLAG
+        cout << M_link_indices[i] << ",";
+#endif
+        if(M_sum_products[i] < prod_sum){
+            index_randomized_link = M_link_indices[i];
+        }
+    }
+#ifdef DEBUG_FLAG
+    cout << "}" << endl;
+    cout << "selected _randomized_indices[" << index_randomized_link << "]= "
+         << _randomized_indices[index_randomized_link] << endl;
+#endif
+    if(index_randomized_link >= _randomized_indices.size()){
+        cout << "out of bound : line " << __LINE__ << endl;
+    }
+//    auto end = std::chrono::system_clock::now(); // time measurement
+//    std::chrono::duration<double> elapsed_seconds = end-start; // time measurement
+//    _time_selectLink += elapsed_seconds.count(); // time measurement
+
+    uint pos = _randomized_indices[index_randomized_link];
+//    _randomized_indices[index_randomized_link] = _randomized_indices[occupied_link_count];
+
+//    suffle_randomized_index(index_randomized_link, occupied_link_count);
+    replace_randomized_index(index_randomized_link, occupied_link_count); // assigns 0 which index should not be used
+    return pos;
+}
+
 bool NetworkBApercolationExplosive_v5::occupyLink() {
     if (occupied_link_count >= linkCount()){
         return false;
     }
-    uint pos = selectLink_v2();
+//    uint pos = selectLink_v2();
+    uint pos = link_for_min_cluster_sum_product_v2(occupied_link_count);
     return NetworkBApercolation_v5::placeSelectedLink(pos);
 }
 
-void NetworkBApercolationExplosive_v5::time_summary() {
-//    NetworkBApercolation_v5::time_summary();
+void NetworkBApercolationExplosive_v5::summary() {
+    NetworkBApercolation_v5::summary();
     cout << "_time_selectLink " << _time_selectLink << " sec" << endl;
-    cout << "_time_link_for_min_cluster_sum_rule " << _time_link_for_min_cluster_sum_rule << " sec" << endl;
-    cout << "_count_link_for_min_cluster_sum_rule_a " << _count_link_for_min_cluster_sum_rule_a << " times" << endl;
-    cout << "_count_link_for_min_cluster_sum_rule_b " << _count_link_for_min_cluster_sum_rule_b << " times" << endl;
-    cout << "_count_link_for_min_cluster_sum_rule_c " << _count_link_for_min_cluster_sum_rule_c << " times" << endl;
+//    cout << "_time_link_for_min_cluster_sum_rule " << _time_link_for_min_cluster_sum_rule << " sec" << endl;
+//    cout << "_count_link_for_min_cluster_sum_rule_a " << _count_link_for_min_cluster_sum_rule_a << " times" << endl;
+//    cout << "_count_link_for_min_cluster_sum_rule_b " << _count_link_for_min_cluster_sum_rule_b << " times" << endl;
+//    cout << "_count_link_for_min_cluster_sum_rule_c " << _count_link_for_min_cluster_sum_rule_c << " times" << endl;
 
+
+}
+
+void NetworkBApercolationExplosive_v5::reset(int i) {
+    _time_selectLink=0;
+    _time_link_for_min_cluster_sum_rule=0;
+    NetworkBApercolation_v5::reset(i);
+}
+/**
+ * swap a-th and b-th element of _randomized_indices
+ * @param a
+ * @param b
+ */
+void NetworkBApercolationExplosive_v5::swap_randomized_index(size_t a, size_t b) {
+    uint tmp = _randomized_indices[a];
+    _randomized_indices[a] = _randomized_indices[b];
+    _randomized_indices[b] = tmp;
+}
+/**
+ * assign b-th element of _randomized_indices to a-th element and set b-th element to zero
+ * @param a
+ * @param b
+ */
+void NetworkBApercolationExplosive_v5::replace_randomized_index(size_t a, size_t b) {
+    _randomized_indices[a] = _randomized_indices[b];
+    _randomized_indices[b] = 0; // does not affect the result. use only when debugging so that we can identify easily
 }
 
 

@@ -24,7 +24,7 @@ m=5
 N       Time        Mem
 50k     0.09 sec
 100k    0.2 sec     45 MB
-1M      3.2 sec     242 MB
+1M      3.4 sec     242 MB
 
 
 ##
@@ -34,13 +34,25 @@ M=2
 
 N       Time        Mem
 50k     0.19 sec
-100k    0.45 sec
+100k    0.43 sec
 1M      7.4 sec
-2M      16.45 sec   464 MB
+2M      16.11 sec   464 MB
 
 **************************************************
 ## with recursive root finding method (idea copied from Digonto vai code)(Date : 2019.10.04)
-NetworkBApercolationExplosive_v5
+
+##
+NetworkBApercolation_v5
+m=5
+
+N       Time        Mem
+50k     0.056 sec
+100k    0.136 sec     45 MB
+1M      2.64 sec     242 MB
+
+
+##
+NetworkBApercolationExplosive_v5 (time required info is not correct anymore ???)
 m=5
 M=2
 
@@ -48,5 +60,13 @@ N       Time        Mem
 50k     0.05 sec
 100k    0.127 sec
 1M      2.67 sec
-2M      6.35 sec   400 MB
+2M      6.35 sec   410 MB
 
+
+[Date 2019.10.15]
+for
+m=5
+N=1,000,000
+total time elapsed = 6.05476 sec
+time taken by link_for_min_cluster_sum_product_v2 method = 4.86812 sec
+link_for_min_cluster_sum_product_v2 takes ~80 % of total runtime

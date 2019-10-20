@@ -111,7 +111,7 @@ void degree_distribution_BA(int argc, char **argv) {
 
 //        cout << "line " << __LINE__ << endl;
 
-        vector<size_t> degs = net.degrees();
+        vector<uint> degs = net.degrees();
         std::sort(degs.begin(), degs.end());
 
 //        cout << degs.size() << " and  " << neighborCount.size() << endl;
@@ -167,7 +167,7 @@ void degree_distribution_BA_v2(int argc, char **argv) {
 
 //        cout << "line " << __LINE__ << endl;
 
-        vector<size_t> degs = net.degrees();
+        vector<uint> degs = net.degrees();
 //        std::sort(degs.begin(), degs.end());
 
 //        cout << degs.size() << " and  " << neighborCount.size() << endl;

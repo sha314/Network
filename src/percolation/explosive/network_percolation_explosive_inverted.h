@@ -60,7 +60,7 @@ public:
     std::string get_signature() {
         std::stringstream ss;
         ss << "network_BA_percolation_explosive_inverted_m0_";
-        ss << _network_frame.get_m0() << "_m_" << _network_frame.get_m()
+        ss << get_m0() << "_m_" << get_m()
            << "_size_" << _network_size << "_M_" << _M_link << '-';
         return ss.str();
     }

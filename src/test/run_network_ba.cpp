@@ -126,8 +126,8 @@ void run_BA_percolation(int argc, char **argv) {
 //   NetworkBApercolationExplosive_Inverted_v3 net(m, m, N, M);
 
 //    NetworkBApercolation_v5 net(m, m, N);
-//    NetworkBApercolationExplosive_v5 net(m, m, N, M);
-    NetworkBApercolationExplosive_Inverted_v5 net(m,m,N,M);
+    NetworkBApercolationExplosive_v5 net(m, m, N, M);
+//    NetworkBApercolationExplosive_Inverted_v5 net(m,m,N,M);
 
     net.setRandomState(0, true);
     net.initializeNetwork();
@@ -243,6 +243,7 @@ void run_BA_jump_percolation(int argc, char **argv) {
 
         size_t i{};
         while (net.occupyLink()) {
+            net.entropy();
             net.jump();
             ++i;
         }
@@ -358,4 +359,79 @@ void clusterSizeDistribution(int argc, char **argv) {
 
     // normalization
     fout.close();
+}
+
+
+
+void degreeDistribution(int argc, char **argv) {
+//    size_t m0 = size_t(atoi(argv[1]));
+    if (argc < 2) {
+        cout << "argv[1] = m" << endl;
+        cout << "argv[2] = NetworkSize" << endl;
+        cout << "argv[3] = EnsembleSize" << endl;
+        return;
+    }
+
+    size_t m = size_t(atoi(argv[1]));
+    size_t N = size_t(atoi(argv[2]));
+    size_t En = size_t(atoi(argv[3]));
+
+    cout << "network size " << N << endl;
+    cout << "ensemble size " << En << endl;
+
+    NetworkBA net(m, m);
+//    NetworkBA_v2 net(m, m);
+    cout << "m0 " << net.get_m0() << ", m " << net.get_m() << endl;
+
+    string filename = net.get_signature() + "N_" + to_string(N)
+                      + "-degree_distribution-" + currentTime() + ".txt";
+
+
+    vector<size_t> count(10);
+
+    for (size_t en{}; en < En; ++en) {
+        auto t0 = std::chrono::system_clock::now();
+        net.reset();
+
+        for (size_t i{}; i < N; ++i) {
+            net.addNode();
+        }
+//        _network_frame.view_nodes();
+
+//        cout << "line " << __LINE__ << endl;
+
+        vector<uint> degs = net.degrees();
+//        std::sort(degs.begin(), degs.end());
+
+//        cout << degs.size() << " and  " << neighborCount.size() << endl;
+
+        for (size_t i{}; i < degs.size(); ++i) {
+            if(degs[i] >= count.size()){
+                count.resize(degs[i]);
+            }
+            ++count[degs[i]];
+        }
+
+
+//        cout << "line " << __LINE__ << endl;
+        auto t1 = std::chrono::system_clock::now();
+        std::chrono::duration<double> drtion = t1 - t0;
+        cout << "Iteration " << en << " : time " << drtion.count() << " sec" << endl;
+    }
+
+    ofstream fout(filename);
+    fout << "#{\"m0\":" << net.get_m0()
+         << ",\"m\":" << net.get_m()
+         << ",\"N\":" << N
+         << ",\"En\":" << En
+         << "}" << endl;
+
+    for (size_t i{1}; i < count.size(); ++i) {
+        if(count[i] == 0) continue;
+        fout << i << "\t" << double(count[i])/En << endl;
+    }
+
+    // normalization
+    fout.close();
+
 }

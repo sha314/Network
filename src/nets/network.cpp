@@ -203,8 +203,8 @@ void Network::view_links() {
     cout << "}" << endl;
 }
 
-vector<size_t> Network::degrees() {
-    vector<size_t> degs(_nodes.size());
+vector<uint> Network::degrees() {
+    vector<uint> degs(_nodes.size());
 
     for(uint i{}; i < _nodes.size(); ++i){
         degs[i] = _nodes[i].neighborCount();

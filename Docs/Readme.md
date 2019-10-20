@@ -7,3 +7,7 @@ Different Kinds of Network models are created here. For example the Random Netwo
 1. self jump: in network percolation, cluster size grows in size in each step.
     Usually largest cluster in step (n) is not the largest cluster in step (n+1).
     But sometimes it is, giving us the self jump for the cluster size.
+    
+    
+# Reference
+Universality class of explosive percolation in Barabási-Albert networks

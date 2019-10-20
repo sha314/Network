@@ -17,7 +17,9 @@ class NetworkBApercolationExplosive_v5 : public NetworkBApercolation_v5{
 private:
     // time measurement variable
     double _time_selectLink{}, _time_link_for_min_cluster_sum_rule {};
-    size_t _count_link_for_min_cluster_sum_rule_a{}, _count_link_for_min_cluster_sum_rule_b{}, _count_link_for_min_cluster_sum_rule_c{};
+//    size_t _count_link_for_min_cluster_sum_rule_a{}, _count_link_for_min_cluster_sum_rule_b{}, _count_link_for_min_cluster_sum_rule_c{};
+    std::vector<long> M_sum_products;
+    std::vector<int>  M_link_indices;
 protected:
     uint _M_link{2}; // number of link to choose for product rule or sum rule
 public:
@@ -26,13 +28,13 @@ public:
     ~NetworkBApercolationExplosive_v5() = default;
     NetworkBApercolationExplosive_v5() = default;
     NetworkBApercolationExplosive_v5(size_t m0, size_t m, size_t size, uint M);
-
+    void reset(int i);
     virtual bool occupyLink();
 
     std::string get_signature() {
         std::stringstream ss;
         ss << "network_BA_percolation_explosive_m0_";
-        ss << _network_frame.get_m0() << "_m_" << _network_frame.get_m() << "_size_" << _network_size << "_M_" << _M_link << '-';
+        ss << get_m0() << "_m_" << get_m() << "_size_" << _network_size << "_M_" << _M_link << '-';
         return ss.str();
     }
     std::string getClassName(){return "NetworkBApercolationExplosive_v5";}
@@ -40,11 +42,16 @@ public:
     /**
      * Sum rule and Product rule
      */
-    uint link_for_min_cluster_sum_product_v2(size_t start_at=0); // both sum and product rule and randomly chooses from _randomized_link_indices
+    uint link_for_min_cluster_sum_product_v2(size_t start_at); // both sum and product rule and randomly chooses from _randomized_link_indices
     uint link_for_min_cluster_sum_product_v3_adaptive(double tc, size_t start_at);
+    uint link_for_min_cluster_sum_product_v4(uint start_at); // both sum and product rule and randomly chooses from _randomized_link_indices
     uint selectLink_v2();
 
-    void time_summary();
+    void summary();
+
+    void swap_randomized_index(size_t link, size_t count);
+
+    void replace_randomized_index(size_t link, size_t count);
 };
 
 #endif //NETWORK_NETWORK_PERCOLATION_EXPLOSIVE_V5_H

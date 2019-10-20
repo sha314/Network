@@ -1,0 +1,15 @@
+# optimizing NetworkBApercolationExplosive_v5::link_for_min_cluster_sum_product_v2
+m=5,M=2
+N           Total_Time          Time_by_selected_function       %
+
+100k        0.33 sec            0.23 sec                        70
+500k        2.6 sec             2.04 sec                        78
+
+
+change 1
+100k        0.35 sec            0.23 sec                        65
+500k        3.02 sec             2.3 sec                        76
+
+
+change 2
+100k        0.375               0.18                            49

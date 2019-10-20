@@ -452,6 +452,7 @@ void NetworkBApercolation_v3::relabel_links(Cluster& clstr, int id) { // todo : 
  * @return
  */
 double NetworkBApercolation_v3::entropy_v1() {
+    cout << "NetworkBApercolation_v3::entropy_v1" << endl;
     size_t count{}, n;
     double mu{}, H{};
     for(size_t i{}; i < _cluster.size(); ++i){

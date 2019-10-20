@@ -132,15 +132,16 @@ void BA_entropy_jump_ensemble(int argc, char **argv){
 //    NetworkBApercolation_v3 net(m, m, N);
 
 
-    double t;
-    double P{}, P_old{}, dP;
-    bool c{false};
+//    double t;
+//    double P{}, P_old{}, dP;
+//    bool c{false};
 
-    double entropy_jmp{0}, entropy_jmp_avg{}, tmp{}, tmp_old{};
+    double entropy_jmp{0}, entropy_jmp_avg{}, tmp{};
+//    double tmp_old{};
     double delta_H, previous_entropy;
 
-    size_t i{};
-    for(size_t en{}; en < En; ++en) {
+//    size_t i{};
+    for(int en{}; en < En; ++en) {
         cout << "iteration " << en+1 ;
 //        auto t_start = chrono::_V2::system_clock::now();
         net.reset(en % 10 == 0); // reset network in every 10 interval
@@ -192,9 +193,9 @@ void BA_entropy_jump_ensemble(int argc, char **argv){
 
 void network_percolation(int argc, char* argv[]){
 
-    size_t m = 2;
-    size_t N = 10;
-    size_t M = 2;
+    int m = 2;
+    int N = 10;
+    int M = 2;
 
     if(argc > 3) {
         m = atoi(argv[1]);
@@ -390,17 +391,18 @@ void network_percolation_explosive_v2(int argc, char** argv){
 //    NetworkBApercolation_v3 net(m, m, N);
 
 
-    double t;
-    double P{}, P_old{}, dP;
-    bool c{false};
+//    double t;
+//    double P{}, P_old{}, dP;
+//    bool c{false};
 
     size_t linkCount = net.linkCount();
     vector<double> entropy(linkCount), order_parameter(linkCount);
-    double entropy_jmp{0}, entropy_jmp_avg{}, H{}, tmp_old{};
+    double entropy_jmp{0}, entropy_jmp_avg{}, H{};
+//    double tmp_old{};
     double delta_H, previous_entropy;
 
     size_t k{};
-    for(size_t en{1}; en <= En; ++en) {
+    for(int en{1}; en <= En; ++en) {
         cout << "iteration " << en ;
         auto t_start = chrono::_V2::system_clock::now();
         net.reset(en % 25 == 0); // reset network in every 20 interval
@@ -477,40 +479,40 @@ void network_percolation_explosive_v2(int argc, char** argv){
  *
  */
 void network_percolation_global(){
-    NetworkPercolation<NetworkMDA> networkPercolation(10, 1, 1000000);
-    cout << networkPercolation.get_signature() << endl;
-//    networkPercolation.viewNodes();
-//    networkPercolation.viewLinks();
-//    networkPercolation.viewCluster();
-//    networkPercolation.viewClusterExtended();
-
-    int i=0;
-    while(networkPercolation.occupyLink()){
-//        cout << "iteration " << ++i << "****************************" << endl;
-//        cout << "last link " << networkPercolation.lastLink() << endl;
-//        networkPercolation.viewNodes();
-//        networkPercolation.viewClusterExtended();
-    }
-    cout << "time " << networkPercolation.time() << " sec" << endl;
+//    NetworkPercolation<NetworkMDA> networkPercolation(10, 1, 1000000);
+//    cout << networkPercolation.get_signature() << endl;
+////    networkPercolation.viewNodes();
+////    networkPercolation.viewLinks();
+////    networkPercolation.viewCluster();
+////    networkPercolation.viewClusterExtended();
+//
+//    int i=0;
+//    while(networkPercolation.occupyLink()){
+////        cout << "iteration " << ++i << "****************************" << endl;
+////        cout << "last link " << networkPercolation.lastLink() << endl;
+////        networkPercolation.viewNodes();
+////        networkPercolation.viewClusterExtended();
+//    }
+//    cout << "time " << networkPercolation.time() << " sec" << endl;
 
 }
 
 void network_percolationReverse_global(){
-    NetworkPercolationReverse<NetworkBA> networkPercolation(3, 1, 10);
-    cout << networkPercolation.get_signature() << endl;
-    networkPercolation.viewNodes();
-    networkPercolation.viewLinks();
-    networkPercolation.viewCluster();
-//    networkPercolation.viewClusterExtended();
-
-    int i=0;
-    while(networkPercolation.occupyLink()){
-//        cout << "iteration " << ++i << "****************************" << endl;
-//        cout << "last link " << networkPercolation.lastLink() << endl;
-//        networkPercolation.viewNodes();
-//        networkPercolation.viewClusterExtended();
-    }
-    cout << "time " << networkPercolation.time() << " sec" << endl;
+//    NetworkPercolationReverse<NetworkBA> networkPercolation(3, 1, 10);
+//    cout << networkPercolation.get_signature() << endl;
+//    networkPercolation.viewNodes();
+//    networkPercolation.viewLinks();
+//    networkPercolation.viewCluster();
+////    networkPercolation.viewClusterExtended();
+//
+//    int i=0;
+//    while(networkPercolation.occupyLink()){
+////        cout << "iteration " << ++i << "****************************" << endl;
+////        cout << "last link " << networkPercolation.lastLink() << endl;
+////        networkPercolation.viewNodes();
+////        networkPercolation.viewClusterExtended();
+//    }
+//    cout << "time " << networkPercolation.time() << " sec" << endl;
 
 }
 
@@ -707,58 +709,69 @@ void test_v5(int argc, char **argv) {
     int m = atoi(argv[1]);
     int N = atoi(argv[2]);
     int M = atoi(argv[3]);
-
     int ensemble_size = atoi(argv[4]);
-
+    cout << "m=" << m << ",N="<< N << ",M=" << M << ",En="<<ensemble_size << endl;
+    if (N <= 2*m) cerr << "Why ?? : line " << __LINE__ << endl;
 
 //    NetworkBApercolation_v5 net(m, m, N);
     NetworkBApercolationExplosive_v5 net(m, m, N, M);
 //    NetworkBApercolationExplosive_Inverted_v5 net(m,m,N,M);
 
-    net.setRandomState(0, true);
+    net.setRandomState(0, false);
     net.initializeNetwork();
 
     size_t linkCount = net.linkCount();
     size_t nodeCount = net.nodeCount();
-    cout << nodeCount << ", " << linkCount << ", " << endl;
+//    cout << nodeCount << ", " << linkCount << ", " << endl;
 //    net.viewNetwork();
 //    net.viewListOfLinkIndices();
     vector<double> entropy_jump(ensemble_size), order_jump(ensemble_size);
     vector<double> entropy(linkCount), order_param(linkCount); // entropy and order parameter
-    for (size_t k{0}; k < ensemble_size; ++k) {
+    bool flag=true;
+
+    for (int k{0}; k < ensemble_size; ++k) {
         auto t_start= chrono::_V2::system_clock::now();
 //        net.viewListOfLinkIndices();
         net.reset(k%25 == 0); // every 25 step. reset the network
 
+
+
         size_t i{};
-//        net.viewClusters();
-//        net.viewListOfLinkIndices();
-//        net.viewNetwork();
+        net.viewClusters();
+        net.viewListOfLinkIndices();
+        net.viewNetwork();
 //        cout << "entering to while" << endl;
-        while (net.occupyLink()) {
+        while (true) {
+            flag = net.occupyLink();
+            if (!flag) break;
 //            cout << "i " << i  << endl;
             entropy[i] += net.entropy();
             order_param[i] += net.largestClusterSize();
-//            net.viewClusters();
+
+            net.viewClusters();
+            net.viewListOfLinkIndices();
 //            cout << net.entropy_v1()  << "\t";
 //            cout << net.entropy_v2() << endl;
 //            cout << net.largestClusterSize() << endl;
             net.jump();
 //            _network_frame.viewClusterExtended();
             ++i;
-//            if (i == 7) break;
+//            if (i == 9) break;
         }
+//        net.summary();
         entropy_jump[k] = net.largestEntropyJump();
         order_jump[k] = net.largestOrderJump();
 //        cout << entropy_jump[k] << " at " << entropy_jump_pc[k] << endl;
         auto t_end= chrono::_V2::system_clock::now();
         chrono::duration<double> drtion = t_end - t_start;
-        cout << "iteration " << k << " : time elapsed " << drtion.count() << " sec" << endl;
+        cout << "iteration " << k
+         << " : time elapsed " << drtion.count() << " sec"
+         << endl;
     }
 
     auto tm = currentTime();
     string signature = net.get_signature();
-    string filename_jump = signature + "_largest_jump_" + tm;
+    string filename_jump = signature + "_largest_jump_" + tm + ".txt";
     stringstream ss;
     ss << "{"
        << R"*("signature":")*" << signature << "\""
@@ -772,16 +785,16 @@ void test_v5(int argc, char **argv) {
        << R"*(,"date":")*" << tm << "\""
        << "}";
 
-    ofstream fout_jump(filename_jump);
-    fout_jump << '#' << ss.str() << endl;
-    fout_jump << "#<largest entropy jump>\t<largest order parameter jump>" << endl;
-    for(size_t k{}; k < ensemble_size ; ++k){
-        fout_jump << abs(entropy_jump[k]) << '\t' << order_jump[k] << endl;
-    }
-    fout_jump.close();
+//    ofstream fout_jump(filename_jump);
+//    fout_jump << '#' << ss.str() << endl;
+//    fout_jump << "#<largest entropy jump>\t<largest order parameter jump>" << endl;
+//    for(size_t k{}; k < ensemble_size ; ++k){
+//        fout_jump << abs(entropy_jump[k]) << '\t' << order_jump[k] << endl;
+//    }
+//    fout_jump.close();
 
 
-    string filename = signature + "_entropy-order_" + tm;
+    string filename = signature + "_entropy-order_" + tm + ".txt";
     ofstream fout(filename);
     fout << '#' << ss.str() << endl;
     fout << "# t=relative link density" << endl;
@@ -808,7 +821,7 @@ void test_v3(int argc, char **argv) {
     int M = atoi(argv[3]);
 
     int ensemble_size = atoi(argv[4]);
-
+    cout << "m=" << m << ",N="<< N << ",M=" << M << ",En="<<ensemble_size << endl;
 
 //    NetworkBApercolation_v3 net(m, m, N);
      NetworkBApercolationExplosive_v3 net(m, m, N, M);
@@ -822,9 +835,9 @@ void test_v3(int argc, char **argv) {
 //    net.viewNetwork();
 //    net.viewListOfLinkIndices();
     vector<double> entropy_jump(ensemble_size), order_jump(ensemble_size);
-    double jump_tc{};
+//    double jump_tc{};
     vector<double> entropy(linkCount), order_param(linkCount); // entropy and order parameter
-    for (size_t k{0}; k < ensemble_size; ++k) {
+    for (int k{0}; k < ensemble_size; ++k) {
         auto t_start= chrono::_V2::system_clock::now();
 //        net.viewListOfLinkIndices();
         net.reset(k%25 == 0); // every 25 step. reset the network
@@ -863,7 +876,7 @@ void test_v3(int argc, char **argv) {
 
     auto tm = currentTime();
     string signature = net.get_signature();
-    string filename_jump = signature + "_largest_jump_" + tm;
+    string filename_jump = signature + "_largest_jump_" + tm + ".txt";
     stringstream ss;
     ss << "{"
        << R"*("signature":")*" << signature << "\""
@@ -880,13 +893,13 @@ void test_v3(int argc, char **argv) {
     ofstream fout_jump(filename_jump);
     fout_jump << '#' << ss.str() << endl;
     fout_jump << "#<largest entropy jump>\t<p>" << endl;
-    for(size_t k{}; k < ensemble_size ; ++k){
+    for(int k{}; k < ensemble_size ; ++k){
         fout_jump << entropy_jump[k] << '\t' << order_jump[k] << endl;
     }
     fout_jump.close();
 
 
-    string filename = signature + "_entropy-order_" + tm;
+    string filename = signature + "_entropy-order_" + tm + ".txt";
     ofstream fout(filename);
     fout << '#' << ss.str() << endl;
     fout << "# t=relative link density" << endl;

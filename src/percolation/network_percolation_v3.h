@@ -89,7 +89,7 @@ public:
     size_t get_m() const {return _m;}
     virtual std::string get_signature() {
         std::stringstream ss;
-        ss << "netrowk_BA_percolation_m0_";
+        ss << "network_BA_percolation_m0_";
         ss << _network_frame.get_m0() << "_m_" << _network_frame.get_m() << "_size_" << _network_size << "-";
         return ss.str();
     }

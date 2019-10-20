@@ -1,9 +1,19 @@
 cmake_minimum_required(VERSION 3.0)
 project(Network)
 
-set(CMAKE_CXX_STANDARD 11)
+### for pgi
+#SET(CMAKE_CXX_COMPILER /home/shahnoor/software/pgi/linux86-64/19.4/bin/pgc++)
+#SET(CMAKE_C_COMPILER /home/shahnoor/software/pgi/linux86-64/19.4/bin/pgcc)
+#SET(CMAKE_CXX_FLAGS  "-O3 std=c++11")
 
-SET(CMAKE_CXX_FLAGS  "-pthread -fopenmp")
+
+## for gcc
+set(CMAKE_CXX_STANDARD 11)
+#SET(CMAKE_CXX_FLAGS  "-Wall -D DEBUG_FLAG") # for debug only
+## if -O3 is enabled during compilation then step by step debugging is harder
+#SET(CMAKE_CXX_FLAGS  "-O3 -Wall -D DEBUG_FLAG")
+SET(CMAKE_CXX_FLAGS  "-pthread -fopenmp -O3 -Wall") # Only Release flag
+
 
 set(SOURCE_FILES
         src/main.cpp
@@ -52,6 +62,6 @@ set(SOURCE_FILES
         src/test/test_network_ba_v2.h
         src/percolation/explosive/network_percolation_explosive_v5.cpp
         src/percolation/explosive/network_percolation_explosive_v5.h
-        src/percolation/explosive/network_percolation_explosive_v3.cpp src/percolation/explosive/network_percolation_explosive_inverted.cpp src/percolation/explosive/network_percolation_explosive_inverted.h src/test/run_network_ba.cpp src/test/run_network_ba.h)
+        src/percolation/explosive/network_percolation_explosive_v3.cpp src/percolation/explosive/network_percolation_explosive_inverted.cpp src/percolation/explosive/network_percolation_explosive_inverted.h src/test/run_network_ba.cpp src/test/run_network_ba.h src/percolation/network_percolation_v6.cpp src/percolation/network_percolation_v6.h)
 
 add_executable(networks ${SOURCE_FILES})
