@@ -70,7 +70,7 @@ int NetworkBApercolation_v5::findRoot(int k) {
      * int a = 2;
      * cout << (a=10) << endl; // this will print 10
      */
-    return _cluster_info[k]=find_root_v3(_cluster_info[k]); // assign and return at the same time
+    return _cluster_info[k]=findRoot(_cluster_info[k]); // assign and return at the same time
 //    return b;
 }
 

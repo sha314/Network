@@ -1,10 +1,14 @@
 //
-// Created by shahnoor on 9/29/2019.
+// Created by shahnoor on 10/20/19.
 //
 
+#include <iostream>
+#include <chrono>
 #include <climits>
-#include "network_percolation_explosive_v5.h"
+#include "network_percolation_explosive_v6.h"
 
+
+using namespace std;
 
 
 /**
@@ -14,10 +18,10 @@
  * @param size
  * @param M
  */
-NetworkBApercolationExplosive_v5::NetworkBApercolationExplosive_v5(size_t m0, size_t m, size_t size, uint M)
-        : NetworkBApercolation_v5(m0, m, size)
+NetworkBApercolationExplosive_v6::NetworkBApercolationExplosive_v6(size_t m0, size_t m, size_t size, uint M)
+        : NetworkBApercolation_v6(m0, m, size)
 {
-    std::cout << "class NetworkBApercolationExplosive_v5" << std::endl;
+    std::cout << "class NetworkBApercolationExplosive_v6" << std::endl;
     if (M > 2) {
         if(M > MAX_M_VALUE){
             cout << "M exceeds maximum allowed value : line " << __LINE__ << endl;
@@ -25,8 +29,8 @@ NetworkBApercolationExplosive_v5::NetworkBApercolationExplosive_v5(size_t m0, si
         }
         _M_link = M;
     }
-    M_sum_products.resize(_M_link);
-    M_link_indices.resize(_M_link);
+//    M_sum_products.resize(_M_link);
+//    M_link_indices.resize(_M_link);
 }
 
 
@@ -36,7 +40,7 @@ NetworkBApercolationExplosive_v5::NetworkBApercolationExplosive_v5(size_t m0, si
  *               values : 's' for sum rule and 'p' for product rule
  * @return
  */
-uint NetworkBApercolationExplosive_v5::selectLink_v2() {
+uint NetworkBApercolationExplosive_v6::selectLink_v2() {
     if(occupied_link_count >= _link_count){
         return _link_count+1;
     }
@@ -63,7 +67,7 @@ uint NetworkBApercolationExplosive_v5::selectLink_v2() {
  *
  * @return value of the link in the _randomized_indices for which cluster size become minimum
  */
-uint NetworkBApercolationExplosive_v5::link_for_min_cluster_sum_product_v2(size_t start_at) {
+uint NetworkBApercolationExplosive_v6::link_for_min_cluster_sum_product_v2(size_t start_at) {
 //    auto start = std::chrono::system_clock::now(); // time measurement
     size_t index_randomized_link{0};
 
@@ -89,8 +93,8 @@ uint NetworkBApercolationExplosive_v5::link_for_min_cluster_sum_product_v2(size_
 
 
         // >>>>>> START B takes ~26 % of total runtime
-        id1 = _network_frame.fromNetworkMapA(tmp_lnk_index);
-        id2 = _network_frame.fromNetworkMapB(tmp_lnk_index);
+        id1 = _network_map_A[tmp_lnk_index];
+        id2 = _network_map_B[tmp_lnk_index];
 //        id1 = getNodeA(tmp_lnk_index);
 //        id2 = getNodeB(tmp_lnk_index);
 //        _network_frame.fromNetworkMapAB(id1, id2, tmp_lnk_index); // slower a bit
@@ -150,7 +154,7 @@ uint NetworkBApercolationExplosive_v5::link_for_min_cluster_sum_product_v2(size_
  *
  * @return value of the link in the _randomized_indices for which cluster size become minimum
  */
-uint NetworkBApercolationExplosive_v5::link_for_min_cluster_sum_product_v3_adaptive(double tc, size_t start_at) {
+uint NetworkBApercolationExplosive_v6::link_for_min_cluster_sum_product_v3_adaptive(double tc, size_t start_at) {
     size_t index_randomized_link{0};
     double t = relativeLinkDensity();
     int tmp_lnk_index, root1, root2;
@@ -174,10 +178,8 @@ uint NetworkBApercolationExplosive_v5::link_for_min_cluster_sum_product_v3_adapt
         tmp_lnk_index = _randomized_indices[r];
 //        cout << r << ":" << tmp_lnk_index << ",";
 
-        id1 = _network_frame.getNodeA(tmp_lnk_index);
-        id2 = _network_frame.getNodeB(tmp_lnk_index);
-//        id1 = getNodeA(tmp_lnk_index);
-//        id2 = getNodeB(tmp_lnk_index);
+        id1 = _network_map_A[tmp_lnk_index];
+        id2 = _network_map_B[tmp_lnk_index];
 
         root1 = findRoot(id1);
         root2 = findRoot(id2);
@@ -226,111 +228,19 @@ uint NetworkBApercolationExplosive_v5::link_for_min_cluster_sum_product_v3_adapt
 }
 
 
-/**
- * For minimizing cluster sizes using sum rule
- * version 4:
- *  (a) this function starts to read _M values of _randomized_indices array starting at start_at
- *  (b) both sum rule and product rule is present here but one of them is commented
- *  (c) uses two additional array to store and retrieve the sum (or product) information and link index
- *
- *  product of two cluster, each of a million in size, can be very large. for example : 10^6 * 10^6 = 10^12
- *  so use size_t variable type for storing products
- *
- * TODO The link with the smaller value of the products is occupied; in case of products being equal one of the corresponding links is selected randomly.
- *
- * @return value of the link in the _randomized_indices for which cluster size become minimum
- */
-uint NetworkBApercolationExplosive_v5::link_for_min_cluster_sum_product_v4(uint start_at) {
-    cerr << "problem !!! repair it : NetworkBApercolationExplosive_v5::link_for_min_cluster_sum_product_v4" << endl;
-//    auto start = std::chrono::system_clock::now(); // time measurement
-    uint index_randomized_link{0};
 
-    uint tmp_lnk_index;
-    int id1{-1}, id2{-1}, root1, root2;
-    long n_nodes, prod_sum ; // so that it is very big before going into the loop
-    int r{};
-//    long M_sum_products[_M_link];
-//    int M_link_indices[_M_link];
 
-//    cout << "randomly between ("<< start_at <<"," << _link_count << ")={";
-//    std::uniform_int_distribution<uint> distribution(start_at, max_link_index);
-
-    for(size_t i{0}; i < _M_link; ++i){
-        // random number between a and b or rand(a,b) = a + r%(b-a); where r is an arbitrary random number
-        r = start_at + _random_generator() % (_link_count-start_at);
-//        r = distribution(_random_generator);
-        M_link_indices[i] = r;
-        tmp_lnk_index = _randomized_indices[r];
-#ifdef DEBUG_FLAG
-        cout << "random " << r << endl;
-#endif
-        // >>>>>> START B takes ~26 % of total runtime
-        id1 = _network_frame.fromNetworkMapA(tmp_lnk_index);
-        id2 = _network_frame.fromNetworkMapB(tmp_lnk_index);
-//        id1 = getNodeA(tmp_lnk_index);
-//        id2 = getNodeB(tmp_lnk_index);
-        // <<<<< END B
-
-        root1 = findRoot(id1);
-        root2 = findRoot(id2);
-
-        n_nodes = _cluster_info[root1] * _cluster_info[root2]; // product rule. automatically becomes positive
-//            n_nodes = abs(_cluster_info[root1] + _cluster_info[root2]); // sum rule
-        M_sum_products[i] = n_nodes;
-
-//        if(n_nodes < prod_sum ) { // since we are minimizing cluster sizes
-//            prod_sum = n_nodes;
-//            index_randomized_link = r;
-//        }
-#ifdef DEBUG_FLAG
-        cout << "checking link _randomized_indices[" << r << "]=" << tmp_lnk_index << endl;
-        cout << " out of  id = " << id1 << " and " << id2 << " prod_sum = " << n_nodes << endl;
-#endif
-    }
-    prod_sum = M_sum_products[0];
-    index_randomized_link = M_link_indices[0];
-#ifdef DEBUG_FLAG
-    cout << "random indices {" << M_link_indices[0] << ",";
-#endif
-    for(size_t i{1}; i < _M_link; ++i){
-#ifdef DEBUG_FLAG
-        cout << M_link_indices[i] << ",";
-#endif
-        if(M_sum_products[i] < prod_sum){
-            index_randomized_link = M_link_indices[i];
-        }
-    }
-#ifdef DEBUG_FLAG
-    cout << "}" << endl;
-    cout << "selected _randomized_indices[" << index_randomized_link << "]= "
-         << _randomized_indices[index_randomized_link] << endl;
-#endif
-    if(index_randomized_link >= _randomized_indices.size()){
-        cout << "out of bound : line " << __LINE__ << endl;
-    }
-//    auto end = std::chrono::system_clock::now(); // time measurement
-//    std::chrono::duration<double> elapsed_seconds = end-start; // time measurement
-//    _time_selectLink += elapsed_seconds.count(); // time measurement
-
-    uint pos = _randomized_indices[index_randomized_link];
-//    _randomized_indices[index_randomized_link] = _randomized_indices[occupied_link_count];
-
-//    suffle_randomized_index(index_randomized_link, occupied_link_count);
-    replace_randomized_index(index_randomized_link, occupied_link_count); // assigns 0 which index should not be used
-    return pos;
-}
-
-bool NetworkBApercolationExplosive_v5::occupyLink() {
-    if (occupied_link_count >= linkCount()){
+bool NetworkBApercolationExplosive_v6::occupyLink() {
+    if (occupied_link_count >= getLinkCount()){
         return false;
     }
 //    uint pos = selectLink_v2();
-    uint pos = link_for_min_cluster_sum_product_v4(occupied_link_count);
-    return NetworkBApercolation_v5::placeSelectedLink(pos);
+    uint pos = link_for_min_cluster_sum_product_v2(occupied_link_count);
+    return NetworkBApercolation_v6::placeSelectedLink(pos);
 }
 
-void NetworkBApercolationExplosive_v5::summary() {
-    NetworkBApercolation_v5::summary();
+void NetworkBApercolationExplosive_v6::summary() {
+    NetworkBApercolation_v6::summary();
     cout << "_time_selectLink " << _time_selectLink << " sec" << endl;
 //    cout << "_time_link_for_min_cluster_sum_rule " << _time_link_for_min_cluster_sum_rule << " sec" << endl;
 //    cout << "_count_link_for_min_cluster_sum_rule_a " << _count_link_for_min_cluster_sum_rule_a << " times" << endl;
@@ -340,17 +250,17 @@ void NetworkBApercolationExplosive_v5::summary() {
 
 }
 
-void NetworkBApercolationExplosive_v5::reset(int i) {
+void NetworkBApercolationExplosive_v6::reset(int i) {
     _time_selectLink=0;
     _time_link_for_min_cluster_sum_rule=0;
-    NetworkBApercolation_v5::reset(i);
+    NetworkBApercolation_v6::reset(i);
 }
 /**
  * swap a-th and b-th element of _randomized_indices
  * @param a
  * @param b
  */
-void NetworkBApercolationExplosive_v5::swap_randomized_index(size_t a, size_t b) {
+void NetworkBApercolationExplosive_v6::swap_randomized_index(size_t a, size_t b) {
     uint tmp = _randomized_indices[a];
     _randomized_indices[a] = _randomized_indices[b];
     _randomized_indices[b] = tmp;
@@ -360,7 +270,7 @@ void NetworkBApercolationExplosive_v5::swap_randomized_index(size_t a, size_t b)
  * @param a
  * @param b
  */
-void NetworkBApercolationExplosive_v5::replace_randomized_index(size_t a, size_t b) {
+void NetworkBApercolationExplosive_v6::replace_randomized_index(size_t a, size_t b) {
     _randomized_indices[a] = _randomized_indices[b];
     _randomized_indices[b] = 0; // does not affect the result. use only when debugging so that we can identify easily
 }

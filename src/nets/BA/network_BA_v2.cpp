@@ -48,8 +48,8 @@ void NetworkBA_v2::initialize() {
         _nodes.emplace_back(i);
         for(int j{}; j < _m0; ++j){
             if(j > i){
-                network_map_A.emplace_back(i);
-                network_map_B.emplace_back(j);
+                _network_map_A.emplace_back(i);
+                _network_map_B.emplace_back(j);
                 _preferentially.emplace_back(i);
                 _preferentially.emplace_back(j);
                 degree_count[i] += 1;
@@ -87,8 +87,8 @@ bool NetworkBA_v2::add_node_v1() {
 // # each    node    comes    with    two    new link
         rnd = _random() % _preferentially.size();
         int j = _preferentially[rnd];
-        network_map_A.emplace_back(_node_index);
-        network_map_B.emplace_back(j);
+        _network_map_A.emplace_back(_node_index);
+        _network_map_B.emplace_back(j);
 //# to prevent self connection, don't just add directly to preferentially.
 //# store it in a temporary location first
         tmp.emplace_back(_node_index);
@@ -127,8 +127,8 @@ bool NetworkBA_v2::add_node_v2() {
     if(degree_count.size()>= _N_size) degree_count.resize(_N_size + 10);
 // then connect the new node to the selected m_nodes
     for(int j: m_nodes){
-        network_map_A.emplace_back(_node_index);
-        network_map_B.emplace_back(j);
+        _network_map_A.emplace_back(_node_index);
+        _network_map_B.emplace_back(j);
         _preferentially.emplace_back(_node_index);
         _preferentially.emplace_back(j);
         degree_count[_node_index] += 1;
@@ -168,11 +168,11 @@ std::vector<double> NetworkBA_v2::degreeDistribution() {
 
 void NetworkBA_v2::view() {
     cout << "NetworkBA_v2::view __LINE__" << __LINE__ << endl;
-    for(size_t i{}; i < network_map_A.size(); ++i){
-        cout << "Link[" << i << "] => " << network_map_A[i] << " - " << network_map_B[i] << endl;
+    for(size_t i{}; i < _network_map_A.size(); ++i){
+        cout << "Link[" << i << "] => " << _network_map_A[i] << " - " << _network_map_B[i] << endl;
     }
     cout << "Netowrk size " << _N_size << " max size " << _N_max << endl;
-    cout << "Link count " << network_map_A.size() << endl;
+    cout << "Link count " << _network_map_A.size() << endl;
 
 }
 
@@ -196,8 +196,8 @@ void NetworkBA_v2::reset() {
     _N_size = _m0;
     _N_max = _N_size;
     _link_count = 0; // number of links
-    network_map_A.clear();
-    network_map_B.clear();
+    _network_map_A.clear();
+    _network_map_B.clear();
     _preferentially.clear();
     initialize();
 }

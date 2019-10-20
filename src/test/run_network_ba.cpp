@@ -9,6 +9,7 @@
 #include "../util/time_tracking.h"
 #include "../percolation/explosive/network_percolation_explosive_v5.h"
 #include "../percolation/explosive/network_percolation_explosive_inverted.h"
+#include "../percolation/explosive/network_percolation_explosive_v6.h"
 
 using namespace std;
 
@@ -230,8 +231,11 @@ void run_BA_jump_percolation(int argc, char **argv) {
 //   NetworkBApercolationExplosive_Inverted_v3 net(m, m, N, M);
 
 //    NetworkBApercolation_v5 net(m, m, N);
-    NetworkBApercolationExplosive_v5 net(m, m, N, M);
+//    NetworkBApercolationExplosive_v5 net(m, m, N, M);
 //    NetworkBApercolationExplosive_Inverted_v5 net(m,m,N,M);
+
+    //    NetworkBApercolation_v6 net(m, m, N);
+    NetworkBApercolationExplosive_v6 net(m, m, N, M);
 
     net.setRandomState(0, true);
     net.initializeNetwork();
@@ -265,8 +269,8 @@ void run_BA_jump_percolation(int argc, char **argv) {
        << R"*(,"class":")*" << net.getClassName() << "\""
        << R"*(,"m":)*" << m
        << R"*(,"N":)*" << N
-       << R"*(,"number_of_links":)*" << net.linkCount()
-       << R"*(,"number_of_nodes":)*" << net.nodeCount()
+       << R"*(,"number_of_links":)*" << net.getLinkCount()
+       << R"*(,"number_of_nodes":)*" << net.getNodeCount()
        << R"*(,"M":)*" << M
        << R"*(,"ensemble_size":)*" << ensemble_size
        << R"*(,"date":")*" << tm << "\""

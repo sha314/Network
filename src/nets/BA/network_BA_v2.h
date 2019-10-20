@@ -20,18 +20,11 @@ class NetworkBA_v2{
     uint _m{2}; // number of new nodes each node comes with
 
     // variable properties
-    std::vector<int> _nodes;
-    size_t _N_size{3}; // network size = number of nodes
+
     size_t _N_max;
     int _node_index; // 1 less _N_size
     size_t _link_count{}; // number of links
 
-    /*
-     * i-th node of network_map_A is connected to the
-     * i-th node of network_map_B
-     */
-    std::vector<int> network_map_A;
-    std::vector<int> network_map_B;
 
     /*
      * Very useful for preferential attachment
@@ -44,10 +37,20 @@ class NetworkBA_v2{
      */
     std::vector<uint> degree_count;
 
+    size_t _c{};
+
+protected:
+    std::vector<int> _nodes;
+    size_t _N_size{3}; // network size = number of nodes
+    /*
+ * i-th node of network_map_A is connected to the
+ * i-th node of network_map_B
+ */
+    std::vector<int> _network_map_A;
+    std::vector<int> _network_map_B;
+
     size_t _random_state{};
     std::mt19937 _random;
-
-    size_t _c{};
 
 private:
     bool add_node_v1();
@@ -75,23 +78,23 @@ public:
 
 
     std::vector<double> degreeDistribution();
-    int fromNetworkMapA(uint a) const { return network_map_A[a];}
-    int fromNetworkMapB(uint a) const { return network_map_B[a];}
+    int fromNetworkMapA(uint a) const { return _network_map_A[a];}
+    int fromNetworkMapB(uint a) const { return _network_map_B[a];}
 
-    void fromNetworkMapAB(int& A, int& B, uint i) const { A=network_map_A[i];B=network_map_B[i];}
+    void fromNetworkMapAB(int& A, int& B, uint i) const { A=_network_map_A[i];B=_network_map_B[i];}
 
     void clear_preferentially(){_preferentially.clear();}
 
-    int getNodeA(int link) const {return network_map_A[link];}
-    int getNodeB(int link) const {return network_map_B[link];}
+    int getNodeA(int link) const {return _network_map_A[link];}
+    int getNodeB(int link) const {return _network_map_B[link];}
 
-    std::string get_signature() {
+    virtual std::string get_signature() {
         std::stringstream ss;
-        ss << "netrowk_BA_v2_m0_";
-        ss << _m0 << "_m_" << _m << "-";
+        ss << getClassName() ;
+        ss << "_m0_" << _m0 << "_m_" << _m << "-";
         return ss.str();
     }
-
+    virtual std::string getClassName(){return "NetworkBA_v2";}
 
     std::vector<uint> degrees() { return degree_count;}
 };

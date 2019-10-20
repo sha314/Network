@@ -14,6 +14,7 @@
 #include "../percolation/explosive/network_percolation_explosive_v5.h"
 #include "../percolation/explosive/network_percolation_explosive_v3.h"
 #include "../percolation/explosive/network_percolation_explosive_inverted.h"
+#include "../percolation/explosive/network_percolation_explosive_v6.h"
 #include <chrono>
 #include <fstream>
 #include <thread>
@@ -805,6 +806,164 @@ void test_v5(int argc, char **argv) {
              << "\t" << order_param[k]/(ensemble_size*double(N)) << endl;
     }
     fout.close();
+
+}
+
+void test_v6(int argc, char **argv) {
+//    if(argc < 5 ){
+//        cout << "argv[1] == m" << endl;
+//        cout << "argv[2] == N" << endl;
+//        cout << "argv[3] == M" << endl;
+//        cout << "argv[4] == Ensemble" << endl;
+//        return;
+//    }
+    int m = atoi(argv[1]);
+    int N = atoi(argv[2]);
+    int M = atoi(argv[3]);
+    int ensemble_size = atoi(argv[4]);
+    cout << "m=" << m << ",N="<< N << ",M=" << M << ",En="<<ensemble_size << endl;
+    if (N <= 2*m) cerr << "Why ?? : line " << __LINE__ << endl;
+
+    NetworkBApercolation_v6 net(m, m, N);
+//    NetworkBApercolationExplosive_v6 net(m, m, N, M);
+//    NetworkBApercolationExplosive_Inverted_v5 net(m,m,N,M);
+
+    net.setRandomState(0, true);
+    net.initializeNetwork();
+
+    size_t linkCount = net.getLinkCount();
+    size_t nodeCount = net.getNodeCount();
+    cout << nodeCount << ", " << linkCount << ", " << endl;
+//    net.viewNetwork();
+//    net.viewListOfLinkIndices();
+    vector<double> entropy_jump(ensemble_size), order_jump(ensemble_size);
+    vector<double> entropy(linkCount), order_param(linkCount); // entropy and order parameter
+    bool flag=true;
+
+    for (int k{0}; k < ensemble_size; ++k) {
+        auto t_start= chrono::_V2::system_clock::now();
+//        net.viewListOfLinkIndices();
+        net.reset(k%25 == 0); // every 25 step. reset the network
+
+
+
+        size_t i{};
+        net.viewClusters();
+        net.viewListOfLinkIndices();
+        net.viewNetwork();
+//        cout << "entering to while" << endl;
+        while (true) {
+            flag = net.occupyLink();
+            if (!flag) break;
+//            cout << "i " << i  << endl;
+            entropy[i] += net.entropy();
+            order_param[i] += net.largestClusterSize();
+
+            net.viewClusters();
+            net.viewListOfLinkIndices();
+//            cout << net.entropy_v1()  << "\t";
+//            cout << net.entropy_v2() << endl;
+//            cout << net.largestClusterSize() << endl;
+            net.jump();
+//            _network_frame.viewClusterExtended();
+            ++i;
+//            if (i == 9) break;
+        }
+//        net.summary();
+        entropy_jump[k] = net.largestEntropyJump();
+        order_jump[k] = net.largestOrderJump();
+//        cout << entropy_jump[k] << " at " << entropy_jump_pc[k] << endl;
+        auto t_end= chrono::_V2::system_clock::now();
+        chrono::duration<double> drtion = t_end - t_start;
+        cout << "iteration " << k
+             << " : time elapsed " << drtion.count() << " sec"
+             << endl;
+    }
+
+//    net.viewClusters();
+//    net.viewListOfLinkIndices();
+
+    auto tm = currentTime();
+    string signature = net.get_signature();
+    string filename_jump = signature + "_largest_jump_" + tm + ".txt";
+    stringstream ss;
+    ss << "{"
+       << R"*("signature":")*" << signature << "\""
+       << R"*(,"class":")*" << net.getClassName() << "\""
+       << R"*(,"m":)*" << m
+       << R"*(,"N":)*" << N
+       << R"*(,"number_of_links":)*" << net.getLinkCount()
+       << R"*(,"number_of_nodes":)*" << net.getNodeCount()
+       << R"*(,"M":)*" << M
+       << R"*(,"ensemble_size":)*" << ensemble_size
+       << R"*(,"date":")*" << tm << "\""
+       << "}";
+
+//    ofstream fout_jump(filename_jump);
+//    fout_jump << '#' << ss.str() << endl;
+//    fout_jump << "#<largest entropy jump>\t<largest order parameter jump>" << endl;
+//    for(size_t k{}; k < ensemble_size ; ++k){
+//        fout_jump << abs(entropy_jump[k]) << '\t' << order_jump[k] << endl;
+//    }
+//    fout_jump.close();
+
+
+    string filename = signature + "_entropy-order_" + tm + ".txt";
+    ofstream fout(filename);
+    fout << '#' << ss.str() << endl;
+    fout << "# t=relative link density" << endl;
+    fout << "#<t>\t<H>\t<P>" << endl;
+    for(size_t k{}; k < entropy.size() ; ++k){
+        fout << (k+1)/double(N)
+             << "\t" << entropy[k]/ensemble_size
+             << "\t" << order_param[k]/(ensemble_size*double(N)) << endl;
+    }
+    fout.close();
+
+}
+
+void test_network_v6(int argc, char **argv) {
+//    if(argc < 5 ){
+//        cout << "argv[1] == m" << endl;
+//        cout << "argv[2] == N" << endl;
+//        cout << "argv[3] == M" << endl;
+//        cout << "argv[4] == Ensemble" << endl;
+//        return;
+//    }
+    int m = atoi(argv[1]);
+    int N = atoi(argv[2]);
+    int M = atoi(argv[3]);
+    int ensemble_size = atoi(argv[4]);
+    cout << "m=" << m << ",N="<< N << ",M=" << M << ",En="<<ensemble_size << endl;
+    if (N <= 2*m) cerr << "Why ?? : line " << __LINE__ << endl;
+
+    NetworkBApercolation_v6 net(m, m, N);
+//    NetworkBApercolationExplosive_v6 net(m, m, N, M);
+//    NetworkBApercolationExplosive_Inverted_v5 net(m,m,N,M);
+
+    net.setRandomState(0, true);
+    net.initializeNetwork();
+
+    size_t linkCount = net.getLinkCount();
+    size_t nodeCount = net.getNodeCount();
+    cout << nodeCount << ", " << linkCount << ", " << endl;
+//    net.viewNetwork();
+//    net.viewListOfLinkIndices();
+
+    bool flag=true;
+
+//        net.viewListOfLinkIndices();
+        net.reset(1); // every 25 step. reset the network
+
+        size_t i{};
+        net.viewClusters();
+        net.viewListOfLinkIndices();
+        net.viewNetwork();
+//        cout << "entering to while" << endl;
+
+//    net.viewClusters();
+//    net.viewListOfLinkIndices();
+
 
 }
 

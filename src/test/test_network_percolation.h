@@ -31,6 +31,8 @@ void test_NetworkBApercolationExplosive_v3_jump(int argc, char **argv);
 
 void test_v5(int argc, char **argv);
 void test_v3(int argc, char **argv);
+void test_v6(int argc, char **argv); // 2019.10.20
+void test_network_v6(int argc, char **argv); // 2019.10.20
 
 void test_NetworkBA_v2(int argc, char **argv);
 
