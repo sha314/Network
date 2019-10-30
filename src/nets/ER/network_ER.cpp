@@ -7,8 +7,34 @@
 
 using namespace std;
 
+/*************************
+ * class Network_v2
+ ***************************/
+void Network_v2::setRandomState(size_t seed, bool g) {
+    _random_state = seed;
+    if(g){
+        std::random_device rd;
+        _random_state = rd();
+    }
+    _gen.seed(_random_state);
+    cout << "random seed Network_v2 " << _random_state << endl;
+}
+
+void Network_v2::view() {
+    cout << "Network_v2::view __LINE__" << __LINE__ << endl;
+    for(size_t i{}; i < _network_map_A.size(); ++i){
+        cout << "Link[" << i << "] => " << _network_map_A[i] << " - " << _network_map_B[i] << endl;
+    }
+    cout << "Netowrk size " << _nodes.size() << endl;
+    cout << "Link count " << _network_map_A.size() << endl;
+    cout << "Max link " << _nodes.size() *( _nodes.size()-1)/2 << endl;
+
+}
+
+
 /*****************************
  * Erdos Renyi network
+ * class Network_ER
  *****************************/
 Network_ER::Network_ER(size_t N, double p) : Network_v2(){
     N_size = N;
@@ -39,24 +65,14 @@ void Network_ER::initialize() {
     build(N_size);
 }
 
-
-void Network_v2::setRandomState(size_t seed, bool g) {
-    _random_state = seed;
-    if(g){
-        std::random_device rd;
-        _random_state = rd();
-    }
-    _gen.seed(_random_state);
-    cout << "random seed Network_v2 " << _random_state << endl;
+void Network_ER::rebuild() {
+    build(N_size);
 }
 
-void Network_v2::view() {
-    cout << "Network_v2::view __LINE__" << __LINE__ << endl;
-    for(size_t i{}; i < _network_map_A.size(); ++i){
-        cout << "Link[" << i << "] => " << _network_map_A[i] << " - " << _network_map_B[i] << endl;
-    }
-    cout << "Netowrk size " << _nodes.size() << endl;
-    cout << "Link count " << _network_map_A.size() << endl;
-
-
+void Network_ER::viewLocal() {
+    cout << "G(N,p) : N="  << N_size << ",p=" << p_value << endl;
+    cout << "Connection number peaked around " << p_value * N_size*(N_size - 1)/2 << endl;
 }
+
+
+

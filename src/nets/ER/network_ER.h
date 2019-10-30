@@ -22,6 +22,7 @@ class Network_v2{
  */
 
 protected:
+    size_t N_size;
     std::vector<int> _nodes;
 
     /*
@@ -45,11 +46,17 @@ public:
 //    void reset();
     std::vector<uint> degrees() { return degree_count;}
 
-    void view();
+    void view(); // general property of network
     virtual std::string getClassName(){return "Network_v2";}
     virtual void initialize() = 0; // pure virtual function
+    virtual void rebuild() = 0;
+    virtual std::string get_signature()=0;
+    virtual void viewLocal() =0; // other properties of a network that is different for different types of network
     size_t getNodeCount() const { return  _nodes.size();}
     size_t getLinkCount() const { return  _network_map_A.size();}
+
+    int getNodeA(int link) const {return _network_map_A[link];}
+    int getNodeB(int link) const {return _network_map_B[link];}
 };
 
 
@@ -73,6 +80,7 @@ public:
     uint get_m0()const { return  _m0;}
     uint get_m() const { return  _m;}
     virtual std::string getClassName(){return "Network_BA";}
+    void rebuild();
 };
 
 // MDA network
@@ -80,6 +88,7 @@ class Network_MDA : Network_v2{
 
 public:
     virtual std::string getClassName(){return "Network_MDA";}
+    void rebuild();
 };
 
 
@@ -103,7 +112,7 @@ Also known as the “G(n,p)"
  */
 class Network_ER : public Network_v2{
     double p_value{};
-    size_t N_size;
+
 
     int _node_index; // 1 less _N_size
     size_t _link_count{}; // number of links
@@ -124,28 +133,22 @@ public:
 
     explicit Network_ER(size_t N, double p);
 
-    void reset();
-
+    void rebuild() override ;
     void initialize() override;
 
 
     std::vector<double> degreeDistribution();
-    int fromNetworkMapA(uint a) const { return _network_map_A[a];}
-    int fromNetworkMapB(uint a) const { return _network_map_B[a];}
 
 
-
-
-    int getNodeA(int link) const {return _network_map_A[link];}
-    int getNodeB(int link) const {return _network_map_B[link];}
-
-    virtual std::string get_signature() {
+    std::string get_signature() override {
         std::stringstream ss;
         ss << getClassName() ;
         ss << "_N_" << N_size << "_p_" << p_value << "-";
         return ss.str();
     }
-    virtual std::string getClassName(){return "Network_ER";}
+    std::string getClassName() override {return "Network_ER";}
+
+    void viewLocal() override;
 
 
 };
