@@ -824,11 +824,11 @@ void test_v6(int argc, char **argv) {
     cout << "m=" << m << ",N="<< N << ",M=" << M << ",En="<<ensemble_size << endl;
     if (N <= 2*m) cerr << "Why ?? : line " << __LINE__ << endl;
 
-    NetworkBApercolation_v6 net(m, m, N);
-//    NetworkBApercolationExplosive_v6 net(m, m, N, M);
+//    NetworkBApercolation_v6 net(m, m, N);
+    NetworkBApercolationExplosive_v6 net(m, m, N, M); // TODO M=2 is problematic
 //    NetworkBApercolationExplosive_Inverted_v5 net(m,m,N,M);
 
-    net.setRandomState(0, true);
+    net.setRandomState(0, false);
     net.initializeNetwork();
 
     size_t linkCount = net.getLinkCount();
@@ -839,31 +839,35 @@ void test_v6(int argc, char **argv) {
     vector<double> entropy_jump(ensemble_size), order_jump(ensemble_size);
     vector<double> entropy(linkCount), order_param(linkCount); // entropy and order parameter
     bool flag=true;
-
+    double H1,H2;
     for (int k{0}; k < ensemble_size; ++k) {
         auto t_start= chrono::_V2::system_clock::now();
 //        net.viewListOfLinkIndices();
         net.reset(k%25 == 0); // every 25 step. reset the network
 
-
-
         size_t i{};
+        net.viewNetwork();
         net.viewClusters();
         net.viewListOfLinkIndices();
-        net.viewNetwork();
 //        cout << "entering to while" << endl;
         while (true) {
             flag = net.occupyLink();
             if (!flag) break;
-//            cout << "i " << i  << endl;
+//            cout << "********************* i " << i  << endl;
             entropy[i] += net.entropy();
             order_param[i] += net.largestClusterSize();
 
-            net.viewClusters();
-            net.viewListOfLinkIndices();
-//            cout << net.entropy_v1()  << "\t";
-//            cout << net.entropy_v2() << endl;
-//            cout << net.largestClusterSize() << endl;
+//            net.viewClusters();
+//            net.viewListOfLinkIndices();
+            H1 = net.entropy_v1();
+            H2 = net.entropy_v2();
+//            cout << H1  << "\t";
+//            cout << H2 << "\t";
+//            cout << net.largestClusterSize() ;
+//            cout << endl;
+            if(abs(H1 - H2) > 1e-10){
+                cerr << "entropy calculation is problematic"  << endl;
+            }
             net.jump();
 //            _network_frame.viewClusterExtended();
             ++i;
@@ -947,23 +951,15 @@ void test_network_v6(int argc, char **argv) {
     size_t linkCount = net.getLinkCount();
     size_t nodeCount = net.getNodeCount();
     cout << nodeCount << ", " << linkCount << ", " << endl;
-//    net.viewNetwork();
-//    net.viewListOfLinkIndices();
 
-    bool flag=true;
+    net.viewNetwork();
+    net.viewListOfLinkIndices();
 
-//        net.viewListOfLinkIndices();
-        net.reset(1); // every 25 step. reset the network
 
-        size_t i{};
-        net.viewClusters();
-        net.viewListOfLinkIndices();
-        net.viewNetwork();
-//        cout << "entering to while" << endl;
-
+//    net.reset(1);
 //    net.viewClusters();
 //    net.viewListOfLinkIndices();
-
+//    net.viewNetwork();
 
 }
 

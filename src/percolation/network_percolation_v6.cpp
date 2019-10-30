@@ -8,7 +8,9 @@
 
 using namespace std;
 
-NetworkBApercolation_v6::NetworkBApercolation_v6(size_t m0, size_t m, size_t size) {
+NetworkBApercolation_v6::NetworkBApercolation_v6(size_t m0, size_t m, size_t size)
+        : NetworkBA_v2(m0, m)
+{
     std::cout << "class NetworkBApercolation_v6" << std::endl;
 //    cout << m0 << ", " << m << endl;
     _network_size = size;
@@ -284,6 +286,7 @@ void NetworkBApercolation_v6::viewClusters() {
  */
 void NetworkBApercolation_v6::initialize_network() {
     cout << "Initializing Network ... " << std::flush;
+    init();
     grow(_network_size);
     // initialize link indices
     _link_count = getLinkCount();

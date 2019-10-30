@@ -131,8 +131,8 @@ void run_in_main(int argc, char* argv[]){
 //    test_v3(argc, argv);
 //    BA_order_parameter_jump(argc, argv);
 //    BA_entropy_jump_ensemble(argc, argv);
-//    test_v6(argc, argv); // 2019.10.20
-    test_network_v6(argc, argv); // 2019.10.20
+    test_v6(argc, argv); // 2019.10.20
+//    test_network_v6(argc, argv); // 2019.10.20
 
     /**
      * Corrected method for final run

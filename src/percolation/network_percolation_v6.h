@@ -119,7 +119,8 @@ public:
            << "_size_" << _network_size;
         return ss.str();
     }
-    virtual std::string getClassName(){return "NetworkBApercolation_v5";}
+
+    std::string getClassName() override {return "NetworkBApercolation_v6";}
 
     bool isSelfClusterJump() {return _self_cluster_jump;}
 

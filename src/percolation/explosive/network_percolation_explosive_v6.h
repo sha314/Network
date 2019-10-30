@@ -40,7 +40,7 @@ public:
            << "_M_" << _M_link << '-';
         return ss.str();
     }
-    std::string getClassName() override {return "NetworkBApercolationExplosive_v5";}
+    std::string getClassName() override {return "NetworkBApercolationExplosive_v6";}
 
     /**
      * Sum rule and Product rule
