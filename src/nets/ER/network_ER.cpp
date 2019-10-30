@@ -10,7 +10,7 @@ using namespace std;
 /*****************************
  * Erdos Renyi network
  *****************************/
-Network_ER::Network_ER(size_t N, double p) {
+Network_ER::Network_ER(size_t N, double p) : Network_v2(){
     N_size = N;
     p_value = p;
 }
@@ -55,7 +55,7 @@ void Network_v2::view() {
     for(size_t i{}; i < _network_map_A.size(); ++i){
         cout << "Link[" << i << "] => " << _network_map_A[i] << " - " << _network_map_B[i] << endl;
     }
-    cout << "Netowrk size " << _N_size << " max size " << _N_max << endl;
+    cout << "Netowrk size " << _nodes.size() << endl;
     cout << "Link count " << _network_map_A.size() << endl;
 
 

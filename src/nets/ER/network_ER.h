@@ -14,13 +14,7 @@
  * General network class
  */
 class Network_v2{
-// constant properties
-    uint _m0{3}; // seed
-    uint _m{2}; // number of new nodes each node comes with
 
-    // variable properties
-
-    size_t _N_max;
 
     /*
  * Counts the degree of node
@@ -29,7 +23,7 @@ class Network_v2{
 
 protected:
     std::vector<int> _nodes;
-    size_t _N_size{3}; // network size = number of nodes
+
     /*
  * i-th node of network_map_A is connected to the
  * i-th node of network_map_B
@@ -42,24 +36,33 @@ protected:
     std::mt19937 _gen;
 
 public:
-    ~Network_v2() = default;
+    virtual ~Network_v2() = default;
     Network_v2() = default;
 //    Network_v2(size_t m0=3, size_t m=1); // only seeding
 
     void setRandomState(size_t seed=0, bool g=true);
     size_t getRandomState() {return _random_state;};
-    void reset();
+//    void reset();
     std::vector<uint> degrees() { return degree_count;}
-    uint get_m0()const { return  _m0;}
-    uint get_m() const { return  _m;}
+
     void view();
     virtual std::string getClassName(){return "Network_v2";}
+    virtual void initialize() = 0; // pure virtual function
+    size_t getNodeCount() const { return  _nodes.size();}
+    size_t getLinkCount() const { return  _network_map_A.size();}
 };
 
 
 // Barabasi Albert network
 class Network_BA : Network_v2{
 
+    // constant properties
+    uint _m0{3}; // seed
+    uint _m{2}; // number of new nodes each node comes with
+
+    // variable properties
+
+    size_t _N_max;
     /*
      * Very useful for preferential attachment
      */
@@ -67,7 +70,8 @@ class Network_BA : Network_v2{
 public:
     Network_BA(size_t m0=3, size_t m=1); // only seeding
     void clear_preferentially(){_preferentially.clear();}
-
+    uint get_m0()const { return  _m0;}
+    uint get_m() const { return  _m;}
     virtual std::string getClassName(){return "Network_BA";}
 };
 
@@ -97,7 +101,7 @@ p
 Also known as the “G(n,p)"
  model” (graph on n nodes with probability p)
  */
-class Network_ER : Network_v2{
+class Network_ER : public Network_v2{
     double p_value{};
     size_t N_size;
 
@@ -118,19 +122,11 @@ private:
 public:
     ~Network_ER() = default;
 
-    explicit Network_ER(size_t n, double p);
+    explicit Network_ER(size_t N, double p);
 
     void reset();
-    void setMaxNetworkSize(size_t N);
-    size_t getBlankSize();
 
-    size_t getNodeCount() const { return  _N_size;}
-    size_t getLinkCount() const { return  _link_count;}
-    bool spaceAvailable();
-
-
-    void initialize();
-    void view();
+    void initialize() override;
 
 
     std::vector<double> degreeDistribution();
@@ -146,7 +142,7 @@ public:
     virtual std::string get_signature() {
         std::stringstream ss;
         ss << getClassName() ;
-        ss << "_m0_" << get_m0() << "_m_" << get_m() << "-";
+        ss << "_N_" << N_size << "_p_" << p_value << "-";
         return ss.str();
     }
     virtual std::string getClassName(){return "Network_ER";}
