@@ -24,7 +24,7 @@ class Network_v2{
 protected:
     size_t N_size;
     std::vector<int> _nodes;
-
+    std::vector<std::vector<int>> _adjacency_list;
     /*
  * i-th node of network_map_A is connected to the
  * i-th node of network_map_B
@@ -47,6 +47,7 @@ public:
     std::vector<uint> degrees() { return degree_count;}
 
     void view(); // general property of network
+    void viewAdjacencyList();
     virtual std::string getClassName(){return "Network_v2";}
     virtual void initialize() = 0; // pure virtual function
     virtual void rebuild() = 0;
@@ -126,8 +127,8 @@ protected:
 
 
 private:
-    bool build(size_t netowk_size);
-
+    bool build(size_t network_size);
+    bool build_with_adjacency_list(size_t network_size);
 public:
     ~Network_ER() = default;
 

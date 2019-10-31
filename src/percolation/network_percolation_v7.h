@@ -60,11 +60,11 @@ public:
     virtual ~NetworkPercolation_v7()          = default;
     NetworkPercolation_v7()           = default;
 
-    explicit NetworkPercolation_v7(Network_v2* net){_net = net;};
+    explicit NetworkPercolation_v7(Network_v2* net);
 
-    void setRandomState(size_t seed=0, bool g=true);
+    void setRandomState(size_t seed);
     size_t getRandomState() {return _random_state;};
-    void init(bool g=true);
+    void initialize();
     virtual void reset(int i);
 
     int findRoot(int a);
@@ -85,8 +85,8 @@ public:
     void viewListOfLinkIndices();
     void viewNetwork(){_net->view();}
 
-    void initialize_network();
-    void initializeNetwork() {initialize_network();};
+
+
 
 
     double entropy();

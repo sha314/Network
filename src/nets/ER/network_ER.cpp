@@ -31,6 +31,16 @@ void Network_v2::view() {
 
 }
 
+void Network_v2::viewAdjacencyList() {
+    for(size_t i{}; i < _adjacency_list.size(); ++i){
+        cout << "node[" << i << "]={";
+        for(size_t j{}; j < _adjacency_list[i].size(); ++j){
+            cout << _adjacency_list[i][j] << ",";
+        }
+        cout << "}" << endl;
+    }
+}
+
 
 /*****************************
  * Erdos Renyi network
@@ -42,13 +52,13 @@ Network_ER::Network_ER(size_t N, double p) : Network_v2(){
 }
 
 
-bool Network_ER::build(size_t netowk_size) {
-    degree_count.resize(netowk_size);
+bool Network_ER::build(size_t network_size) {
+    degree_count.resize(network_size);
     double p{};
     std::uniform_real_distribution<double> random(0, 1);
-    for(int i{}; i < netowk_size; ++i){
+    for(int i{}; i < network_size; ++i){
         _nodes.emplace_back(i);
-        for(int j{i+1}; j < netowk_size; ++j){
+        for(int j{i+1}; j < network_size; ++j){
             p = random(_gen);
             if(p <= p_value){
                 _network_map_A.emplace_back(i);
@@ -61,12 +71,35 @@ bool Network_ER::build(size_t netowk_size) {
     return false;
 }
 
+bool Network_ER::build_with_adjacency_list(size_t network_size) {
+    degree_count.resize(network_size);
+    _adjacency_list.resize(network_size);
+    double p{};
+    std::uniform_real_distribution<double> random(0, 1);
+    for(int i{}; i < network_size; ++i){
+        _nodes.emplace_back(i);
+        for(int j{i+1}; j < network_size; ++j){
+            p = random(_gen);
+            if(p <= p_value){
+                _network_map_A.emplace_back(i);
+                _network_map_B.emplace_back(j);
+                degree_count[i] += 1;
+                degree_count[j] += 1;
+                _adjacency_list[i].emplace_back(j);
+                _adjacency_list[j].emplace_back(i);
+            }
+        }
+    }
+    return false;
+}
+
 void Network_ER::initialize() {
-    build(N_size);
+//    build(N_size);
+    build_with_adjacency_list(N_size);
 }
 
 void Network_ER::rebuild() {
-    build(N_size);
+    initialize();
 }
 
 void Network_ER::viewLocal() {

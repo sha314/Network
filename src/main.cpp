@@ -145,7 +145,8 @@ void run_in_main(int argc, char* argv[]){
 
 //    degreeDistribution(argc, argv);
     // 2019.10.30
-    test_ER();
+//    test_ER();
+    test_ER_Percolation();
 
 }
 

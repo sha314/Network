@@ -8,36 +8,29 @@
 
 using namespace std;
 
-void NetworkPercolation_v7::setRandomState(size_t seed, bool g) {
-    _random_state = seed;
-    if(g){
-        std::random_device rd;
-        _random_state = rd();
+
+NetworkPercolation_v7::NetworkPercolation_v7(Network_v2 *net) {
+    _net = net;
+    _link_count = _net->getLinkCount();
+    _network_size = _net->getNodeCount();
+    setRandomState(_net->getRandomState());
+    list_of_link_indices.resize(_link_count);
+    for(uint i{}; i < list_of_link_indices.size(); ++i) {
+        list_of_link_indices[i]=i;
     }
+    max_link_index = _link_count - 1;
+    // initialize cluster
+    _cluster_info.resize(_network_size);
+};
+
+
+void NetworkPercolation_v7::setRandomState(size_t seed) {
+    _random_state = seed;
     _random_generator.seed(_random_state);
     cout << "random seed NetworkPercolation_v7 " << _random_state << endl;
 }
 
 
-
-void NetworkPercolation_v7::init(bool g) {
-    // only need to do once
-    setRandomState(_random_state, g);
-
-    _link_count = _net->getLinkCount();
-    list_of_link_indices.resize(_link_count );
-
-    for(uint i{}; i < list_of_link_indices.size(); ++i){
-        list_of_link_indices[i] = i;
-    }
-
-    // need to do when resetting
-    _cluster_info = vector<int>(_network_size, -1);
-    occupied_link_count = 0;
-    // shuffle the value of the list
-    shuffle(list_of_link_indices.begin(), list_of_link_indices.end(), _random_generator);
-    _randomized_indices = list_of_link_indices;
-}
 
 /**
  * Negative value in _cluster_info element means that element is the size of the cluster and
@@ -276,18 +269,10 @@ void NetworkPercolation_v7::viewClusters() {
 /**
  * TODO : group together assignment that must be done once and that must be done every time
  */
-void NetworkPercolation_v7::initialize_network() {
+void NetworkPercolation_v7::initialize() {
     cout << "Initializing Network ... " << std::flush;
-    init();
     // initialize link indices
-    _link_count = _net->getLinkCount();
-    list_of_link_indices.resize(_link_count);
-    for(uint i{}; i < list_of_link_indices.size(); ++i) {
-        list_of_link_indices[i]=i;
-    }
-    max_link_index = _link_count - 1;
-    // initialize cluster
-    _cluster_info.resize(_network_size);
+
     initialize_cluster();
     cout << "done." << endl;
     occupied_link_count = 0;
@@ -295,6 +280,11 @@ void NetworkPercolation_v7::initialize_network() {
     _largest_jump_entropy=0;
     _previous_entropy=0;
     _entropy_jump_tc=0;
+    largest_cluster_size=0;
+    largest_jump_cluster_size=0;
+    _previous_cluster_size=0;
+    _max_recursion_depth = 0;
+    _findRoot_time=0;
 
     randomize_indices(list_of_link_indices);
     _randomized_indices = list_of_link_indices;
@@ -310,29 +300,27 @@ void NetworkPercolation_v7::initialize_cluster() {
 void NetworkPercolation_v7::reset(int i) {
 //    cout << "reset NetworkBApercolation_v3: line " <<__LINE__ << endl;
 
-    occupied_link_count = 0;
-    _entropy_val = log(_network_size);// initial entropy
-    _largest_jump_entropy=0;
-    _previous_entropy=0;
-    _entropy_jump_tc=0;
-    largest_cluster_size=0;
-    largest_jump_cluster_size=0;
-    _previous_cluster_size=0;
-    _max_recursion_depth = 0;
-    _findRoot_time=0;
+//    occupied_link_count = 0;
+//    _entropy_val = log(_network_size);// initial entropy
+//    _largest_jump_entropy=0;
+//    _previous_entropy=0;
+//    _entropy_jump_tc=0;
+//    largest_cluster_size=0;
+//    largest_jump_cluster_size=0;
+//    _previous_cluster_size=0;
+//    _max_recursion_depth = 0;
+//    _findRoot_time=0;
 //    viewNetwork();
     if(i == 1){
         _net->rebuild();
         // initialize the network again
     }
 //    viewNetwork();
-    randomize_indices(list_of_link_indices);
-    _randomized_indices = list_of_link_indices;
-    initialize_cluster();
+    initialize();
 }
 
 double NetworkPercolation_v7::entropy_v1() {
-    cout << "NetworkPercolation_v7::entropy_v1" << endl;
+//    cout << "NetworkPercolation_v7::entropy_v1" << endl;
     double mu{}, H{};
     for(size_t i{}; i < _cluster_info.size(); ++i){
         mu = -1*_cluster_info[i]/double(_network_size); // negative values of a clusters are sizes
@@ -483,3 +471,5 @@ void NetworkPercolation_v7::summary() {
     cout << "_max_recursion_depth " << _max_recursion_depth << endl;
     cout << "_findRoot_time " << _findRoot_time << " sec" << endl;
 }
+
+
