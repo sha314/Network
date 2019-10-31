@@ -5,6 +5,7 @@
 #include "network_percolation_v7.h"
 #include <iostream>
 #include <algorithm>
+#include <climits>
 
 using namespace std;
 
@@ -19,8 +20,7 @@ NetworkPercolation_v7::NetworkPercolation_v7(Network_v2 *net) {
         list_of_link_indices[i]=i;
     }
     max_link_index = _link_count - 1;
-    // initialize cluster
-    _cluster_info.resize(_network_size);
+
 };
 
 
@@ -224,7 +224,7 @@ int NetworkPercolation_v7::clusterSize(int a) {
 
 bool NetworkPercolation_v7::occupyLink() {
     if(occupied_link_count >= _link_count) return false;
-    uint i = list_of_link_indices[occupied_link_count];
+    uint i = _randomized_indices[occupied_link_count];
     return placeSelectedLink(i);
 //     print(clusters)
 }
@@ -286,11 +286,14 @@ void NetworkPercolation_v7::initialize() {
     _max_recursion_depth = 0;
     _findRoot_time=0;
 
-    randomize_indices(list_of_link_indices);
     _randomized_indices = list_of_link_indices;
+    randomize_indices(_randomized_indices);
+
 }
 
 void NetworkPercolation_v7::initialize_cluster() {
+    // initialize cluster
+    _cluster_info.resize(_network_size);
     for(size_t i{}; i < _network_size; ++i){
         _cluster_info[i] = -1; // all clusters are of size 1 and all of them are root cluster
     }
@@ -472,4 +475,194 @@ void NetworkPercolation_v7::summary() {
     cout << "_findRoot_time " << _findRoot_time << " sec" << endl;
 }
 
+/*******************************
+ *  Inverted explosive
+ *  sum rule or product rule, activate links which maximizes cluster size
+ *****************************/
+NetworkPercolationInverted_v7::NetworkPercolationInverted_v7(Network_v2 *net, int M)
+        :NetworkPercolation_v7(net) {
+    if(M < 1){
+        cout << "M cannot be < 1 : " << __LINE__ << endl;
+    }
+    _M_link = M;
+}
 
+bool NetworkPercolationInverted_v7::occupyLink() {
+    if(occupied_link_count >= _link_count) return false;
+    uint i = link_for_max_cluster_sum_product(occupied_link_count);
+    return NetworkPercolation_v7::placeSelectedLink(i);
+}
+
+uint NetworkPercolationInverted_v7::link_for_max_cluster_sum_product(uint start_at) {
+//    auto start = std::chrono::system_clock::now(); // time measurement
+    size_t index_randomized_link{0};
+
+    uint tmp_lnk_index;
+    int id1{-1}, id2{-1}, root1, root2;
+    long n_nodes, prod_sum = 1; // so that it is very big before going into the loop
+//    cout << LONG_MAX << " vs " << prod_sum << endl;
+//    cout << ULONG_MAX << " vs " << prod_sum << endl;
+//    size_t limit = start_at + _M_link;
+    size_t r{};
+//    cout << "randomly between ("<< start_at <<"," << _link_count << ")={";
+    std::uniform_int_distribution<size_t> distribution(start_at, max_link_index);
+
+    for(size_t i{0}; i < _M_link; ++i){
+
+        // >>>>>> START A takes ~24 % of total runtime
+        // random number between a and b or rand(a,b) = a + r%(b-a); where r is an arbitrary random number
+        // TODO : must select radnomly with uniform probability
+//         use std::uniform_int_distribution<int> distribution(0,9);
+//        r = start_at + _random_generator() % (_link_count-start_at);
+        r = distribution(_random_generator);
+        tmp_lnk_index = _randomized_indices[r];
+        // <<<<< END A
+
+        // >>>>>> START B takes ~26 % of total runtime
+        id1 = _net->getNodeA(tmp_lnk_index);
+        id2 = _net->getNodeB(tmp_lnk_index);
+
+//        _network_frame.fromNetworkMapAB(id1, id2, tmp_lnk_index); // slower a bit
+        // <<<<< END B
+
+        root1 = findRoot(id1);
+        root2 = findRoot(id2);
+
+        n_nodes = _cluster_info[root1] * _cluster_info[root2]; // product rule. automatically becomes positive
+//            n_nodes = abs(_cluster_info[root1] + _cluster_info[root2]); // sum rule
+        if(n_nodes > prod_sum ) { // since we are maximize cluster sizes
+            prod_sum = n_nodes;
+            index_randomized_link = r;
+        }
+#ifdef DEBUG_FLAG
+        cout << "checking link _randomized_indices[" << r << "]=" << tmp_lnk_index << endl;
+        cout << " out of  id = " << id1 << " and " << id2 << " prod_sum = " << prod_sum << endl;
+#endif
+    }
+
+    if(index_randomized_link >= _randomized_indices.size()){
+        cout << "out of bound : line " << __LINE__ << endl;
+    }
+//    cout << "}" << endl;
+#ifdef DEBUG_FLAG
+    cout << "selected _randomized_indices[" << index_randomized_link << "] = "
+         << _randomized_indices[index_randomized_link] << endl;
+#endif
+
+    uint pos = _randomized_indices[index_randomized_link];
+    // must assign to a temp variable, otherwise it is replaced before retrurn
+    // must erase the used value. // but erasing takes more than 90% of total time
+//    _randomized_link_indices.erase(_randomized_link_indices.begin() + r);
+    // instead of erasing the index, try swapping it with _number_of_occupied_links index\
+
+    // 2019.05.20 better idea is just to replace the used value of _randomized_link_indices
+    // by the first unused value, i.e., value at _number_of_occupied_links
+
+    _randomized_indices[index_randomized_link] = _randomized_indices[occupied_link_count];
+
+    _randomized_indices[occupied_link_count] = 0; // does not affect the result. use only when debugging so that we can identify easily
+//    auto end = std::chrono::system_clock::now(); // time measurement
+//    std::chrono::duration<double> elapsed_seconds = end-start; // time measurement
+//    _time_selectLink += elapsed_seconds.count(); // time measurement
+    if(pos > UINT_MAX){
+        cout << "warning ! pos > UINT_MAX : line " << __LINE__ << endl;
+    }
+    return pos;
+}
+
+//void NetworkPercolationInverted_v7::initialize() {
+//    NetworkPercolation_v7::initialize();
+//}
+
+/*****************************************
+ * Explosive percolation
+ * Minimizing cluster size using sum rule or product rule
+ **************************************************/
+bool NetworkPercolationExplosive_v7::occupyLink() {
+    if(occupied_link_count >= _link_count) return false;
+    uint i = link_for_min_cluster_sum_product(occupied_link_count);
+    return NetworkPercolation_v7::placeSelectedLink(i);
+}
+
+NetworkPercolationExplosive_v7::NetworkPercolationExplosive_v7(Network_v2 *net, int M)
+        :NetworkPercolation_v7(net)
+{
+    _M_link = M;
+}
+
+uint NetworkPercolationExplosive_v7::link_for_min_cluster_sum_product(uint start_at) {
+    //    auto start = std::chrono::system_clock::now(); // time measurement
+    size_t index_randomized_link{0};
+
+    uint tmp_lnk_index;
+    int id1{-1}, id2{-1}, root1, root2;
+    long n_nodes, prod_sum = LONG_MAX; // so that it is very big before going into the loop
+//    cout << LONG_MAX << " vs " << prod_sum << endl;
+//    cout << ULONG_MAX << " vs " << prod_sum << endl;
+//    size_t limit = start_at + _M_link;
+    size_t r{};
+//    cout << "randomly between ("<< start_at <<"," << _link_count << ")={";
+    std::uniform_int_distribution<size_t> distribution(start_at, max_link_index);
+
+    for(size_t i{0}; i < _M_link; ++i){
+
+        // >>>>>> START A takes ~24 % of total runtime
+        // random number between a and b or rand(a,b) = a + r%(b-a); where r is an arbitrary random number
+        // TODO : must select radnomly with uniform probability
+//         use std::uniform_int_distribution<int> distribution(0,9);
+//        r = start_at + _random_generator() % (_link_count-start_at);
+        r = distribution(_random_generator);
+        tmp_lnk_index = _randomized_indices[r];
+        // <<<<< END A
+
+        // >>>>>> START B takes ~26 % of total runtime
+        id1 = _net->getNodeA(tmp_lnk_index);
+        id2 = _net->getNodeB(tmp_lnk_index);
+
+//        _network_frame.fromNetworkMapAB(id1, id2, tmp_lnk_index); // slower a bit
+        // <<<<< END B
+
+        root1 = findRoot(id1);
+        root2 = findRoot(id2);
+
+        n_nodes = _cluster_info[root1] * _cluster_info[root2]; // product rule. automatically becomes positive
+//            n_nodes = abs(_cluster_info[root1] + _cluster_info[root2]); // sum rule
+        if(n_nodes < prod_sum ) { // since we are minimizing cluster sizes
+            prod_sum = n_nodes;
+            index_randomized_link = r;
+        }
+#ifdef DEBUG_FLAG
+        cout << "checking link _randomized_indices[" << r << "]=" << tmp_lnk_index << endl;
+        cout << " out of  id = " << id1 << " and " << id2 << " prod_sum = " << prod_sum << endl;
+#endif
+    }
+
+    if(index_randomized_link >= _randomized_indices.size()){
+        cout << "out of bound : line " << __LINE__ << endl;
+    }
+//    cout << "}" << endl;
+#ifdef DEBUG_FLAG
+    cout << "selected _randomized_indices[" << index_randomized_link << "] = "
+         << _randomized_indices[index_randomized_link] << endl;
+#endif
+
+    uint pos = _randomized_indices[index_randomized_link];
+    // must assign to a temp variable, otherwise it is replaced before retrurn
+    // must erase the used value. // but erasing takes more than 90% of total time
+//    _randomized_link_indices.erase(_randomized_link_indices.begin() + r);
+    // instead of erasing the index, try swapping it with _number_of_occupied_links index\
+
+    // 2019.05.20 better idea is just to replace the used value of _randomized_link_indices
+    // by the first unused value, i.e., value at _number_of_occupied_links
+
+    _randomized_indices[index_randomized_link] = _randomized_indices[occupied_link_count];
+
+    _randomized_indices[occupied_link_count] = 0; // does not affect the result. use only when debugging so that we can identify easily
+//    auto end = std::chrono::system_clock::now(); // time measurement
+//    std::chrono::duration<double> elapsed_seconds = end-start; // time measurement
+//    _time_selectLink += elapsed_seconds.count(); // time measurement
+    if(pos > UINT_MAX){
+        cout << "warning ! pos > UINT_MAX : line " << __LINE__ << endl;
+    }
+    return pos;
+}

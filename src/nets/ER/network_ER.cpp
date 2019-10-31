@@ -41,13 +41,18 @@ void Network_v2::viewAdjacencyList() {
     }
 }
 
+std::vector<double> Network_v2::degreeDistribution() {
+    cout << "To be implemented  : line " << __LINE__ << endl;
+    return vector<double>();
+}
+
 
 /*****************************
  * Erdos Renyi network
  * class Network_ER
  *****************************/
-Network_ER::Network_ER(size_t N, double p) : Network_v2(){
-    N_size = N;
+Network_ER::Network_ER(double p) : Network_v2(){
+//    N_size = N;
     p_value = p;
 }
 
@@ -93,13 +98,14 @@ bool Network_ER::build_with_adjacency_list(size_t network_size) {
     return false;
 }
 
-void Network_ER::initialize() {
+void Network_ER::initialize(size_t N) {
+    N_size = N;
 //    build(N_size);
     build_with_adjacency_list(N_size);
 }
 
 void Network_ER::rebuild() {
-    initialize();
+    initialize(N_size);
 }
 
 void Network_ER::viewLocal() {

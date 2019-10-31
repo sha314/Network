@@ -10,8 +10,8 @@ project(Network)
 ## for gcc
 set(CMAKE_CXX_STANDARD 11)
 
-SET(CMAKE_CXX_FLAGS  "-Wall") # for debug without flag
-#SET(CMAKE_CXX_FLAGS  "-Wall -D DEBUG_FLAG") # for debug only
+#SET(CMAKE_CXX_FLAGS  "-Wall") # for debug without flag
+SET(CMAKE_CXX_FLAGS  "-Wall -D DEBUG_FLAG") # for debug only
 ## if -O3 is enabled during compilation then step by step debugging is harder
 #SET(CMAKE_CXX_FLAGS  "-O3 -Wall -D DEBUG_FLAG")
 #SET(CMAKE_CXX_FLAGS  "-O3 -Wall") # Only Release flag
@@ -65,6 +65,20 @@ set(SOURCE_FILES
         src/test/test_network_ba_v2.h
         src/percolation/explosive/network_percolation_explosive_v5.cpp
         src/percolation/explosive/network_percolation_explosive_v5.h
-        src/percolation/explosive/network_percolation_explosive_v3.cpp src/percolation/explosive/network_percolation_explosive_inverted.cpp src/percolation/explosive/network_percolation_explosive_inverted.h src/test/run_network_ba.cpp src/test/run_network_ba.h src/percolation/network_percolation_v6.cpp src/percolation/network_percolation_v6.h src/percolation/explosive/network_percolation_explosive_v6.cpp src/percolation/explosive/network_percolation_explosive_v6.h src/nets/ER/network_ER.cpp src/nets/ER/network_ER.h src/nets/ER/test.cpp src/nets/ER/test.h src/percolation/network_percolation_v7.cpp src/percolation/network_percolation_v7.h)
+        src/percolation/explosive/network_percolation_explosive_v3.cpp
+        src/percolation/explosive/network_percolation_explosive_inverted.cpp
+        src/percolation/explosive/network_percolation_explosive_inverted.h
+        src/test/run_network_ba.cpp
+        src/test/run_network_ba.h
+        src/percolation/network_percolation_v6.cpp
+        src/percolation/network_percolation_v6.h
+        src/percolation/explosive/network_percolation_explosive_v6.cpp
+        src/percolation/explosive/network_percolation_explosive_v6.h
+        src/nets/ER/network_ER.cpp
+        src/nets/ER/network_ER.h
+        src/nets/ER/test.cpp
+        src/nets/ER/test.h
+        src/percolation/network_percolation_v7.cpp
+        src/percolation/network_percolation_v7.h)
 
 add_executable(networks ${SOURCE_FILES})

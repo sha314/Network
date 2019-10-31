@@ -18,10 +18,11 @@
  */
 class NetworkPercolation_v7{
 private:
-    Network_v2* _net;
+
     double _findRoot_time{};
 
 protected:
+    Network_v2* _net;
     //time measurement variables
     double _time_placeSelectedLink{};
     int _max_recursion_depth{};
@@ -130,8 +131,16 @@ public:
 };
 
 class NetworkPercolationExplosive_v7: public NetworkPercolation_v7{
-
+    int _M_link{2};
 public:
+    ~NetworkPercolationExplosive_v7() override = default;
+    NetworkPercolationExplosive_v7(Network_v2* net, int M);
+//    void initialize();
+
+    bool occupyLink() override ;
+
+    uint link_for_min_cluster_sum_product(uint start_at);
+
     virtual std::string get_signature() {
         std::cout << "TODO " << std::endl;
         std::stringstream ss;
@@ -142,13 +151,16 @@ public:
         return ss.str();
     }
 
-    virtual std::string getClassName() {return "NetworkPercolationExplosive_v7";}
+    std::string getClassName() override {return "NetworkPercolationExplosive_v7";}
 
 };
 
 class NetworkPercolationInverted_v7: public NetworkPercolation_v7{
-
+    int _M_link{2};
 public:
+    ~NetworkPercolationInverted_v7() override = default;
+    NetworkPercolationInverted_v7(Network_v2* net, int M);
+//    void initialize();
     virtual std::string get_signature() {
         std::cout << "TODO " << std::endl;
         std::stringstream ss;
@@ -158,9 +170,10 @@ public:
            << "_size_" << _network_size;
         return ss.str();
     }
+    bool occupyLink() override ;
+    std::string getClassName() override {return "NetworkPercolationInverted_v7";}
 
-    virtual std::string getClassName() {return "NetworkPercolationInverted_v7";}
-
+    uint link_for_max_cluster_sum_product(uint start_at);
 };
 
 

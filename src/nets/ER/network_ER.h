@@ -49,7 +49,7 @@ public:
     void view(); // general property of network
     void viewAdjacencyList();
     virtual std::string getClassName(){return "Network_v2";}
-    virtual void initialize() = 0; // pure virtual function
+    virtual void initialize(size_t N) = 0; // pure virtual function
     virtual void rebuild() = 0;
     virtual std::string get_signature()=0;
     virtual void viewLocal() =0; // other properties of a network that is different for different types of network
@@ -58,6 +58,8 @@ public:
 
     int getNodeA(int link) const {return _network_map_A[link];}
     int getNodeB(int link) const {return _network_map_B[link];}
+
+    std::vector<double> degreeDistribution();
 };
 
 
@@ -130,15 +132,12 @@ private:
     bool build(size_t network_size);
     bool build_with_adjacency_list(size_t network_size);
 public:
-    ~Network_ER() = default;
+    ~Network_ER() override = default;
 
-    explicit Network_ER(size_t N, double p);
+    explicit Network_ER(double p);
 
     void rebuild() override ;
-    void initialize() override;
-
-
-    std::vector<double> degreeDistribution();
+    void initialize(size_t N) override;
 
 
     std::string get_signature() override {

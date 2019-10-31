@@ -9,9 +9,9 @@ using namespace std;
 
 
 void test_ER() {
-    Network_v2* net = new Network_ER(100, 0.8);
+    Network_v2* net = new Network_ER(0.8);
     net->setRandomState(0, true);
-    net->initialize();
+    net->initialize(100);
     net->view();
     net->viewLocal();
 
@@ -19,21 +19,43 @@ void test_ER() {
 
 
 void test_ER_Percolation() {
-    Network_v2* net = new Network_ER(10, 0.4);
+    Network_v2* net=new Network_ER(0.4);
     net->setRandomState(0, true);
-    net->initialize();
+    net->initialize(10);
 //    net->view();
 //    net->viewLocal();
     net->viewAdjacencyList();
 
-//    NetworkPercolation_v7 percolation(net);
-//    percolation.initialize();
-//    percolation.viewClusters();
-//    while(percolation.occupyLink()){
-////        percolation.viewClusters();
-////        cout << percolation.entropy_v1() << " , " << percolation.entropy_v2() << endl;
-//        cout << percolation.largestClusterSize() << endl;
-//    }
-//    percolation.viewClusters();
+    NetworkPercolation_v7 percolation(net);
+    percolation.initialize();
+    percolation.viewClusters();
+    while(percolation.occupyLink()){
+//        percolation.viewClusters();
+//        cout << percolation.entropy_v1() << " , " << percolation.entropy_v2() << endl;
+        cout << percolation.largestClusterSize() << endl;
+    }
+    percolation.viewClusters();
+
+}
+
+void test_ER_PercolationExplosive() {
+    auto * net = new Network_ER(0.4);
+    net->setRandomState(0, false);
+    net->initialize(10);
+//    net->view();
+//    net->viewLocal();
+    net->viewAdjacencyList();
+
+    NetworkPercolationExplosive_v7 percolation(net, 2);
+//    NetworkPercolationInverted_v7 percolation(net, 2);
+
+    percolation.initialize();
+    percolation.viewClusters();
+    while(percolation.occupyLink()){
+//        percolation.viewClusters();
+//        cout << percolation.entropy_v1() << " , " << percolation.entropy_v2() << endl;
+        cout << percolation.largestClusterSize() << endl;
+    }
+    percolation.viewClusters();
 
 }

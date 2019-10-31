@@ -7,5 +7,6 @@
 
 void test_ER();
 void test_ER_Percolation();
+void test_ER_PercolationExplosive();
 
 #endif //NETWORK_TEST_H
