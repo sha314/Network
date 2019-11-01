@@ -79,6 +79,6 @@ set(SOURCE_FILES
         src/nets/ER/test.cpp
         src/nets/ER/test.h
         src/percolation/network_percolation_v7.cpp
-        src/percolation/network_percolation_v7.h)
+        src/percolation/network_percolation_v7.h src/nets/MDA/network_MDA.h src/nets/BA/network_BA.h)
 
 add_executable(networks ${SOURCE_FILES})

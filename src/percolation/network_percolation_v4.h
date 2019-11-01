@@ -9,6 +9,7 @@
 #include "../nets/link/link.h"
 #include "cluster/cluster_v2.h"
 #include "cluster/cluster_v3.h"
+#include "../nets/BA/network_BA.h"
 
 /**
  * Random Link percolation on Barabasi-Albert Network model

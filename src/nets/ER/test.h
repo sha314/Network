@@ -8,5 +8,6 @@
 void test_ER();
 void test_ER_Percolation();
 void test_ER_PercolationExplosive();
+void run_ER_percolation(int argc, char* argv[]);
 
 #endif //NETWORK_TEST_H

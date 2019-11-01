@@ -4,6 +4,7 @@
 
 
 #include "../network.h"
+#include "network_BA.h"
 
 using  namespace std;
 

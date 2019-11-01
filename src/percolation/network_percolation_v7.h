@@ -165,9 +165,7 @@ public:
         std::cout << "TODO " << std::endl;
         std::stringstream ss;
         ss << getClassName()
-           //           << "_m0_" << _net->get_m0()
-           //           << "_m_" << get_m()
-           << "_size_" << _network_size;
+           << "_N_" << _network_size << "_M_" << _M_link;
         return ss.str();
     }
     bool occupyLink() override ;

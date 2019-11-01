@@ -9,6 +9,8 @@
 #include "network_build.h"
 #include "../nets/network.h"
 #include "../util/time_tracking.h"
+#include "../nets/BA/network_BA.h"
+#include "../nets/MDA/network_MDA.h"
 
 using namespace std;
 

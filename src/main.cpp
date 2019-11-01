@@ -85,13 +85,13 @@ void test_component_sizes() {
  * @param argv
  */
 void run_in_main(int argc, char* argv[]){
-    if(argc < 5 ){
-        cout << "argv[1] == m" << endl;
-        cout << "argv[2] == N" << endl;
-        cout << "argv[3] == M" << endl;
-        cout << "argv[4] == Ensemble" << endl;
-        return;
-    }
+//    if(argc < 5 ){
+//        cout << "argv[1] == m" << endl;
+//        cout << "argv[2] == N" << endl;
+//        cout << "argv[3] == M" << endl;
+//        cout << "argv[4] == Ensemble" << endl;
+//        return;
+//    }
     /**
      * Testing methods
      */
@@ -147,7 +147,8 @@ void run_in_main(int argc, char* argv[]){
     // 2019.10.30
 //    test_ER();
 //    test_ER_Percolation();
-    test_ER_PercolationExplosive();
+//    test_ER_PercolationExplosive();
+    run_ER_percolation(argc, argv);
 
 }
 

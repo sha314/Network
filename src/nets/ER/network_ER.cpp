@@ -100,8 +100,8 @@ bool Network_ER::build_with_adjacency_list(size_t network_size) {
 
 void Network_ER::initialize(size_t N) {
     N_size = N;
-//    build(N_size);
-    build_with_adjacency_list(N_size);
+    build(N_size);
+//    build_with_adjacency_list(N_size);
 }
 
 void Network_ER::rebuild() {
