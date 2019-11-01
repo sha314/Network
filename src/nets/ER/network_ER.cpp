@@ -7,57 +7,18 @@
 
 using namespace std;
 
-/*************************
- * class Network_v2
- ***************************/
-void Network_v2::setRandomState(size_t seed, bool g) {
-    _random_state = seed;
-    if(g){
-        std::random_device rd;
-        _random_state = rd();
-    }
-    _gen.seed(_random_state);
-    cout << "random seed Network_v2 " << _random_state << endl;
-}
-
-void Network_v2::view() {
-    cout << "Network_v2::view __LINE__" << __LINE__ << endl;
-    for(size_t i{}; i < _network_map_A.size(); ++i){
-        cout << "Link[" << i << "] => " << _network_map_A[i] << " - " << _network_map_B[i] << endl;
-    }
-    cout << "Netowrk size " << _nodes.size() << endl;
-    cout << "Link count " << _network_map_A.size() << endl;
-    cout << "Max link " << _nodes.size() *( _nodes.size()-1)/2 << endl;
-
-}
-
-void Network_v2::viewAdjacencyList() {
-    for(size_t i{}; i < _adjacency_list.size(); ++i){
-        cout << "node[" << i << "]={";
-        for(size_t j{}; j < _adjacency_list[i].size(); ++j){
-            cout << _adjacency_list[i][j] << ",";
-        }
-        cout << "}" << endl;
-    }
-}
-
-std::vector<double> Network_v2::degreeDistribution() {
-    cout << "To be implemented  : line " << __LINE__ << endl;
-    return vector<double>();
-}
-
 
 /*****************************
  * Erdos Renyi network
  * class Network_ER
  *****************************/
-Network_ER::Network_ER(double p) : Network_v2(){
+NetworkER_v7::NetworkER_v7(double p) : Network_v7(){
 //    N_size = N;
     p_value = p;
 }
 
 
-bool Network_ER::build(size_t network_size) {
+bool NetworkER_v7::build(size_t network_size) {
     degree_count.resize(network_size);
     double p{};
     std::uniform_real_distribution<double> random(0, 1);
@@ -76,7 +37,7 @@ bool Network_ER::build(size_t network_size) {
     return false;
 }
 
-bool Network_ER::build_with_adjacency_list(size_t network_size) {
+bool NetworkER_v7::build_with_adjacency_list(size_t network_size) {
     degree_count.resize(network_size);
     _adjacency_list.resize(network_size);
     double p{};
@@ -98,17 +59,17 @@ bool Network_ER::build_with_adjacency_list(size_t network_size) {
     return false;
 }
 
-void Network_ER::initialize(size_t N) {
+void NetworkER_v7::initialize(size_t N) {
     N_size = N;
     build(N_size);
 //    build_with_adjacency_list(N_size);
 }
 
-void Network_ER::rebuild() {
+void NetworkER_v7::rebuild() {
     initialize(N_size);
 }
 
-void Network_ER::viewLocal() {
+void NetworkER_v7::viewLocal() {
     cout << "G(N,p) : N="  << N_size << ",p=" << p_value << endl;
     cout << "Connection number peaked around " << p_value * N_size*(N_size - 1)/2 << endl;
 }

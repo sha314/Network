@@ -10,7 +10,7 @@
 using namespace std;
 
 
-NetworkPercolation_v7::NetworkPercolation_v7(Network_v2 *net) {
+NetworkPercolation_v7::NetworkPercolation_v7(Network_v7 *net) {
     _net = net;
     _link_count = _net->getLinkCount();
     _network_size = _net->getNodeCount();
@@ -479,7 +479,7 @@ void NetworkPercolation_v7::summary() {
  *  Inverted explosive
  *  sum rule or product rule, activate links which maximizes cluster size
  *****************************/
-NetworkPercolationInverted_v7::NetworkPercolationInverted_v7(Network_v2 *net, int M)
+NetworkPercolationInverted_v7::NetworkPercolationInverted_v7(Network_v7 *net, int M)
         :NetworkPercolation_v7(net) {
     if(M < 1){
         cout << "M cannot be < 1 : " << __LINE__ << endl;
@@ -584,7 +584,7 @@ bool NetworkPercolationExplosive_v7::occupyLink() {
     return NetworkPercolation_v7::placeSelectedLink(i);
 }
 
-NetworkPercolationExplosive_v7::NetworkPercolationExplosive_v7(Network_v2 *net, int M)
+NetworkPercolationExplosive_v7::NetworkPercolationExplosive_v7(Network_v7 *net, int M)
         :NetworkPercolation_v7(net)
 {
     _M_link = M;

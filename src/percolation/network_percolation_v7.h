@@ -22,7 +22,7 @@ private:
     double _findRoot_time{};
 
 protected:
-    Network_v2* _net;
+    Network_v7* _net;
     //time measurement variables
     double _time_placeSelectedLink{};
     int _max_recursion_depth{};
@@ -61,7 +61,7 @@ public:
     virtual ~NetworkPercolation_v7()          = default;
     NetworkPercolation_v7()           = default;
 
-    explicit NetworkPercolation_v7(Network_v2* net);
+    explicit NetworkPercolation_v7(Network_v7* net);
 
     void setRandomState(size_t seed);
     size_t getRandomState() {return _random_state;};
@@ -134,7 +134,7 @@ class NetworkPercolationExplosive_v7: public NetworkPercolation_v7{
     int _M_link{2};
 public:
     ~NetworkPercolationExplosive_v7() override = default;
-    NetworkPercolationExplosive_v7(Network_v2* net, int M);
+    NetworkPercolationExplosive_v7(Network_v7* net, int M);
 //    void initialize();
 
     bool occupyLink() override ;
@@ -159,7 +159,7 @@ class NetworkPercolationInverted_v7: public NetworkPercolation_v7{
     int _M_link{2};
 public:
     ~NetworkPercolationInverted_v7() override = default;
-    NetworkPercolationInverted_v7(Network_v2* net, int M);
+    NetworkPercolationInverted_v7(Network_v7* net, int M);
 //    void initialize();
     virtual std::string get_signature() {
         std::cout << "TODO " << std::endl;

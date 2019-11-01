@@ -744,3 +744,43 @@ void Network::setRandomState(size_t seed, bool g) {
 //
 //
 
+
+/******************************
+ *
+ * class Network_v2
+ ***************************/
+void Network_v7::setRandomState(size_t seed, bool g) {
+    _random_state = seed;
+    if(g){
+        std::random_device rd;
+        _random_state = rd();
+    }
+    _gen.seed(_random_state);
+    cout << "random seed Network_v2 " << _random_state << endl;
+}
+
+void Network_v7::view() {
+    cout << "Network_v2::view __LINE__" << __LINE__ << endl;
+    for(size_t i{}; i < _network_map_A.size(); ++i){
+        cout << "Link[" << i << "] => " << _network_map_A[i] << " - " << _network_map_B[i] << endl;
+    }
+    cout << "Netowrk size " << _nodes.size() << endl;
+    cout << "Link count " << _network_map_A.size() << endl;
+    cout << "Max link " << _nodes.size() *( _nodes.size()-1)/2 << endl;
+
+}
+
+void Network_v7::viewAdjacencyList() {
+    for(size_t i{}; i < _adjacency_list.size(); ++i){
+        cout << "node[" << i << "]={";
+        for(size_t j{}; j < _adjacency_list[i].size(); ++j){
+            cout << _adjacency_list[i][j] << ",";
+        }
+        cout << "}" << endl;
+    }
+}
+
+std::vector<double> Network_v7::degreeDistribution() {
+    cout << "To be implemented  : line " << __LINE__ << endl;
+    return vector<double>();
+}

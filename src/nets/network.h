@@ -120,5 +120,60 @@ public:
 };
 
 
+/*******************************************
+ * General network class
+ * version 2
+ * indication version 7 : so that we can easily track the classes that uses it
+ * date : 2019.10.29
+ ***************************************/
+class Network_v7{
+
+
+    /*
+ * Counts the degree of node
+ * i-th element = number of connection i-th node have
+ */
+
+protected:
+    size_t N_size;
+    std::vector<int> _nodes;
+    std::vector<std::vector<int>> _adjacency_list;
+    /*
+ * i-th node of network_map_A is connected to the
+ * i-th node of network_map_B
+ */
+    std::vector<int> _network_map_A;
+    std::vector<int> _network_map_B;
+    std::vector<uint> degree_count;
+    // does not need to be in a class. make it globally available for all classes
+    size_t _random_state{};
+    std::mt19937 _gen;
+
+public:
+    virtual ~Network_v7() = default;
+    Network_v7() = default;
+//    Network_v2(size_t m0=3, size_t m=1); // only seeding
+
+    void setRandomState(size_t seed=0, bool g=true);
+    size_t getRandomState() {return _random_state;};
+//    void reset();
+    std::vector<uint> degrees() { return degree_count;}
+
+    void view(); // general property of network
+    void viewAdjacencyList();
+    virtual std::string getClassName(){return "Network_v2";}
+    virtual void initialize(size_t N) = 0; // pure virtual function
+    virtual void rebuild() = 0;
+    virtual std::string get_signature()=0;
+    virtual void viewLocal() =0; // other properties of a network that is different for different types of network
+    size_t getNodeCount() const { return  _nodes.size();}
+    size_t getLinkCount() const { return  _network_map_A.size();}
+
+    int getNodeA(int link) const {return _network_map_A[link];}
+    int getNodeB(int link) const {return _network_map_B[link];}
+
+    std::vector<double> degreeDistribution();
+};
+
 
 #endif //NETWORK_NETWORK_H

@@ -9,90 +9,9 @@
 #include <iostream>
 #include <random>
 #include <sstream>
-
-/**
- * General network class
- */
-class Network_v2{
+#include "../network.h"
 
 
-    /*
- * Counts the degree of node
- * i-th element = number of connection i-th node have
- */
-
-protected:
-    size_t N_size;
-    std::vector<int> _nodes;
-    std::vector<std::vector<int>> _adjacency_list;
-    /*
- * i-th node of network_map_A is connected to the
- * i-th node of network_map_B
- */
-    std::vector<int> _network_map_A;
-    std::vector<int> _network_map_B;
-    std::vector<uint> degree_count;
-    // does not need to be in a class. make it globally available for all classes
-    size_t _random_state{};
-    std::mt19937 _gen;
-
-public:
-    virtual ~Network_v2() = default;
-    Network_v2() = default;
-//    Network_v2(size_t m0=3, size_t m=1); // only seeding
-
-    void setRandomState(size_t seed=0, bool g=true);
-    size_t getRandomState() {return _random_state;};
-//    void reset();
-    std::vector<uint> degrees() { return degree_count;}
-
-    void view(); // general property of network
-    void viewAdjacencyList();
-    virtual std::string getClassName(){return "Network_v2";}
-    virtual void initialize(size_t N) = 0; // pure virtual function
-    virtual void rebuild() = 0;
-    virtual std::string get_signature()=0;
-    virtual void viewLocal() =0; // other properties of a network that is different for different types of network
-    size_t getNodeCount() const { return  _nodes.size();}
-    size_t getLinkCount() const { return  _network_map_A.size();}
-
-    int getNodeA(int link) const {return _network_map_A[link];}
-    int getNodeB(int link) const {return _network_map_B[link];}
-
-    std::vector<double> degreeDistribution();
-};
-
-
-// Barabasi Albert network
-class Network_BA : Network_v2{
-
-    // constant properties
-    uint _m0{3}; // seed
-    uint _m{2}; // number of new nodes each node comes with
-
-    // variable properties
-
-    size_t _N_max;
-    /*
-     * Very useful for preferential attachment
-     */
-    std::vector<uint> _preferentially;
-public:
-    Network_BA(size_t m0=3, size_t m=1); // only seeding
-    void clear_preferentially(){_preferentially.clear();}
-    uint get_m0()const { return  _m0;}
-    uint get_m() const { return  _m;}
-    virtual std::string getClassName(){return "Network_BA";}
-    void rebuild();
-};
-
-// MDA network
-class Network_MDA : Network_v2{
-
-public:
-    virtual std::string getClassName(){return "Network_MDA";}
-    void rebuild();
-};
 
 
 // Erdos Renyi network
@@ -113,7 +32,7 @@ p
 Also known as the “G(n,p)"
  model” (graph on n nodes with probability p)
  */
-class Network_ER : public Network_v2{
+class NetworkER_v7 : public Network_v7{
     double p_value{};
 
 
@@ -132,9 +51,9 @@ private:
     bool build(size_t network_size);
     bool build_with_adjacency_list(size_t network_size);
 public:
-    ~Network_ER() override = default;
+    ~NetworkER_v7() override = default;
 
-    explicit Network_ER(double p);
+    explicit NetworkER_v7(double p);
 
     void rebuild() override ;
     void initialize(size_t N) override;

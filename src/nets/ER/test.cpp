@@ -13,7 +13,7 @@ using namespace std;
 
 
 void test_ER() {
-    Network_v2* net = new Network_ER(0.8);
+    Network_v7* net = new NetworkER_v7(0.8);
     net->setRandomState(0, true);
     net->initialize(100);
     net->view();
@@ -23,7 +23,7 @@ void test_ER() {
 
 
 void test_ER_Percolation() {
-    Network_v2* net=new Network_ER(0.4);
+    Network_v7* net=new NetworkER_v7(0.4);
     net->setRandomState(0, true);
     net->initialize(10);
 //    net->view();
@@ -43,7 +43,7 @@ void test_ER_Percolation() {
 }
 
 void test_ER_PercolationExplosive() {
-    auto * net = new Network_ER(0.4);
+    auto * net = new NetworkER_v7(0.4);
     net->setRandomState(0, false);
     net->initialize(10);
 //    net->view();
@@ -78,7 +78,7 @@ void run_ER_percolation(int argc, char* argv[]){
     int ensemble_size = atoi(argv[4]);
     cout << "N="<< N << ",p=" << p << ",M=" << M << ",En="<<ensemble_size << endl;
 
-    auto * net=new Network_ER(p);
+    auto * net=new NetworkER_v7(p);
     net->setRandomState(0, true);
     net->initialize(N);
 
