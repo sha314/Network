@@ -270,11 +270,11 @@ void NetworkPercolation_v7::viewClusters() {
  * TODO : group together assignment that must be done once and that must be done every time
  */
 void NetworkPercolation_v7::initialize() {
-    cout << "Initializing Network ... " << std::flush;
+//    cout << "Initializing Network ... " << std::flush;
     // initialize link indices
 
     initialize_cluster();
-    cout << "done." << endl;
+//    cout << "done." << endl;
     occupied_link_count = 0;
     _entropy_val = log(_network_size);// initial entropy
     _largest_jump_entropy=0;

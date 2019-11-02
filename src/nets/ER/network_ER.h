@@ -65,7 +65,16 @@ public:
         ss << "_N_" << N_size << "_p_" << p_value << "-";
         return ss.str();
     }
-    std::string getClassName() override {return "Network_ER";}
+    std::vector<std::string> get_signature_array() override {
+        std::vector<std::string> a;
+        a.emplace_back("ER");
+
+        std::stringstream ss;
+        ss << "_N_" << N_size << "_p_" << p_value << "-";
+        a.emplace_back(ss.str());
+        return a;
+    }
+    std::string getClassName() override {return "NetworkER_v7";}
 
     void viewLocal() override;
 

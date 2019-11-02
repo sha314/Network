@@ -152,7 +152,6 @@ protected:
 public:
     virtual ~Network_v7() = default;
     Network_v7() = default;
-//    Network_v2(size_t m0=3, size_t m=1); // only seeding
 
     void setRandomState(size_t seed=0, bool g=true);
     size_t getRandomState() {return _random_state;};
@@ -165,6 +164,7 @@ public:
     virtual void initialize(size_t N) = 0; // pure virtual function
     virtual void rebuild() = 0;
     virtual std::string get_signature()=0;
+    virtual std::vector<std::string> get_signature_array()  = 0;
     virtual void viewLocal() =0; // other properties of a network that is different for different types of network
     size_t getNodeCount() const { return  _nodes.size();}
     size_t getLinkCount() const { return  _network_map_A.size();}

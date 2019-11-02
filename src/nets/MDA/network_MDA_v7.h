@@ -9,7 +9,7 @@
 #include "../network.h"
 
 // MDA network
-class NetworkMDA_v7 : Network_v7{
+class NetworkMDA_v7 : public Network_v7{
 
 public:
     virtual std::string getClassName(){return "Network_MDA";}

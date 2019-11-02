@@ -13,6 +13,7 @@
 #include "percolation/explosive/network_percolation_explosive_v3.h"
 #include "test/run_network_ba.h"
 #include "nets/ER/test.h"
+#include "test/test_v7.h"
 //#include "percolation/network_percolation2.h"
 #include <algorithm>
 #include <fstream>
@@ -144,11 +145,8 @@ void run_in_main(int argc, char* argv[]){
 //    run_BA_jump_percolation(argc, argv);
 
 //    degreeDistribution(argc, argv);
-    // 2019.10.30
-//    test_ER();
-//    test_ER_Percolation();
-//    test_ER_PercolationExplosive();
-    run_ER_percolation(argc, argv);
+
+    test_v7(argc, argv); // 2019.10.30
 
 }
 
