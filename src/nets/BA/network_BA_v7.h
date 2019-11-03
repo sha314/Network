@@ -38,12 +38,15 @@ public:
     std::vector<std::string> get_signature_array()  override;
     void viewLocal() override; // other properties of a network that is different for different types of network
     bool grow(size_t n);
+    bool grow_adjacency(size_t netowk_size);
     void setMaxNetworkSize(size_t N) {
         if(_N_tmp > N){cout << "cannot initiate with smaller size " << __LINE__ << endl;}
 
     }
 
     bool addNode();
+    bool add_node();
+    bool add_node_adjacency_list();
 };
 
 #endif //NETWORK_NETWORK_BA_V7_H

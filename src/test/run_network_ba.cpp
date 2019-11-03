@@ -231,11 +231,11 @@ void run_BA_jump_percolation(int argc, char **argv) {
 //   NetworkBApercolationExplosive_Inverted_v3 net(m, m, N, M);
 
 //    NetworkBApercolation_v5 net(m, m, N);
-//    NetworkBApercolationExplosive_v5 net(m, m, N, M);
+    NetworkBApercolationExplosive_v5 net(m, m, N, M);
 //    NetworkBApercolationExplosive_Inverted_v5 net(m,m,N,M);
 
-    //    NetworkBApercolation_v6 net(m, m, N);
-    NetworkBApercolationExplosive_v6 net(m, m, N, M);
+//        NetworkBApercolation_v6 net(m, m, N);
+//    NetworkBApercolationExplosive_v6 net(m, m, N, M);
 
     net.setRandomState(0, true);
     net.initializeNetwork();

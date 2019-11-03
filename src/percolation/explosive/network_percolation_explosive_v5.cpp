@@ -325,7 +325,7 @@ bool NetworkBApercolationExplosive_v5::occupyLink() {
         return false;
     }
 //    uint pos = selectLink_v2();
-    uint pos = link_for_min_cluster_sum_product_v4(occupied_link_count);
+    uint pos = link_for_min_cluster_sum_product_v2(occupied_link_count);
     return NetworkBApercolation_v5::placeSelectedLink(pos);
 }
 

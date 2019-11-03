@@ -14,7 +14,7 @@
 #include "../nets/ER/network_ER.h"
 #include "../nets/BA/network_BA_v7.h"
 
-void test_BA();
+
 
 using namespace std;
 
@@ -24,7 +24,7 @@ void test_v7(int argc, char **argv) {
 //    test_ER_Percolation();
 //    test_ER_PercolationExplosive();
 //    run_ER_percolation(argc, argv);
-    test_BA();
+    test_BA(argc, argv);
 }
 
 
@@ -40,7 +40,7 @@ void test_ER() {
 
 
 void test_ER_Percolation() {
-    Network_v7* net=new NetworkER_v7(0.4);
+    NetworkER_v7* net=new NetworkER_v7(0.4);
     net->setRandomState(0, true);
     net->initialize(10);
 //    net->view();
@@ -190,10 +190,76 @@ void run_ER_percolation(int argc, char* argv[]){
 
 
 
-void test_BA() {
-    auto* net = new NetworkBA_v7(3, 1);
+void test_BA(int argc, char* argv[]) {
+    if(argc < 5 ){
+        cout << "argv[1] == m" << endl;
+        cout << "argv[2] == N" << endl;
+        cout << "argv[3] == M" << endl;
+        cout << "argv[4] == Ensemble" << endl;
+        return;
+    }
+    int m = atoi(argv[1]);
+    int N = atoi(argv[2]);
+    int M = atoi(argv[3]);
+
+    int En = atoi(argv[4]);
+    cout << "m=" << m << ",N="<< N << ",M=" << M << ",En="<<En << endl;
+
+
+    auto* net = new NetworkBA_v7(m, m);
     net->setRandomState(0, true);
-    net->initialize(10);
-    net->view();
-    net->viewLocal();
+    net->initialize(N);
+//    net->view();
+//    net->viewAdjacencyList();
+//    net->viewLocal();
+    cout << "Done" << endl;
+
+    NetworkPercolationExplosive_v7 percolation(net, M);
+    percolation.initialize();
+
+//    percolation.viewClusters();
+
+    double entropy_jump{}, order_jump{};
+    for (size_t k{0}; k < En; ++k) {
+        auto t_start= chrono::_V2::system_clock::now();
+        percolation.reset(k%25 == 0); // every 25 step. reset the network
+
+        size_t i{};
+        while (percolation.occupyLink()) {
+            percolation.entropy();
+            percolation.jump();
+            ++i;
+        }
+        entropy_jump += percolation.largestEntropyJump();
+        order_jump += percolation.largestOrderJump();
+
+//        cout << entropy_jump[k] << " at " << entropy_jump_pc[k] << endl;
+        auto t_end= chrono::_V2::system_clock::now();
+        chrono::duration<double> drtion = t_end - t_start;
+        cout << "iteration " << k << " : time elapsed " << drtion.count() << " sec" << endl;
+    }
+
+    auto tm = currentTime();
+    auto arr = net->get_signature_array();
+    string signature = percolation.getClassName();
+    string filename_jump = arr[0] + "_" + signature + "_jump_" + tm + ".txt";
+    stringstream ss;
+    ss << "{"
+       << R"*("signature":")*" << signature << "\""
+       << R"*(,"class":")*" << percolation.getClassName() << "\""
+       << R"*(,"m":)*" << m
+       << R"*(,"N":)*" << N
+       << R"*(,"number_of_links":)*" << net->getLinkCount()
+       << R"*(,"number_of_nodes":)*" << net->getNodeCount()
+       << R"*(,"M":)*" << M
+       << R"*(,"ensemble_size":)*" << En
+       << R"*(,"date":")*" << tm << "\""
+       << "}";
+
+    ofstream fout_jump(filename_jump);
+    fout_jump << '#' << ss.str() << endl;
+    fout_jump << "#<m><N><M><En><largest entropy jump><largest order parameter jump>" << endl;
+    fout_jump << m << "\t" << N << "\t" << M << "\t" << En
+              << "\t" << abs(entropy_jump)/En << '\t' << order_jump/En << endl;
+    fout_jump.close();
 }

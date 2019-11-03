@@ -88,8 +88,10 @@ public:
     void initialize_network();
     void initializeNetwork() {initialize_network();};
 
-    size_t nodeCount(){return _network_frame.getNodeCount();}
-    size_t linkCount(){return _network_frame.getLinkCount();}
+    size_t nodeCount()const{return _network_frame.getNodeCount();}
+    size_t linkCount()const{return _network_frame.getLinkCount();}
+    size_t getNodeCount() const { return  nodeCount();}
+    size_t getLinkCount() const { return  linkCount();}
 
     double entropy();
     double entropy_v1();

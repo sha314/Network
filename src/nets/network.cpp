@@ -760,7 +760,7 @@ void Network_v7::setRandomState(size_t seed, bool g) {
 }
 
 void Network_v7::view() {
-    cout << "Network_v2::view __LINE__" << __LINE__ << endl;
+    cout << "Network_v7::view __LINE__" << __LINE__ << endl;
     for(size_t i{}; i < _network_map_A.size(); ++i){
         cout << "Link[" << i << "] => " << _network_map_A[i] << " - " << _network_map_B[i] << endl;
     }
@@ -771,6 +771,7 @@ void Network_v7::view() {
 }
 
 void Network_v7::viewAdjacencyList() {
+    cout << "Network_v7::viewAdjacencyList " << endl;
     for(size_t i{}; i < _adjacency_list.size(); ++i){
         cout << "node[" << i << "]={";
         for(size_t j{}; j < _adjacency_list[i].size(); ++j){
