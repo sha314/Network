@@ -63,5 +63,10 @@ N     |   Time (sec) |  Mem
 
 
 
-
+date : 2019.11.04
+Digonto's code have same performance as mine. 
+But digonto vai stops the loop  after N iteration,
+whereas I stop the loop after M iteration.
+N is the number of nodes and M is the number of links.
+M is always much greater than N.
 

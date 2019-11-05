@@ -72,44 +72,31 @@ void NetworkBA_v7::viewLocal() {
 }
 
 bool NetworkBA_v7::grow(size_t netowk_size) {
-    if(netowk_size <= _N_tmp){
+    if(netowk_size <= _node_index){
         cout << "cannot grow" << endl;
         return false;
     }
-    _N_tmp = _m0;
+
     degree_count.resize(N_size);
-//    view();
-    for(size_t i{_N_tmp}; i < netowk_size; ++i){
+    while (_node_index < netowk_size){
         add_node();
-//        cout << i << "-th node" << endl;
-//        view();
     }
-//    view();
-    _N_tmp = netowk_size;
 
     return true;
 
 }
 
 bool NetworkBA_v7::grow_adjacency(size_t netowk_size) {
-    if(netowk_size <= _N_tmp){
+    if(netowk_size <= _node_index){
         cout << "cannot grow" << endl;
         return false;
     }
-    _N_tmp = _m0;
     degree_count.resize(N_size);
     _adjacency_list.resize(N_size);
-//    view();
-    for(size_t i{_N_tmp}; i < netowk_size; ++i){
+    while (_node_index < netowk_size){
         add_node_adjacency_list();
-//        cout << i << "-th node" << endl;
-//        view();
     }
-//    view();
-    _N_tmp = netowk_size;
-
     return true;
-
 }
 
 bool NetworkBA_v7::addNode() {
@@ -120,7 +107,7 @@ bool NetworkBA_v7::addNode() {
 bool NetworkBA_v7::add_node() {
     // first select m_nodes preferentially with no repetition
 // to prevent self connection
-    _nodes.emplace_back(_N_tmp); // add one new node
+    _nodes.emplace_back(_node_index); // add one new node
     std::set<int> m_nodes;
     size_t rnd, k;
     uniform_int_distribution<size_t> dist(0, _preferentially.size()-1);
@@ -131,7 +118,7 @@ bool NetworkBA_v7::add_node() {
         m_nodes.insert(std::move(k));
     }
     _link_count += m_nodes.size();
-    if(degree_count.size()>= _N_tmp) degree_count.resize(_N_tmp + 10);
+    if(degree_count.size()>= _node_index) degree_count.resize(_node_index + 10);
 // then connect the new node to the selected m_nodes
     for(int j: m_nodes){
         _network_map_A.emplace_back(_node_index);
@@ -143,14 +130,13 @@ bool NetworkBA_v7::add_node() {
 //        _c += 1;
     }
     ++_node_index;
-    ++_N_tmp; // increase network size by 1 node
     return true;
 }
 
 bool NetworkBA_v7::add_node_adjacency_list() {
     // first select m_nodes preferentially with no repetition
 // to prevent self connection
-    _nodes.emplace_back(_N_tmp); // add one new node
+    _nodes.emplace_back(_node_index); // add one new node
     std::set<int> m_nodes;
     size_t rnd, k;
     uniform_int_distribution<size_t> dist(0, _preferentially.size()-1);
@@ -161,7 +147,7 @@ bool NetworkBA_v7::add_node_adjacency_list() {
         m_nodes.insert(std::move(k));
     }
     _link_count += m_nodes.size();
-    if(degree_count.size()>= _N_tmp) degree_count.resize(_N_tmp + 10);
+    if(degree_count.size()>= _node_index) degree_count.resize(_node_index + 10);
 // then connect the new node to the selected m_nodes
     for(int j: m_nodes){
         _network_map_A.emplace_back(_node_index);
@@ -175,7 +161,6 @@ bool NetworkBA_v7::add_node_adjacency_list() {
 //        _c += 1;
     }
     ++_node_index;
-    ++_N_tmp; // increase network size by 1 node
     return true;
 }
 

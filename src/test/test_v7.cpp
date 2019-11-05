@@ -13,8 +13,10 @@
 #include "../nets/network.h"
 #include "../nets/ER/network_ER.h"
 #include "../nets/BA/network_BA_v7.h"
+#include "../nets/MDA/network_MDA_v7.h"
 
 
+void test_MDA(int argc, char **pString);
 
 using namespace std;
 
@@ -24,9 +26,18 @@ void test_v7(int argc, char **argv) {
 //    test_ER_Percolation();
 //    test_ER_PercolationExplosive();
 //    run_ER_percolation(argc, argv);
-    test_BA(argc, argv);
+//    test_BA(argc, argv);
+    test_MDA(argc, argv);
 }
 
+void test_MDA(int argc, char **pString) {
+    NetworkMDA_v7 *net = new NetworkMDA_v7(2, 2);
+//    net->setRandomState(0, true);
+    net->initialize(20);
+    net->view();
+    net->viewAdjacencyList();
+    net->viewLocal();
+}
 
 
 void test_ER() {
@@ -190,7 +201,7 @@ void run_ER_percolation(int argc, char* argv[]){
 
 
 
-void test_BA(int argc, char* argv[]) {
+void test_BA_percolation(int argc, char* argv[]) {
     if(argc < 5 ){
         cout << "argv[1] == m" << endl;
         cout << "argv[2] == N" << endl;
@@ -262,4 +273,30 @@ void test_BA(int argc, char* argv[]) {
     fout_jump << m << "\t" << N << "\t" << M << "\t" << En
               << "\t" << abs(entropy_jump)/En << '\t' << order_jump/En << endl;
     fout_jump.close();
+}
+
+void test_BA(int argc, char* argv[]) {
+    if(argc < 5 ){
+        cout << "argv[1] == m" << endl;
+        cout << "argv[2] == N" << endl;
+        cout << "argv[3] == M" << endl;
+        cout << "argv[4] == Ensemble" << endl;
+        return;
+    }
+    int m = atoi(argv[1]);
+    int N = atoi(argv[2]);
+    int M = atoi(argv[3]);
+
+    int En = atoi(argv[4]);
+    cout << "m=" << m << ",N="<< N << ",M=" << M << ",En="<<En << endl;
+
+
+    auto* net = new NetworkBA_v7(m, m);
+    net->setRandomState(0, true);
+    net->initialize(N);
+    net->view();
+    net->viewAdjacencyList();
+//    net->viewLocal();
+    cout << "Done" << endl;
+
 }

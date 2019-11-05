@@ -1,0 +1,5 @@
+v6 or version 6
+
+same as version 5 or v5.
+except :
+    percolation class is extended from network class.

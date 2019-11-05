@@ -700,13 +700,13 @@ void test_NetworkBA_v2(int argc, char **argv){
 }
 
 void test_v5(int argc, char **argv) {
-//    if(argc < 5 ){
-//        cout << "argv[1] == m" << endl;
-//        cout << "argv[2] == N" << endl;
-//        cout << "argv[3] == M" << endl;
-//        cout << "argv[4] == Ensemble" << endl;
-//        return;
-//    }
+    if(argc < 5 ){
+        cout << "argv[1] == m" << endl;
+        cout << "argv[2] == N" << endl;
+        cout << "argv[3] == M" << endl;
+        cout << "argv[4] == Ensemble" << endl;
+        return;
+    }
     int m = atoi(argv[1]);
     int N = atoi(argv[2]);
     int M = atoi(argv[3]);

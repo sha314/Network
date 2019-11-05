@@ -142,11 +142,11 @@ void run_in_main(int argc, char* argv[]){
 //    clusterSizeDistribution(argc, argv); // added 2019.06.22
 //    demarcationLine(argc, argv);
 //    run_BA_percolation(argc, argv);
-    run_BA_jump_percolation(argc, argv);
+//    run_BA_jump_percolation(argc, argv);
 
 //    degreeDistribution(argc, argv);
 
-//    test_v7(argc, argv); // 2019.10.30
+    test_v7(argc, argv); // 2019.10.30
 
 }
 

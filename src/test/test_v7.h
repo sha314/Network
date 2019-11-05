@@ -11,5 +11,6 @@ void test_ER_Percolation();
 void test_ER_PercolationExplosive();
 void run_ER_percolation(int argc, char* argv[]);
 void test_BA(int argc, char* argv[]);
+void test_BA_percolation(int argc, char* argv[]);
 
 #endif //NETWORK_TEST_V7_H

@@ -1,0 +1,5 @@
+v7 or version 7
+
+all network class is extended from Network_v7 class.
+different network class have different construction system but same basic properties, e.g. links, nodes, degree.
+percolation class excepts Network_v7 pointer as an argument and perform percolation on Network_v7.

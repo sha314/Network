@@ -75,7 +75,7 @@ uint NetworkBApercolationExplosive_v5::link_for_min_cluster_sum_product_v2(size_
 //    size_t limit = start_at + _M_link;
     size_t r{};
 //    cout << "randomly between ("<< start_at <<"," << _link_count << ")={";
-
+    std::uniform_int_distribution<size_t> distribution(start_at, max_link_index);
     for(size_t i{0}; i < _M_link; ++i){
 
 
@@ -83,7 +83,8 @@ uint NetworkBApercolationExplosive_v5::link_for_min_cluster_sum_product_v2(size_
         // random number between a and b or rand(a,b) = a + r%(b-a); where r is an arbitrary random number
         // TODO : must select radnomly with uniform probability
         // use std::uniform_int_distribution<int> distribution(0,9);
-        r = start_at + _random_generator() % (_link_count-start_at);
+//        r = start_at + _random_generator() % (_link_count-start_at);
+        r = distribution(_random_generator);
         tmp_lnk_index = _randomized_indices[r];
         // <<<<< END A
 
@@ -248,17 +249,17 @@ uint NetworkBApercolationExplosive_v5::link_for_min_cluster_sum_product_v4(uint 
     uint tmp_lnk_index;
     int id1{-1}, id2{-1}, root1, root2;
     long n_nodes, prod_sum ; // so that it is very big before going into the loop
-    int r{};
+    size_t r{};
 //    long M_sum_products[_M_link];
 //    int M_link_indices[_M_link];
 
 //    cout << "randomly between ("<< start_at <<"," << _link_count << ")={";
-//    std::uniform_int_distribution<uint> distribution(start_at, max_link_index);
+    std::uniform_int_distribution<size_t> distribution(start_at, max_link_index);
 
     for(size_t i{0}; i < _M_link; ++i){
         // random number between a and b or rand(a,b) = a + r%(b-a); where r is an arbitrary random number
-        r = start_at + _random_generator() % (_link_count-start_at);
-//        r = distribution(_random_generator);
+//        r = start_at + _random_generator() % (_link_count-start_at);
+        r = distribution(_random_generator);
         M_link_indices[i] = r;
         tmp_lnk_index = _randomized_indices[r];
 #ifdef DEBUG_FLAG

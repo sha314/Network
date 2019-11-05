@@ -16,9 +16,6 @@ class NetworkBA_v7 : public Network_v7{
     uint _m0{3}; // seed
     uint _m{2}; // number of new nodes each node comes with
 
-    // variable properties
-
-    size_t _N_tmp;
     /*
      * Very useful for preferential attachment
      */
@@ -39,10 +36,6 @@ public:
     void viewLocal() override; // other properties of a network that is different for different types of network
     bool grow(size_t n);
     bool grow_adjacency(size_t netowk_size);
-    void setMaxNetworkSize(size_t N) {
-        if(_N_tmp > N){cout << "cannot initiate with smaller size " << __LINE__ << endl;}
-
-    }
 
     bool addNode();
     bool add_node();
