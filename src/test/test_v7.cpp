@@ -277,6 +277,7 @@ void test_percolation(int argc, char **argv) {
     auto* net = new NetworkMDA_v7(m, m);
     net->setRandomState(0, true);
     net->initialize(N);
+    net->clearAdjacency();
 //    net->view();
 //    net->viewAdjacencyList();
 //    net->viewLocal();
@@ -303,7 +304,7 @@ void test_percolation(int argc, char **argv) {
     for (int k{1}; k <= En; ++k) {
         auto t_start= chrono::_V2::system_clock::now();
 //        net.viewListOfLinkIndices();
-        percolation.reset(0); // every 25 step. reset the network
+        percolation.reset(k % 100 == 0); // every 100 step. reset the network
 //        cout << net->getLinkCount() << endl;
         size_t i{};
 //        percolation.viewClusters();

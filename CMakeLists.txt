@@ -14,7 +14,7 @@ set(CMAKE_CXX_STANDARD 11)
 #SET(CMAKE_CXX_FLAGS  "-Wall -D DEBUG_FLAG") # for debug only
 ## if -O3 is enabled during compilation then step by step debugging is harder
 #SET(CMAKE_CXX_FLAGS  "-O3 -Wall -D DEBUG_FLAG")
-#SET(CMAKE_CXX_FLAGS  "-O3 -Wall") # Only Release flag
+SET(CMAKE_CXX_FLAGS  "-O3 -Wall") # Only Release flag
 #SET(CMAKE_CXX_FLAGS  "-pthread -fopenmp -O3 -Wall") # Only Release flag
 
 

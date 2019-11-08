@@ -320,6 +320,7 @@ void NetworkPercolation_v7::reset(int i) {
     if(i == 1){
         _net->rebuild();
         // initialize the network again
+        _net->clearAdjacency(); // not required for percolation
     }
 //    viewNetwork();
     initialize();

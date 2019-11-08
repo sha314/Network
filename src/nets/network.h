@@ -173,6 +173,7 @@ public:
     int getNodeB(int link) const {return _network_map_B[link];}
 
     std::vector<uint> degreeCounts();
+    void clearAdjacency(){_adjacency_list.clear();}
 };
 
 
