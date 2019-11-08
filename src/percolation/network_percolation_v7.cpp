@@ -532,7 +532,7 @@ uint NetworkPercolationInverted_v7::link_for_max_cluster_sum_product(size_t star
         root1 = findRoot(id1);
         root2 = findRoot(id2);
 
-        n_nodes = _cluster_info[root1] * _cluster_info[root2]; // product rule. automatically becomes positive
+        n_nodes = long(_cluster_info[root1]) * long(_cluster_info[root2]); // product rule. automatically becomes positive
 //            n_nodes = abs(_cluster_info[root1] + _cluster_info[root2]); // sum rule
         if(n_nodes > prod_sum ) { // since we are maximize cluster sizes
             prod_sum = n_nodes;

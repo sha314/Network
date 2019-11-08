@@ -100,7 +100,7 @@ uint NetworkBApercolationExplosive_v5::link_for_min_cluster_sum_product_v2(size_
         root1 = findRoot(id1);
         root2 = findRoot(id2);
 
-        n_nodes = _cluster_info[root1] * _cluster_info[root2]; // product rule. automatically becomes positive
+        n_nodes = long(_cluster_info[root1]) * long(_cluster_info[root2]); // product rule. automatically becomes positive
 //            n_nodes = abs(_cluster_info[root1] + _cluster_info[root2]); // sum rule
         if(n_nodes < prod_sum ) { // since we are minimizing cluster sizes
             prod_sum = n_nodes;
@@ -182,7 +182,7 @@ uint NetworkBApercolationExplosive_v5::link_for_min_cluster_sum_product_v3_adapt
 
         root1 = findRoot(id1);
         root2 = findRoot(id2);
-        n_nodes = _cluster_info[root1] * _cluster_info[root2]; // product rule. automatically becomes positive
+        n_nodes = long(_cluster_info[root1]) * long(_cluster_info[root2]); // product rule. automatically becomes positive
 //            n_nodes = abs(_cluster_info[root1] + _cluster_info[root2]); // sum rule
 
         if(t < tc){
@@ -275,7 +275,7 @@ uint NetworkBApercolationExplosive_v5::link_for_min_cluster_sum_product_v4(uint 
         root1 = findRoot(id1);
         root2 = findRoot(id2);
 
-        n_nodes = _cluster_info[root1] * _cluster_info[root2]; // product rule. automatically becomes positive
+        n_nodes = long(_cluster_info[root1]) * long(_cluster_info[root2]); // product rule. automatically becomes positive
 //            n_nodes = abs(_cluster_info[root1] + _cluster_info[root2]); // sum rule
         M_sum_products[i] = n_nodes;
 
