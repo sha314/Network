@@ -262,7 +262,7 @@ void run_BA_jump_percolation(int argc, char **argv) {
 
     auto tm = currentTime();
     string signature = net.get_signature();
-    string filename_jump = signature + "_entropy_jump_" + tm + ".txt";
+    string filename_jump = signature + "_jump_" + tm + ".txt";
     stringstream ss;
     ss << "{"
        << R"*("signature":")*" << signature << "\""

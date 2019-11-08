@@ -276,7 +276,7 @@ void NetworkPercolation_v7::initialize() {
     // initialize link indices
 
     initialize_cluster();
-    cout << "initialize_cluster() done." << endl;
+//    cout << "initialize_cluster() done." << endl;
     occupied_link_count = 0;
     _entropy_val = log(_network_size);// initial entropy
     _largest_jump_entropy=0;
@@ -323,7 +323,7 @@ void NetworkPercolation_v7::reset(int i) {
     }
 //    viewNetwork();
     initialize();
-    cout << "initialize() done." << endl;
+//    cout << "initialize() done." << endl;
 }
 
 double NetworkPercolation_v7::entropy_v1() {

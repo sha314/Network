@@ -274,13 +274,13 @@ void test_percolation(int argc, char **argv) {
     cout << "m=" << m << ",N="<< N << ",M=" << M << ",En="<<En << endl;
 
 
-    auto* net = new NetworkBA_v7(m, m);
+    auto* net = new NetworkMDA_v7(m, m);
     net->setRandomState(0, true);
     net->initialize(N);
 //    net->view();
 //    net->viewAdjacencyList();
 //    net->viewLocal();
-    cout << "Done" << endl;
+//    cout << "Done" << endl;
 //    auto dd = net->degreeDistribution();
 //    for(size_t i{}; i < dd.size(); ++i){
 //        cout << "k= " << i << " count=" << dd[i] << endl;
@@ -295,6 +295,7 @@ void test_percolation(int argc, char **argv) {
     size_t linkCount = net->getLinkCount();
     size_t nodeCount = net->getNodeCount();
     cout << nodeCount << ", " << linkCount << ", " << endl;
+    size_t limit = nodeCount * 2;
 //    percolation.viewNetwork();
 //    percolation.viewListOfLinkIndices();
     double entropy_jump{}, order_jump{};
@@ -321,10 +322,11 @@ void test_percolation(int argc, char **argv) {
             percolation.jump();
 //            _network_frame.viewClusterExtended();
             ++i;
-//            if (i >= nodeCount) {
-//                cout << "breaking at " << i <<endl;
-//                break;
-//            }
+
+            if (i >= limit) {
+                cout << "breaking at " << i <<endl;
+                break;
+            }
         }
         entropy_jump += percolation.largestEntropyJump();
         order_jump += percolation.largestOrderJump();
@@ -362,17 +364,22 @@ void test_percolation(int argc, char **argv) {
     fout << '#' << ss.str() << endl;
     fout << "# t=relative link density" << endl;
     fout << "#<t>\t<H>\t<P>" << endl;
-    for(size_t k{}; k < entropy.size() ; ++k){
+    for(size_t k{}; k < limit ; ++k){
         auto t = (k+1)/double(N);
-        if (t > 5) {
-            cout << "breaking at t=" << t << endl;
-            break;
-        }
         fout << t
              << "\t" << entropy[k]/En
              << "\t" << order_param[k]/(En*double(N)) << endl;
     }
     fout.close();
+
+    string filename_jump = signature + "_jump_" + tm + ".txt";
+
+    ofstream fout_jump(filename_jump);
+    fout_jump << '#' << ss.str() << endl;
+    fout_jump << "#<m><N><M><En><largest entropy jump><largest order parameter jump>" << endl;
+    fout_jump << m << "\t" << N << "\t" << M << "\t" << En
+              << "\t" << abs(entropy_jump)/En << '\t' << order_jump/En << endl;
+    fout_jump.close();
 }
 
 void test_BA(int argc, char* argv[]) {
