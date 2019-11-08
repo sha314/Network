@@ -52,13 +52,13 @@ bool NetworkMDA_v7::grow_adjacency(size_t netowk_size) {
     _adjacency_list.resize(N_size);
 //    view();
     while(_node_index < netowk_size){
-        add_node();
+        add_node_adjacency_list();
     }
 
     return true;
 }
 
-bool NetworkMDA_v7::add_node() {
+bool NetworkMDA_v7::add_node_adjacency_list() {
 // first select m_nodes preferentially with no repetition
 // to prevent self connection
 
@@ -92,11 +92,21 @@ bool NetworkMDA_v7::add_node() {
 }
 
 void NetworkMDA_v7::rebuild() {
-
+    _link_count=0;
+    _node_index=0;
+    reset();
+    // MDA network construction requires adjacency list
+    initialize(N_size);
 }
 
 std::vector<std::string> NetworkMDA_v7::get_signature_array() {
-    return vector<string>();
+    std::vector<std::string> a;
+    a.emplace_back("MDA");
+
+    std::stringstream ss;
+    ss << "_m0_" << _m0 << "_m_" << _m << "-";
+    a.emplace_back(ss.str());
+    return a;
 }
 
 void NetworkMDA_v7::viewLocal() {

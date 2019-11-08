@@ -756,13 +756,14 @@ void Network_v7::setRandomState(size_t seed, bool g) {
         _random_state = rd();
     }
     _gen.seed(_random_state);
-    cout << "random seed Network_v2 " << _random_state << endl;
+    cout << "random seed Network_v7 " << _random_state << endl;
 }
 
 void Network_v7::view() {
     cout << "Network_v7::view __LINE__" << __LINE__ << endl;
+    cout << "Link[i] => nodeA , nodeB" << endl;
     for(size_t i{}; i < _network_map_A.size(); ++i){
-        cout << "Link[" << i << "] => " << _network_map_A[i] << " - " << _network_map_B[i] << endl;
+        cout << "Link[" << i << "] => " << _network_map_A[i] << " , " << _network_map_B[i] << endl;
     }
     cout << "Netowrk size " << _nodes.size() << endl;
     cout << "Link count " << _network_map_A.size() << endl;
@@ -772,16 +773,37 @@ void Network_v7::view() {
 
 void Network_v7::viewAdjacencyList() {
     cout << "Network_v7::viewAdjacencyList " << endl;
+    unsigned long sz;
     for(size_t i{}; i < _adjacency_list.size(); ++i){
-        cout << "node[" << i << "]={";
-        for(size_t j{}; j < _adjacency_list[i].size(); ++j){
+        sz = _adjacency_list[i].size();
+        cout << "node[" << i << "]=( "<< sz <<" ){";
+
+        for(size_t j{}; j < sz; ++j){
             cout << _adjacency_list[i][j] << ",";
         }
         cout << "}" << endl;
     }
 }
 
-std::vector<double> Network_v7::degreeDistribution() {
-    cout << "To be implemented  : line " << __LINE__ << endl;
-    return vector<double>();
+std::vector<uint> Network_v7::degreeCounts() {
+//    cout << "To be implemented  : line " << __LINE__ << endl;
+    std::vector<uint> degree_distro;
+    size_t k;
+    for(size_t i{}; i < degree_count.size(); ++i){
+        k = degree_count[i];
+        if(k >= degree_distro.size()){
+            degree_distro.resize(k+1); // since k is going to be used as index we need to add extra size
+        }
+        degree_distro[k] += 1;
+    }
+    return degree_distro;
 }
+
+void Network_v7::reset() {
+    _nodes.clear();
+    _adjacency_list.clear();
+    _network_map_A.clear();
+    _network_map_B.clear();
+    degree_count.clear();
+}
+

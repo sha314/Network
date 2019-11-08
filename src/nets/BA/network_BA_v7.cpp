@@ -49,6 +49,8 @@ void NetworkBA_v7::initialize(size_t N) {
 void NetworkBA_v7::rebuild() {
     _link_count=0;
     _node_index=0;
+    _preferentially.clear();
+    reset();
     initialize(N_size);
 
 }
@@ -118,7 +120,7 @@ bool NetworkBA_v7::add_node() {
         m_nodes.insert(std::move(k));
     }
     _link_count += m_nodes.size();
-    if(degree_count.size()>= _node_index) degree_count.resize(_node_index + 10);
+//    if(degree_count.size()>= _node_index) degree_count.resize(_node_index + 10);
 // then connect the new node to the selected m_nodes
     for(int j: m_nodes){
         _network_map_A.emplace_back(_node_index);
@@ -147,7 +149,7 @@ bool NetworkBA_v7::add_node_adjacency_list() {
         m_nodes.insert(std::move(k));
     }
     _link_count += m_nodes.size();
-    if(degree_count.size()>= _node_index) degree_count.resize(_node_index + 10);
+//    if(degree_count.size()>= _node_index) degree_count.resize(_node_index + 1);
 // then connect the new node to the selected m_nodes
     for(int j: m_nodes){
         _network_map_A.emplace_back(_node_index);

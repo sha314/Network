@@ -76,7 +76,7 @@ uint NetworkBApercolationExplosive_v5::link_for_min_cluster_sum_product_v2(size_
     size_t r{};
 //    cout << "randomly between ("<< start_at <<"," << _link_count << ")={";
     std::uniform_int_distribution<size_t> distribution(start_at, max_link_index);
-    for(size_t i{0}; i < _M_link; ++i){
+    for(int i{0}; i < _M_link; ++i){
 
 
         // >>>>>> START A takes ~24 % of total runtime
@@ -121,7 +121,7 @@ uint NetworkBApercolationExplosive_v5::link_for_min_cluster_sum_product_v2(size_
          << _randomized_indices[index_randomized_link] << endl;
 #endif
 
-    size_t pos = _randomized_indices[index_randomized_link];
+    uint pos = _randomized_indices[index_randomized_link];
     // must assign to a temp variable, otherwise it is replaced before retrurn
     // must erase the used value. // but erasing takes more than 90% of total time
 //    _randomized_link_indices.erase(_randomized_link_indices.begin() + r);
@@ -167,7 +167,7 @@ uint NetworkBApercolationExplosive_v5::link_for_min_cluster_sum_product_v3_adapt
 //    size_t limit = start_at + _M_link;
     size_t r{};
 //    cout << "randomly between ("<< start_at <<"," << _link_count << ")={";
-    for(size_t i{0}; i < _M_link; ++i){
+    for(int i{0}; i < _M_link; ++i){
         // what happens when start_at is near to the size of _randomized_link_indices. ???
         // random number between a and b or rand(a,b) = a + r%(b-a); where r is an arbitrary random number
         r = start_at + _random_generator() % (_link_count-start_at);
@@ -209,7 +209,7 @@ uint NetworkBApercolationExplosive_v5::link_for_min_cluster_sum_product_v3_adapt
 //         << " id = " << id1 << " and " << id2 << " prod_sum= " << prod_sum << endl;
 //    cout << " at " << index_randomized_link  << " value " << _randomized_link_indices[index_randomized_link] << endl;
 
-    size_t pos = _randomized_indices[index_randomized_link];
+    uint pos = _randomized_indices[index_randomized_link];
     // must assign to a temp variable, otherwise it is replaced before retrurn
     // must erase the used value. // but erasing takes more than 90% of total time
 //    _randomized_link_indices.erase(_randomized_link_indices.begin() + r);
@@ -256,7 +256,7 @@ uint NetworkBApercolationExplosive_v5::link_for_min_cluster_sum_product_v4(uint 
 //    cout << "randomly between ("<< start_at <<"," << _link_count << ")={";
     std::uniform_int_distribution<size_t> distribution(start_at, max_link_index);
 
-    for(size_t i{0}; i < _M_link; ++i){
+    for(int i{0}; i < _M_link; ++i){
         // random number between a and b or rand(a,b) = a + r%(b-a); where r is an arbitrary random number
 //        r = start_at + _random_generator() % (_link_count-start_at);
         r = distribution(_random_generator);

@@ -171,6 +171,9 @@ int main(int argc, char* argv[]) {
 
     run_in_main(argc, argv);
 
+#ifdef DEBUG_FLAG
+    cout << ">>>>>>>>>>>>Debug Flag is defined !<<<<<<<<<<<<<<" << endl;
+#endif
 
     auto t_end= std::chrono::system_clock::now();
     std::chrono::duration<double> drtion = t_end - t_start;

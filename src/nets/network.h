@@ -152,7 +152,7 @@ protected:
 public:
     virtual ~Network_v7() = default;
     Network_v7() = default;
-
+    void reset();
     void setRandomState(size_t seed=0, bool g=true);
     size_t getRandomState() {return _random_state;};
 //    void reset();
@@ -172,7 +172,7 @@ public:
     int getNodeA(int link) const {return _network_map_A[link];}
     int getNodeB(int link) const {return _network_map_B[link];}
 
-    std::vector<double> degreeDistribution();
+    std::vector<uint> degreeCounts();
 };
 
 

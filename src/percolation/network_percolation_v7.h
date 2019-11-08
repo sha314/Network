@@ -139,7 +139,7 @@ public:
 
     bool occupyLink() override ;
 
-    uint link_for_min_cluster_sum_product(uint start_at);
+    uint link_for_min_cluster_sum_product(size_t start_at);
 
     virtual std::string get_signature() {
         std::cout << "TODO " << std::endl;
@@ -171,7 +171,7 @@ public:
     bool occupyLink() override ;
     std::string getClassName() override {return "NetworkPercolationInverted_v7";}
 
-    uint link_for_max_cluster_sum_product(uint start_at);
+    uint link_for_max_cluster_sum_product(size_t start_at);
 };
 
 

@@ -25,7 +25,8 @@ public:
     void clear_preferentially(){_preferentially.clear();}
     uint get_m0()const { return  _m0;}
     uint get_m() const { return  _m;}
-    virtual std::string getClassName(){return "Network_BA";}
+
+    std::string getClassName() override {return "Network_BA";}
     void rebuild() override ;
     void initialize(size_t N) override;
 

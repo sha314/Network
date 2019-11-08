@@ -411,7 +411,7 @@ void degreeDistribution(int argc, char **argv) {
 
         for (size_t i{}; i < degs.size(); ++i) {
             if(degs[i] >= count.size()){
-                count.resize(degs[i]);
+                count.resize(degs[i]+1); // since degs[i] is going to be used as index we need to add extra size
             }
             ++count[degs[i]];
         }

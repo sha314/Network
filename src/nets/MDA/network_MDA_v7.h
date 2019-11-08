@@ -40,8 +40,7 @@ public:
     bool grow(size_t n);
     bool grow_adjacency(size_t netowk_size);
 
-    bool addNode();
-    bool add_node();
+
     bool add_node_adjacency_list();
 };
 
