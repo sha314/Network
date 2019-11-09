@@ -293,7 +293,7 @@ uint NetworkBApercolationExplosive_v5::link_for_min_cluster_sum_product_v4(uint 
 #ifdef DEBUG_FLAG
     cout << "random indices {" << M_link_indices[0] << ",";
 #endif
-    for(size_t i{1}; i < _M_link; ++i){
+    for(int i{1}; i < _M_link; ++i){
 #ifdef DEBUG_FLAG
         cout << M_link_indices[i] << ",";
 #endif

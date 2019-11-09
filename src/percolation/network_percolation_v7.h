@@ -43,7 +43,7 @@ protected:
     std::vector<uint> _randomized_indices;
 
     double _entropy_val{},    _largest_jump_entropy{}, _previous_entropy{}, _entropy_jump_tc{};
-    size_t largest_cluster_size{}, largest_jump_cluster_size{},_previous_cluster_size{};
+    long largest_cluster_size{}, largest_jump_cluster_size{},_previous_cluster_size{};
     int largest_cluster_index{};
 
 

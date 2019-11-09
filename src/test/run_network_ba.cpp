@@ -140,7 +140,7 @@ void run_BA_percolation(int argc, char **argv) {
 //    net.viewListOfLinkIndices();
     double entropy_jump{}, order_jump{};
     vector<double> entropy(linkCount), order_param(linkCount); // entropy and order parameter
-    for (size_t k{0}; k < ensemble_size; ++k) {
+    for (int k{0}; k < ensemble_size; ++k) {
         auto t_start= chrono::_V2::system_clock::now();
 //        net.viewListOfLinkIndices();
         net.reset(k%25 == 0); // every 25 step. reset the network
@@ -241,7 +241,7 @@ void run_BA_jump_percolation(int argc, char **argv) {
     net.initializeNetwork();
 
     double entropy_jump{}, order_jump{};
-    for (size_t k{0}; k < ensemble_size; ++k) {
+    for (int k{0}; k < ensemble_size; ++k) {
         auto t_start= chrono::_V2::system_clock::now();
         net.reset(k%25 == 0); // every 25 step. reset the network
 

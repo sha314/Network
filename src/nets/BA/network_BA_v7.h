@@ -13,8 +13,8 @@ class NetworkBA_v7 : public Network_v7{
     size_t _link_count;
     size_t  _node_index;
     // constant properties
-    uint _m0{3}; // seed
-    uint _m{2}; // number of new nodes each node comes with
+    int _m0{3}; // seed
+    int _m{2}; // number of new nodes each node comes with
 
     /*
      * Very useful for preferential attachment
@@ -23,10 +23,10 @@ class NetworkBA_v7 : public Network_v7{
 public:
     explicit NetworkBA_v7(uint m0=3, uint m=1); // only seeding
     void clear_preferentially(){_preferentially.clear();}
-    uint get_m0()const { return  _m0;}
-    uint get_m() const { return  _m;}
+    int get_m0()const { return  _m0;}
+    int get_m() const { return  _m;}
 
-    std::string getClassName() override {return "Network_BA";}
+    std::string getClassName() override {return "NetworkBA_v7";}
     void rebuild() override ;
     void initialize(size_t N) override;
 

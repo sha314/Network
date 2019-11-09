@@ -274,7 +274,7 @@ void test_percolation(int argc, char **argv) {
     cout << "m=" << m << ",N="<< N << ",M=" << M << ",En="<<En << endl;
 
 
-    auto* net = new NetworkMDA_v7(m, m);
+    auto* net = new NetworkBA_v7(m, m);
     net->setRandomState(0, true);
     net->initialize(N);
     net->clearAdjacency();
@@ -304,7 +304,7 @@ void test_percolation(int argc, char **argv) {
     for (int k{1}; k <= En; ++k) {
         auto t_start= chrono::_V2::system_clock::now();
 //        net.viewListOfLinkIndices();
-        percolation.reset(k % 100 == 0); // every 100 step. reset the network
+        percolation.reset(k % 25 == 0); // every 100 step. reset the network
 //        cout << net->getLinkCount() << endl;
         size_t i{};
 //        percolation.viewClusters();
@@ -315,15 +315,21 @@ void test_percolation(int argc, char **argv) {
 //            cout << "i " << i  << endl;
             entropy[i] += percolation.entropy();
             order_param[i] += percolation.largestClusterSize();
+            percolation.jump();
 //            percolation.viewClusters();
 //            percolation.viewListOfLinkIndices();
-//            cout << percolation.entropy_v1()  << "\t";
-//            cout << percolation.entropy_v2()  << "\t";
+//            double H1 = percolation.entropy_v1();
+//            double H2 = percolation.entropy_v2();
+//            cout << H1 << "\t";
+//            cout << H2 << "\t";
 //            cout << percolation.largestClusterSize() << endl;
-            percolation.jump();
-//            _network_frame.viewClusterExtended();
-            ++i;
 
+//            _network_frame.viewClusterExtended();
+//            if(abs(H1 - H2) > 1e-5){
+//                cerr << "problem : line " << __LINE__ << endl;
+//            }
+
+            ++i;
             if (i >= limit) {
                 cout << "breaking at " << i <<endl;
                 break;

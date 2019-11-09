@@ -21,7 +21,7 @@ private:
     std::vector<long> M_sum_products;
     std::vector<int>  M_link_indices;
 protected:
-    uint _M_link{2}; // number of link to choose for product rule or sum rule
+    int _M_link{2}; // number of link to choose for product rule or sum rule
 public:
     static const int MAX_M_VALUE = 20;
 

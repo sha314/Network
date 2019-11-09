@@ -8,7 +8,6 @@
 NetworkBA_v7::NetworkBA_v7(uint m0, uint m)
         :Network_v7()
 {
-
     _m0 = m0;
     _m = m;
     if(_m0 <= _m){
@@ -17,6 +16,7 @@ NetworkBA_v7::NetworkBA_v7(uint m0, uint m)
 //    cout << "m0 " << _m0 << " m " << _m << endl;
     _link_count=0;
     _node_index=0;
+    cout << getClassName() << endl;
 }
 
 void NetworkBA_v7::initialize(size_t N) {
@@ -113,7 +113,7 @@ bool NetworkBA_v7::add_node() {
     std::set<int> m_nodes;
     size_t rnd, k;
     uniform_int_distribution<size_t> dist(0, _preferentially.size()-1);
-    while (m_nodes.size() < _m) {
+    while (m_nodes.size() < size_t(_m)) {
 // since  each  new node  comes with  m  new links
         rnd = dist(_gen);
         k = _preferentially[rnd];
@@ -142,7 +142,7 @@ bool NetworkBA_v7::add_node_adjacency_list() {
     std::set<int> m_nodes;
     size_t rnd, k;
     uniform_int_distribution<size_t> dist(0, _preferentially.size()-1);
-    while (m_nodes.size() < _m) {
+    while (m_nodes.size() < size_t(_m)) {
 // since  each  new node  comes with  m  new links
         rnd = dist(_gen);
         k = _preferentially[rnd];
