@@ -12,9 +12,10 @@ set(CMAKE_CXX_STANDARD 11)
 
 #SET(CMAKE_CXX_FLAGS  "-Wall") # for debug without flag
 #SET(CMAKE_CXX_FLAGS  "-Wall -D DEBUG_FLAG") # for debug only
+SET(CMAKE_CXX_FLAGS  "-Wall -D UNIT_TEST") # for unit test only
 ## if -O3 is enabled during compilation then step by step debugging is harder
 #SET(CMAKE_CXX_FLAGS  "-O3 -Wall -D DEBUG_FLAG")
-SET(CMAKE_CXX_FLAGS  "-O3 -Wall") # Only Release flag
+#SET(CMAKE_CXX_FLAGS  "-O3 -Wall") # Only Release flag
 #SET(CMAKE_CXX_FLAGS  "-pthread -fopenmp -O3 -Wall") # Only Release flag
 
 
@@ -79,6 +80,6 @@ set(SOURCE_FILES
         src/nets/ER/test.cpp
         src/nets/ER/test.h
         src/percolation/network_percolation_v7.cpp
-        src/percolation/network_percolation_v7.h src/nets/MDA/network_MDA.h src/nets/BA/network_BA.h src/nets/BA/network_BA_v7.cpp src/nets/BA/network_BA_v7.h src/nets/MDA/network_MDA_v7.cpp src/nets/MDA/network_MDA_v7.h src/test/test_v7.cpp src/test/test_v7.h)
+        src/percolation/network_percolation_v7.h src/nets/MDA/network_MDA.h src/nets/BA/network_BA.h src/nets/BA/network_BA_v7.cpp src/nets/BA/network_BA_v7.h src/nets/MDA/network_MDA_v7.cpp src/nets/MDA/network_MDA_v7.h src/test/test_v7.cpp src/test/test_v7.h src/operation/operation.cpp src/operation/operation.h)
 
 add_executable(networks ${SOURCE_FILES})

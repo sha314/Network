@@ -579,7 +579,8 @@ uint NetworkPercolationExplosive_v7::link_for_min_cluster_sum_product(size_t sta
 
     uint tmp_lnk_index;
     int id1{-1}, id2{-1}, root1, root2;
-    long n_nodes=0, prod_sum = LONG_MAX; // so that it is very big before going into the loop
+    long n_nodes=0;
+    long prod_sum = LONG_MAX; // so that it is very big before going into the loop
 //    cout << LONG_MAX << " vs " << prod_sum << endl;
 //    cout << ULONG_MAX << " vs " << prod_sum << endl;
 //    size_t limit = start_at + _M_link;
@@ -600,13 +601,11 @@ uint NetworkPercolationExplosive_v7::link_for_min_cluster_sum_product(size_t sta
         n_nodes = long(_cluster_info[root1]) * long(_cluster_info[root2]); // product rule. automatically becomes positive
 //            n_nodes = abs(_cluster_info[root1] + _cluster_info[root2]); // sum rule
 
-#ifdef DEBUG_FLAG
+#ifdef UNIT_TEST
         if(n_nodes < 0){
-            cout << "product cannot be negative : line " << __LINE__ << endl;
-            cout << "root1, root2 " << root1 << ", " << root2 << endl;
-            cout << "Wrong root and cluster size "
-                 <<_cluster_info[root1]  << "* " <<  _cluster_info[root2] << " = " << n_nodes << endl;
-            cout << long(-46344) * (-46340) << endl;
+            cerr << "product cannot be negative " << endl
+            << "NetworkPercolationExplosive_v7::link_for_min_cluster_sum_product: line "
+            << __LINE__ << endl;
             cout << "possible solution : cast value from int to long in order to disolve this" << endl;
             exit(0);
         }

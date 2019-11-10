@@ -105,6 +105,15 @@ uint NetworkBApercolationExplosive_v6::link_for_min_cluster_sum_product_v2(size_
 
         n_nodes = long(_cluster_info[root1]) * long(_cluster_info[root2]); // product rule. automatically becomes positive
 //            n_nodes = abs(_cluster_info[root1] + _cluster_info[root2]); // sum rule
+#ifdef UNIT_TEST
+        if(n_nodes < 0){
+            cerr << "product cannot be negative " << endl
+            << "NetworkPercolationExplosive_v7::link_for_min_cluster_sum_product: line "
+            << __LINE__ << endl;
+            cout << "possible solution : cast value from int to long in order to disolve this" << endl;
+            exit(0);
+        }
+#endif
         if(n_nodes < prod_sum ) { // since we are minimizing cluster sizes
             prod_sum = n_nodes;
             index_randomized_link = r;
@@ -185,7 +194,15 @@ uint NetworkBApercolationExplosive_v6::link_for_min_cluster_sum_product_v3_adapt
         root2 = findRoot(id2);
         n_nodes = long(_cluster_info[root1]) * long(_cluster_info[root2]); // product rule. automatically becomes positive
 //            n_nodes = abs(_cluster_info[root1] + _cluster_info[root2]); // sum rule
-
+#ifdef UNIT_TEST
+        if(n_nodes < 0){
+            cerr << "product cannot be negative " << endl
+            << "NetworkPercolationExplosive_v7::link_for_min_cluster_sum_product: line "
+            << __LINE__ << endl;
+            cout << "possible solution : cast value from int to long in order to disolve this" << endl;
+            exit(0);
+        }
+#endif
         if(t < tc){
             if(n_nodes < prod_sum){
                 prod_sum = n_nodes;
