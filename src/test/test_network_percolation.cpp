@@ -187,6 +187,7 @@ void BA_entropy_jump_ensemble(int argc, char **argv){
     fout << "#n = number of occupied links" << endl;
     fout << "#t = n / N" << endl;
     fout << "#cluster size = number of nodes in the cluster" << endl;
+    fout << "#<N><m><M><Avg Entropy Jump>" << endl;
     fout << net.nodeCount() << "\t" << m << "\t" << M << "\t" << entropy_jmp_avg/En << endl;
 
     fout.close();

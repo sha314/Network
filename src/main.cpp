@@ -131,7 +131,6 @@ void run_in_main(int argc, char* argv[]){
 //    test_v5(argc, argv);
 //    test_NetworkBA_v2(argc, argv);
 //    test_v3(argc, argv);
-//    BA_order_parameter_jump(argc, argv);
 //    BA_entropy_jump_ensemble(argc, argv);
 //    test_v6(argc, argv); // 2019.10.20
 //    test_network_v6(argc, argv); // 2019.10.20
@@ -142,11 +141,11 @@ void run_in_main(int argc, char* argv[]){
 //    clusterSizeDistribution(argc, argv); // added 2019.06.22
 //    demarcationLine(argc, argv);
 //    run_BA_percolation(argc, argv);
-    run_BA_jump_percolation(argc, argv);
+//    run_BA_jump_percolation(argc, argv);
 
 //    degreeDistribution(argc, argv);
 
-//    test_v7(argc, argv); // 2019.10.30
+    test_v7(argc, argv); // 2019.10.30
 
 }
 

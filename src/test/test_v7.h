@@ -14,4 +14,8 @@ void test_BA(int argc, char* argv[]);
 void test_MDA(int argc, char* argv[]);
 void test_percolation(int argc, char **argv);
 
+void run_v7_percolation(int argc, char **argv);
+void run_v7_percolation_jump(int argc, char **argv);
+void run_v7_percolation_jump_avg(int argc, char **argv);
+
 #endif //NETWORK_TEST_V7_H

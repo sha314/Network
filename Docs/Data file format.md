@@ -7,3 +7,46 @@
 4. Each line that is not the data itself should start with a '#' symbol (symbol of comment).
     This includes the header too.
 5. Data should be written as column format but in special cases it can be different.
+
+## Header Informaiton
+must be written in json format
+
+element        | description
+:---: | :----: | 
+
+random_seed    | random seed that is used
+:---: | :----: | 
+
+data           | date of generated file
+:---: | :----: | 
+
+signature       | signature of the filename
+:---: | :----: |
+
+network_class   | used network class
+:---: | :----: |
+
+percolation_class   | used percolation class
+:---: | :----: |
+
+m               | m value
+:---: | :----: |
+
+N               | network size or number of nodes
+:---: | :----: |
+
+M               | for explosive percolation
+:---: | :----: |
+
+number_of_links | number of links in the network
+:---: | :----: |
+
+number_of_nodes | number of nodes
+:---: | :----: |
+
+En              | ensemble size
+:---: | :----: |
+
+ensemble_size   | ensemble size
+:---: | :----: |
+
