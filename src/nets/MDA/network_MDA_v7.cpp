@@ -57,7 +57,12 @@ bool NetworkMDA_v7::grow_adjacency(size_t netowk_size) {
 
     return true;
 }
-
+/**
+ * a mediator is selected at random,
+ * then new node connects with the `m` randomly chosen neighbor of that mediator,
+ * hence the name Mediation Driven Attachment Network (MDA Network)
+ * @return
+ */
 bool NetworkMDA_v7::add_node_adjacency_list() {
 // first select m_nodes preferentially with no repetition
 // to prevent self connection
@@ -65,10 +70,10 @@ bool NetworkMDA_v7::add_node_adjacency_list() {
     std::set<int> m_nodes;
     size_t rnd;
     auto r = _gen() % _nodes.size();
-    auto first_chosen = _nodes[r]; // it turns out that r==_nodes[r] always
+    auto mediator = _nodes[r]; // it turns out that r==_nodes[r] always
 
     _nodes.emplace_back(_node_index); // add one new node
-    auto neighbors = _adjacency_list[first_chosen];
+    auto neighbors = _adjacency_list[mediator];
     uniform_int_distribution<size_t> dist(0, neighbors.size()-1);
     while (m_nodes.size() < _m) {
 // since  each  new node  comes with  m  new links
