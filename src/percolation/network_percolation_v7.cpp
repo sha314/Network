@@ -370,7 +370,13 @@ void NetworkPercolation_v7::subtract_entropy(int root_a, int root_b) {
         cerr << "one of the root is not a root : line " << __LINE__ << endl;
     }
     double H{};
-
+#ifdef  DEBUG_FLAG
+    cout << "subtracting entropy for root {" << root_a;
+    if (root_a != root_b){
+        cout << "," << root_b;
+    }
+    cout << "}" << endl;
+#endif
     H += mu_a * log(mu_a);
     if (root_a != root_b){
         H += mu_b * log(mu_b);
@@ -385,6 +391,9 @@ void NetworkPercolation_v7::add_entropy(int root_a) {
 //        root_a = findRoot(root_a);
 //        mu_a = -_cluster_info[root_a]/double(_network_size);
 //    }
+#ifdef  DEBUG_FLAG
+    cout << "adding entropy for root {" << root_a << "}" << endl;
+#endif
     double H{};
     if(mu_a > 0){
         H += mu_a * log(mu_a);

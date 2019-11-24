@@ -30,8 +30,8 @@ void test_v7(int argc, char **argv) {
 //    test_percolation(argc, argv);
 
 
-//    run_v7_percolation(argc, argv);
-    run_v7_percolation_jump(argc, argv);
+    run_v7_percolation(argc, argv);
+//    run_v7_percolation_jump(argc, argv);
 //    run_v7_percolation_jump_avg(argc, argv);
 }
 
