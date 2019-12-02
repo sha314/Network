@@ -8,6 +8,8 @@
     This includes the header too.
 5. Data should be written as column format but in special cases it can be different.
 
+6. Data should have maximum precision, since this is the original data.
+
 ## Header Informaiton
 must be written in json format
 

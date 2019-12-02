@@ -544,6 +544,8 @@ void run_v7_percolation(int argc, char **argv) {
     fout << '#' << ss.str() << endl;
     fout << "# t=relative link density" << endl;
     fout << "#<t>\t<H>\t<P>" << endl;
+//    fout.precision(12);
+    fout.precision(numeric_limits<double>::digits10 + 1); // maximum precision
     for(size_t k{}; k < limit ; ++k){
         auto t = (k+1)/double(N);
         fout << t
