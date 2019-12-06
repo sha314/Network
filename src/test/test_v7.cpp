@@ -604,6 +604,7 @@ void run_v7_percolation_near_tc(int argc, char **argv) {
 //            largest_cluster[i++] += percolation.largestClusterSize();
 
             auto t = percolation.relativeLinkDensity();
+//            cout << "relativeLinkDensity " << t <<  " 1/N" << 1.0 / nodeCount << " 1/M" << 1.0/ linkCount << endl;
             auto sz = percolation.largestClusterSize();
             if(t > tc0) {
                 if (i < largest_cluster.size()) {
@@ -636,7 +637,7 @@ void run_v7_percolation_near_tc(int argc, char **argv) {
                        + "_N_" + to_string(N)
                        + "_m_" + to_string(m)
                        + "_M_" + to_string(M);
-    double dt = 1.0/linkCount;
+    double dt = 1.0 / nodeCount;
     stringstream ss;
     ss << "{"
        << R"*("signature":")*" << signature << "\""
@@ -663,7 +664,8 @@ void run_v7_percolation_near_tc(int argc, char **argv) {
     ofstream fout(filename);
     fout << '#' << ss.str() << endl;
     fout << "# t=relative link density" << endl;
-    fout << "#<t>\t<H>\t<P>" << endl;
+    fout << "# S_max = largest cluster" << endl;
+    fout << "#<t>\t<S_max>" << endl;
 //    fout.precision(12);
     fout.precision(numeric_limits<double>::digits10 + 1); // maximum precision
     auto t = tc0;
