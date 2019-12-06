@@ -30,9 +30,11 @@ void test_v7(int argc, char **argv) {
 //    test_percolation(argc, argv);
 
 
-    run_v7_percolation(argc, argv);
+//    run_v7_percolation(argc, argv);
 //    run_v7_percolation_jump(argc, argv);
 //    run_v7_percolation_jump_avg(argc, argv);
+
+    run_v7_percolation_near_tc(argc, argv);
 }
 
 void test_MDA(int argc, char *argv[]) {
@@ -551,6 +553,123 @@ void run_v7_percolation(int argc, char **argv) {
         fout << t
              << "\t" << entropy[k]/En
              << "\t" << order_param[k]/(En*double(N)) << endl;
+    }
+    fout.close();
+
+}
+
+void run_v7_percolation_near_tc(int argc, char **argv) {
+    if(argc < 5 ){
+        cout << "argv[1] == m" << endl;
+        cout << "argv[2] == N" << endl;
+        cout << "argv[3] == M" << endl;
+        cout << "argv[4] == Ensemble" << endl;
+        return;
+    }
+    int m = atoi(argv[1]);
+    int N = atoi(argv[2]);
+    int M = atoi(argv[3]);
+
+    int En = atoi(argv[4]);
+    cout << "m=" << m << ",N="<< N << ",M=" << M << ",En="<<En << endl;
+
+
+    auto* net = new NetworkBA_v7(m, m);
+    net->setRandomState(0, true);
+    net->initialize(N);
+    net->clearAdjacency();
+//
+//      NetworkPercolation_v7 percolation(net);
+//    NetworkPercolationInverted_v7 percolation(net, M);
+    NetworkPercolationExplosive_v7 percolation(net, M);
+
+    percolation.initialize();
+    size_t linkCount = net->getLinkCount();
+    size_t nodeCount = net->getNodeCount();
+    cout << nodeCount << ", " << linkCount << ", " << endl;
+    size_t limit = nodeCount * 2;
+//    double entropy_jump{}, order_jump{};
+    vector<size_t> largest_cluster; // entropy and order parameter
+    double tc = percolation.get_tc(M);
+    cout << "tc = " << tc << endl;
+    double tc0 = tc-0.1;
+    double tc1 = tc+0.1;
+
+    for (int k{1}; k <= En; ++k) {
+        auto t_start= chrono::_V2::system_clock::now();
+        percolation.reset(k % 25 == 0); // every 100 step. reset the network
+        size_t i{};
+        while (percolation.occupyLink()) {
+//            cout << "i " << i  << endl;
+//            largest_cluster[i++] += percolation.largestClusterSize();
+
+            auto t = percolation.relativeLinkDensity();
+            auto sz = percolation.largestClusterSize();
+            if(t > tc0) {
+                if (i < largest_cluster.size()) {
+                    largest_cluster[i++] += sz;
+                }else{
+                    largest_cluster.emplace_back(sz);
+                }
+//            percolation.jump();
+
+            }
+            if(t > tc1){
+                break;
+            }
+            if (i >= limit) {
+                cout << "breaking at " << i <<endl;
+                break;
+            }
+        }
+//        entropy_jump += percolation.largestEntropyJump();
+//        order_jump += percolation.largestOrderJump();
+
+        auto t_end= chrono::_V2::system_clock::now();
+        chrono::duration<double> drtion = t_end - t_start;
+        cout << "iteration " << k << " : time elapsed " << drtion.count() << " sec" << endl;
+    }
+
+    auto tm = currentTime();
+//    string signature = percolation.get_signature();
+    string signature = net->get_signature_array()[0] +"_"+ percolation.getClassName()
+                       + "_N_" + to_string(N)
+                       + "_m_" + to_string(m)
+                       + "_M_" + to_string(M);
+    double dt = 1.0/linkCount;
+    stringstream ss;
+    ss << "{"
+       << R"*("signature":")*" << signature << "\""
+       << R"*(,"network_class":")*" << net->getClassName() << "\""
+       << R"*(,"percolation_class":")*" << percolation.getClassName() << "\""
+       << R"*(,"random_seed":)*" << net->getRandomState()
+       << R"*(,"m":)*" << m
+       << R"*(,"N":)*" << N
+       << R"*(,"number_of_links":)*" << linkCount
+       << R"*(,"number_of_nodes":)*" << nodeCount
+       << R"*(,"M":)*" << M
+       << R"*(,"tc":)*" << tc
+       << R"*(,"dt":)*" << dt
+
+       << R"*(,"ensemble_size":)*" << En
+       << R"*(,"En":)*" << En
+       << R"*(,"date":")*" << tm << "\""
+       << "}";
+
+
+
+    cout << "dt = " << dt << endl;
+    string filename = signature + "_largest_cluster_near_tc_" + tm + ".txt";
+    ofstream fout(filename);
+    fout << '#' << ss.str() << endl;
+    fout << "# t=relative link density" << endl;
+    fout << "#<t>\t<H>\t<P>" << endl;
+//    fout.precision(12);
+    fout.precision(numeric_limits<double>::digits10 + 1); // maximum precision
+    auto t = tc0;
+    for(size_t k{}; k < largest_cluster.size() ; ++k){
+        fout << t  << "\t" << largest_cluster[k]/double(En) << endl;
+        t += dt;
     }
     fout.close();
 

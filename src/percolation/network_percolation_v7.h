@@ -131,6 +131,8 @@ public:
 };
 
 class NetworkPercolationExplosive_v7: public NetworkPercolation_v7{
+    std::map<int, double> tcs;
+
     int _M_link{2};
 public:
     ~NetworkPercolationExplosive_v7() override = default;
@@ -152,7 +154,7 @@ public:
     }
 
     std::string getClassName() override {return "NetworkPercolationExplosive_v7";}
-
+    double get_tc(int M){return tcs[M];}
 };
 
 class NetworkPercolationInverted_v7: public NetworkPercolation_v7{

@@ -18,4 +18,7 @@ void run_v7_percolation(int argc, char **argv);
 void run_v7_percolation_jump(int argc, char **argv);
 void run_v7_percolation_jump_avg(int argc, char **argv);
 
+
+void run_v7_percolation_near_tc(int argc, char **argv); // 2019.12.06
+
 #endif //NETWORK_TEST_V7_H

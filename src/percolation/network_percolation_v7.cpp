@@ -580,6 +580,17 @@ NetworkPercolationExplosive_v7::NetworkPercolationExplosive_v7(Network_v7 *net, 
 {
     _M_link = M;
     cout << getClassName() << endl;
+
+// tc values
+    tcs[2] = 0.7272;
+    tcs[3] = 0.8847;
+    tcs[4] = 0.9444;
+    tcs[5] = 0.9712;
+    tcs[6] = 0.9844;
+    tcs[7] = 0.9914;
+    tcs[8] = 0.9951;
+    tcs[9] = 0.9971;
+    tcs[10] = 0.9983;
 }
 
 uint NetworkPercolationExplosive_v7::link_for_min_cluster_sum_product(size_t start_at) {
