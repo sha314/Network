@@ -327,13 +327,14 @@ void NetworkPercolation_v7::reset(int i) {
 //    cout << "initialize() done." << endl;
 }
 
-double NetworkPercolation_v7::entropy_v1() {
+long double NetworkPercolation_v7::entropy_v1() {
 //    cout << "NetworkPercolation_v7::entropy_v1" << endl;
-    double mu{}, H{};
+    long double mu{}, H{};
     for(size_t i{}; i < _cluster_info.size(); ++i){
         mu = -1*_cluster_info[i]/double(_network_size); // negative values of a clusters are sizes
         if(mu > 0){
-            H += mu * log(mu);
+//            H += mu * log(mu);
+            H += mu * logl(mu);
         }
     }
     return  -H;
@@ -369,7 +370,7 @@ void NetworkPercolation_v7::subtract_entropy(int root_a, int root_b) {
     if(mu_a < 0 || mu_b < 0){
         cerr << "one of the root is not a root : line " << __LINE__ << endl;
     }
-    double H{};
+    long double H{};
 #ifdef  DEBUG_FLAG
     cout << "subtracting entropy for root {" << root_a;
     if (root_a != root_b){
@@ -377,9 +378,11 @@ void NetworkPercolation_v7::subtract_entropy(int root_a, int root_b) {
     }
     cout << "}" << endl;
 #endif
-    H += mu_a * log(mu_a);
+//    H += mu_a * log(mu_a);
+    H += mu_a * logl(mu_a);
     if (root_a != root_b){
-        H += mu_b * log(mu_b);
+//        H += mu_b * log(mu_b);
+        H += mu_b * logl(mu_b);
     }
     _entropy_val += H; // since subtracting
 }
@@ -396,13 +399,14 @@ void NetworkPercolation_v7::add_entropy(int root_a) {
 #endif
     double H{};
     if(mu_a > 0){
-        H += mu_a * log(mu_a);
+//        H += mu_a * log(mu_a);
+        H += mu_a * logl(mu_a);
     }
 //    cout << "add entropy " << H << endl;
     _entropy_val += -H; // since adding
 }
 
-double NetworkPercolation_v7::entropy_v2() {
+long double NetworkPercolation_v7::entropy_v2() {
     return _entropy_val;
 }
 
@@ -479,7 +483,7 @@ void NetworkPercolation_v7::jump_v2() {
     }
 }
 
-double NetworkPercolation_v7::entropy() {
+long double NetworkPercolation_v7::entropy() {
 //    return entropy_v1();
     return entropy_v2();
 }

@@ -30,11 +30,11 @@ void test_v7(int argc, char **argv) {
 //    test_percolation(argc, argv);
 
 
-//    run_v7_percolation(argc, argv);
+    run_v7_percolation(argc, argv);
 //    run_v7_percolation_jump(argc, argv);
 //    run_v7_percolation_jump_avg(argc, argv);
 
-    run_v7_percolation_near_tc(argc, argv);
+//    run_v7_percolation_near_tc(argc, argv);
 }
 
 void test_MDA(int argc, char *argv[]) {
@@ -478,6 +478,7 @@ void run_v7_percolation(int argc, char **argv) {
 
 
     auto* net = new NetworkBA_v7(m, m);
+//    auto* net = new NetworkMDA_v7(m, m);
     net->setRandomState(0, true);
     net->initialize(N);
     net->clearAdjacency();
@@ -499,7 +500,9 @@ void run_v7_percolation(int argc, char **argv) {
         size_t i{};
         while (percolation.occupyLink()) {
 //            cout << "i " << i  << endl;
-            entropy[i] += percolation.entropy();
+//            auto H = percolation.entropy_v1(); // slow. for debugging purposes
+            auto H = percolation.entropy();
+            entropy[i] += H;
             order_param[i] += percolation.largestClusterSize();
 //            percolation.jump();
 
@@ -786,7 +789,8 @@ void run_v7_percolation_jump(int argc, char **argv) {
     cout << "m=" << m << ",N="<< N << ",M=" << M << ",En="<<En << endl;
 
 
-    auto* net = new NetworkBA_v7(m, m);
+//    auto* net = new NetworkBA_v7(m, m);
+    auto* net = new NetworkMDA_v7(m, m);
     net->setRandomState(0, true);
     net->initialize(N);
     net->clearAdjacency();
@@ -856,6 +860,7 @@ void run_v7_percolation_jump(int argc, char **argv) {
 
     ofstream fout_jump(filename_jump);
     fout_jump << '#' << ss.str() << endl;
+    fout_jump << "#<entropy jump><order parameter jump>" << endl;
     for(size_t i{}; i < entropy_jump.size(); ++i){
         fout_jump << entropy_jump[i] << "\t" << order_jump[i] << endl;
     }

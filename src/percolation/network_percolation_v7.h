@@ -42,7 +42,7 @@ protected:
     std::vector<uint> list_of_link_indices; // from zero to N-1
     std::vector<uint> _randomized_indices;
 
-    double _entropy_val{},    _largest_jump_entropy{}, _previous_entropy{}, _entropy_jump_tc{};
+    long double _entropy_val{},    _largest_jump_entropy{}, _previous_entropy{}, _entropy_jump_tc{};
     long largest_cluster_size{}, largest_jump_cluster_size{},_previous_cluster_size{};
     int largest_cluster_index{};
 
@@ -90,9 +90,9 @@ public:
 
 
 
-    double entropy();
-    double entropy_v1();
-    double entropy_v2();
+    long double entropy();
+    long double entropy_v1();
+    long double entropy_v2();
     void subtract_entropy(int a, int b);
     void add_entropy(int a);
     void jump();
