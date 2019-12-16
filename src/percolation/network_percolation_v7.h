@@ -42,6 +42,9 @@ protected:
     std::vector<uint> list_of_link_indices; // from zero to N-1
     std::vector<uint> _randomized_indices;
 
+    long double delta_H{}; // equivalent to specific heat
+    long delta_P{}; // equivalent to susceptibility
+
     long double _entropy_val{},    _largest_jump_entropy{}, _previous_entropy{}, _entropy_jump_tc{};
     long largest_cluster_size{}, largest_jump_cluster_size{},_previous_cluster_size{};
     int largest_cluster_index{};
@@ -98,6 +101,8 @@ public:
     void jump();
     void jump_v1();
     void jump_v2();
+    long double jump_entropy(); // jump of entropy at each step. equivalent to specific heat
+    long jump_largest_cluster(); // jump of largest cluster at each step. equivalent to susceptibility
     double largestEntropyJump()const{return _largest_jump_entropy;};
     double largestEntropyJump_pc()const{return _entropy_jump_tc;};
     double largestOrderJump() const { return largest_jump_cluster_size/double(_network_size);}

@@ -318,6 +318,7 @@ void NetworkPercolation_v7::reset(int i) {
 //    _findRoot_time=0;
 //    viewNetwork();
     if(i == 1){
+        cout << "rebuilding..." << endl;
         _net->rebuild();
         // initialize the network again
         _net->clearAdjacency(); // not required for percolation
@@ -465,20 +466,19 @@ void NetworkPercolation_v7::jump_v1() {
  * Entropy and Order parameter jump
  */
 void NetworkPercolation_v7::jump_v2() {
-    double delta_H{};
-    long delta_P{};
+
     if(occupied_link_count > 1){
-        delta_H = abs(_entropy_val - _previous_entropy);
+        delta_H = _entropy_val - _previous_entropy;
         delta_P = largest_cluster_size - _previous_cluster_size;
     }
     _previous_entropy = _entropy_val; // be ready for next step
     _previous_cluster_size = largest_cluster_size;
 //    cout << "jump_v2 delta_H " << delta_H << endl;
-    if(delta_H > _largest_jump_entropy){
+    if(abs(delta_H) > abs(_largest_jump_entropy)){
         _largest_jump_entropy = delta_H;
 //        _entropy_jump_tc = relativeLinkDensity();
     }
-    if(delta_P > largest_jump_cluster_size){
+    if(abs(delta_P) > abs(largest_jump_cluster_size)){
         largest_jump_cluster_size = delta_P;
     }
 }
@@ -491,6 +491,14 @@ long double NetworkPercolation_v7::entropy() {
 void NetworkPercolation_v7::summary() {
     cout << "_max_recursion_depth " << _max_recursion_depth << endl;
     cout << "_findRoot_time " << _findRoot_time << " sec" << endl;
+}
+
+long double NetworkPercolation_v7::jump_entropy() {
+    return delta_H;
+}
+
+long NetworkPercolation_v7::jump_largest_cluster() {
+    return delta_P;
 }
 
 /*******************************

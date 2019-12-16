@@ -475,7 +475,7 @@ void run_v7_percolation(int argc, char **argv) {
 
     int En = atoi(argv[4]);
     cout << "m=" << m << ",N="<< N << ",M=" << M << ",En="<<En << endl;
-
+    size_t rebuild_each = 1; // cycle
 
     auto* net = new NetworkBA_v7(m, m);
 //    auto* net = new NetworkMDA_v7(m, m);
@@ -493,10 +493,12 @@ void run_v7_percolation(int argc, char **argv) {
     cout << nodeCount << ", " << linkCount << ", " << endl;
     size_t limit = nodeCount * 2;
 //    double entropy_jump{}, order_jump{};
-    vector<double> entropy(linkCount), order_param(linkCount); // entropy and order parameter
+    vector<long double> entropy(linkCount), dHs(linkCount);
+    vector<double> order_param(linkCount); // entropy and order parameter
+    vector<long> dPs(linkCount);
     for (int k{1}; k <= En; ++k) {
         auto t_start= chrono::_V2::system_clock::now();
-        percolation.reset(k % 25 == 0); // every 100 step. reset the network
+        percolation.reset(k % rebuild_each == 0); // every nn step. reset the network
         size_t i{};
         while (percolation.occupyLink()) {
 //            cout << "i " << i  << endl;
@@ -504,7 +506,10 @@ void run_v7_percolation(int argc, char **argv) {
             auto H = percolation.entropy();
             entropy[i] += H;
             order_param[i] += percolation.largestClusterSize();
-//            percolation.jump();
+            percolation.jump();
+
+            dHs[i] += percolation.jump_entropy();
+            dPs[i] += percolation.jump_largest_cluster();
 
             ++i;
             if (i >= limit) {
@@ -544,8 +549,8 @@ void run_v7_percolation(int argc, char **argv) {
 
 
 
-    string filename = signature + "_entropy-order_" + tm + ".txt";
-    ofstream fout(filename);
+    string filename_entropy_order = signature + "_entropy-order_" + tm + ".txt";
+    ofstream fout(filename_entropy_order);
     fout << '#' << ss.str() << endl;
     fout << "# t=relative link density" << endl;
     fout << "#<t>\t<H>\t<P>" << endl;
@@ -558,6 +563,22 @@ void run_v7_percolation(int argc, char **argv) {
              << "\t" << order_param[k]/(En*double(N)) << endl;
     }
     fout.close();
+
+
+    string filename_specific_heat_susceptibility = signature + "_specific_heat-susceptibility_" + tm + ".txt";
+    ofstream fout2(filename_specific_heat_susceptibility);
+    fout2 << '#' << ss.str() << endl;
+    fout2 << "# t=relative link density" << endl;
+    fout2 << "#<t>\t<C>\t<X>" << endl;
+//    fout2.precision(12);
+    fout2.precision(numeric_limits<double>::digits10 + 1); // maximum precision
+    for(size_t k{}; k < limit ; ++k){
+        auto t = (k+1)/double(N);
+        fout2 << t
+             << "\t" << -1.0*(1.0-t)*dHs[k]*N/En
+             << "\t" << dPs[k]/double(En) << endl;
+    }
+    fout2.close();
 
 }
 
