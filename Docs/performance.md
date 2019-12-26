@@ -70,3 +70,12 @@ whereas I stop the loop after M iteration.
 N is the number of nodes and M is the number of links.
 M is always much greater than N.
 
+
+
+#merging cluster
+making the larger cluster the root one makes the program run faster
+m=5,N=1,000,000
+with larger cluster as root,merge_cluster_v2(), time = 2.15223 sec
+without, merge_cluster_v1(), time = 2.85 sec
+performance increase with merge_cluster_v2() = (2.85-2.15)/2.85 = 25 %
+25 % performance boost

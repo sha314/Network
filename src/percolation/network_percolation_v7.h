@@ -79,7 +79,10 @@ public:
     int find_root_v3(int i); // recursive method
     int find_root_v3_test(int i, int depth=0); // recursive method
 
-    void mergeClusters(int root_a, int root_b);
+    int mergeClusters(int root_a, int root_b);
+    int merge_cluster_v1(int root_a, int root_b) ;
+    int merge_cluster_v2(int root_a, int root_b) ;
+
     size_t clusterCount();
     size_t clusterSizeSum();
     int clusterSize(int a);
@@ -89,6 +92,8 @@ public:
     void viewClusters();
     void viewListOfLinkIndices();
     void viewNetwork(){_net->view();}
+
+    void sumClusters();
 
 
 

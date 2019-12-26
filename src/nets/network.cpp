@@ -796,6 +796,12 @@ std::vector<uint> Network_v7::degreeCounts() {
         }
         degree_distro[k] += 1;
     }
+    double a = 0;
+    for(size_t i{}; i < degree_count.size(); ++i){
+        if(degree_distro[i] == 0) continue;
+        a += degree_distro[i] * i;
+    }
+    cout << "sum = "  << a << " sum/N = " << a/N_size << endl;
     return degree_distro;
 }
 

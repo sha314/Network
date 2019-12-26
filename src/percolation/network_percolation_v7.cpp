@@ -183,9 +183,13 @@ int NetworkPercolation_v7::find_root_v3_test(int i, int depth)
     return _cluster_info[i]=find_root_v3_test(_cluster_info[i],depth+1); // assign and return at the same time
 }
 
-void  NetworkPercolation_v7::mergeClusters(int root_a, int root_b) {
-//#     print("both are roots, ", root_a, ", ", root_b)
-    if (root_a == root_b) return;
+int  NetworkPercolation_v7::mergeClusters(int root_a, int root_b) {
+//    return merge_cluster_v1(root_a, root_b);
+    return merge_cluster_v2(root_a, root_b);
+}
+
+int NetworkPercolation_v7::merge_cluster_v1(int root_a, int root_b)  {//#     print("both are roots, ", root_a, ", ", root_b)
+    if (root_a == root_b) return root_a;
 //# join two roots
 //#     print("before merging ")
 #ifdef DEBUG_FLAG
@@ -193,6 +197,33 @@ void  NetworkPercolation_v7::mergeClusters(int root_a, int root_b) {
 #endif
     _cluster_info[root_a] = _cluster_info[root_a] + _cluster_info[root_b]; //# sizes must add up
     _cluster_info[root_b] = root_a; //# now clusters[b] points to a
+//#     print("after merging ")
+//#     print(clusters)
+    return root_a;
+}
+
+/**
+ * select larger cluster as root
+ * @param root_a
+ * @param root_b
+ */
+int NetworkPercolation_v7::merge_cluster_v2(int root_a, int root_b)  {
+//#     print("both are roots, ", root_a, ", ", root_b)
+    if (root_a == root_b) return root_a;
+//# join two roots
+//#     print("before merging ")
+#ifdef DEBUG_FLAG
+    cout << "cluster size increasing " << endl;
+#endif
+    if(abs(_cluster_info[root_a]) > abs(_cluster_info[root_b])) {
+        _cluster_info[root_a] = _cluster_info[root_a] + _cluster_info[root_b]; //# sizes must add up
+        _cluster_info[root_b] = root_a; //# now clusters[b] points to a
+        return root_a;
+    }else{
+        _cluster_info[root_b] = _cluster_info[root_a] + _cluster_info[root_b]; //# sizes must add up
+        _cluster_info[root_a] = root_b; //# now clusters[a] points to b
+        return root_b;
+    }
 //#     print("after merging ")
 //#     print(clusters)
 }
@@ -245,9 +276,9 @@ bool NetworkPercolation_v7::placeSelectedLink(uint i) {
     cout << "roots " << root_a << ", " << root_b << endl;
 #endif
     subtract_entropy(root_a, root_b);
-    mergeClusters(root_a, root_b);
-    add_entropy(root_a);
-    track_largest_cluster(root_a);
+    auto root = mergeClusters(root_a, root_b);
+    add_entropy(root);
+    track_largest_cluster(root);
     occupied_link_count++;
 // make both cluster point to root cluster. so that search can be faster later
     return true;
@@ -259,13 +290,35 @@ bool NetworkPercolation_v7::placeSelectedLink(uint i) {
 void NetworkPercolation_v7::viewClusters() {
     cout << "clusters : (index) -> ((-size) or (ref to root)) (root or not?){" << endl;
 //    copy(_clusters.begin(), _clusters.end(), ostream_iterator<int>(cout, ","));
+    int sum=0;
     for(size_t i{}; i < _cluster_info.size(); ++i){
         cout << "[" << i << "] -> " << _cluster_info[i];
-        if(_cluster_info[i] < 0) cout << " *";// root cluster
+        if(_cluster_info[i] < 0) {
+            cout << " *"; // root cluster
+            sum += _cluster_info[i];
+        }
         cout << endl;
     }
     cout << "}" << endl;
+    cout << "Network size from cluster " << abs(sum) << endl;
+    if(abs(sum) != _network_size){
+        cout << "size mismatched" << endl;
+    }
+}
 
+void NetworkPercolation_v7::sumClusters() {
+//    cout << "clusters : (index) -> ((-size) or (ref to root)) (root or not?){" << endl;
+//    copy(_clusters.begin(), _clusters.end(), ostream_iterator<int>(cout, ","));
+    int sum=0;
+    for(size_t i{}; i < _cluster_info.size(); ++i){
+        if(_cluster_info[i] < 0) {
+            sum += _cluster_info[i];
+        }
+    }
+    cout << "Network size from cluster " << abs(sum) << endl;
+    if(abs(sum) != _network_size){
+        cout << "size mismatched" << endl;
+    }
 }
 
 /**

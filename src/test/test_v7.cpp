@@ -482,7 +482,7 @@ void run_v7_percolation(int argc, char **argv) {
 
     auto* net = new NetworkBA_v7(m, m);
 //    auto* net = new NetworkMDA_v7(m, m);
-    net->setRandomState(0, false);
+    net->setRandomState(0, true);
     net->initialize(N);
     net->clearAdjacency();
 //
@@ -506,6 +506,8 @@ void run_v7_percolation(int argc, char **argv) {
         while (percolation.occupyLink()) {
 //            cout << "i " << i  << endl;
 //            auto H = percolation.entropy_v1(); // slow. for debugging purposes
+//            percolation.viewClusters();
+//            percolation.sumClusters();
             auto H = percolation.entropy();
             entropy[i] += H;
             order_param[i] += percolation.largestClusterSize();
