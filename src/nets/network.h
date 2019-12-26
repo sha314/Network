@@ -174,6 +174,8 @@ public:
 
     std::vector<uint> degreeCounts();
     void clearAdjacency(){_adjacency_list.clear();}
+    double clusteringCoefficient(int i);
+    double clusteringCoefficientAvg();
 };
 
 

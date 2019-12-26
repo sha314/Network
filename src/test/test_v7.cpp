@@ -92,6 +92,9 @@ void test_MDA(int argc, char *argv[]) {
          << ",\"En\":" << En
          << ",\"type\":\"" << arr[0] << "\""
          << "}" << endl;
+    fout << "#k = degree" << endl;
+    fout << "#P(k) = repetition of k on average" << endl;
+    fout << "# from P(k) to get degree distribution divide it by maximum degree" << endl;
     fout << "#<k>,<P(k)>" << endl;
     for (size_t i{1}; i < counts.size(); ++i) {
         if(counts[i] == 0) continue;
@@ -475,11 +478,11 @@ void run_v7_percolation(int argc, char **argv) {
 
     int En = atoi(argv[4]);
     cout << "m=" << m << ",N="<< N << ",M=" << M << ",En="<<En << endl;
-    size_t rebuild_each = 1; // cycle
+    size_t rebuild_each = 100; // cycle
 
     auto* net = new NetworkBA_v7(m, m);
 //    auto* net = new NetworkMDA_v7(m, m);
-    net->setRandomState(0, true);
+    net->setRandomState(0, false);
     net->initialize(N);
     net->clearAdjacency();
 //
@@ -808,7 +811,7 @@ void run_v7_percolation_jump(int argc, char **argv) {
 
     int En = atoi(argv[4]);
     cout << "m=" << m << ",N="<< N << ",M=" << M << ",En="<<En << endl;
-
+    size_t rebuild_each = 1; // cycle
 
 //    auto* net = new NetworkBA_v7(m, m);
     auto* net = new NetworkMDA_v7(m, m);
@@ -830,7 +833,7 @@ void run_v7_percolation_jump(int argc, char **argv) {
     for (int k{1}; k <= En; ++k) {
         auto t_start= chrono::_V2::system_clock::now();
 //        net.viewListOfLinkIndices();
-        percolation.reset(k % 100 == 0); // every 100 step. reset the network
+        percolation.reset(k % rebuild_each == 0); // every 100 step. reset the network
 //        cout << net->getLinkCount() << endl;
         size_t i{};
         while (percolation.occupyLink()) {

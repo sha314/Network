@@ -807,3 +807,50 @@ void Network_v7::reset() {
     degree_count.clear();
 }
 
+/**
+ * Local clustering coefficient
+ * Clustering coefficient for k-th node is defined as
+ *      cc(k) = (number of available connection between neighbors of k) / (total number of connection possible among neighbors of k)
+ *
+ * Maximum connection possible between n nodes are nC2 = n!/(2! * (n-1)!) = n(n-1)/2
+ * @param i
+ * @return
+ */
+double Network_v7::clusteringCoefficient(int k) {
+    if(k >= _adjacency_list.size()){
+        cerr << "outside adjacency list" << endl;
+    }
+    auto neighbors = _adjacency_list[k];
+    size_t N = neighbors.size();
+    size_t connection{};
+    std::vector<int>::iterator it;
+    for(size_t i{}; i < neighbors.size(); ++i){
+
+        auto neighbors_i = _adjacency_list[neighbors[i]];
+        for(size_t j{i+1}; j < neighbors.size(); ++j ){
+            auto b =  neighbors[i];
+            it = std::find (neighbors_i.begin(), neighbors_i.end(), b);
+            if(it != neighbors_i.end()){
+                // found it
+                cout << *it << endl;
+                ++connection;
+            }
+        }
+    }
+    double possible = N*(N-1.0) / 2.0;
+    return connection/possible;
+}
+
+/**
+ * Global clustering coefficient
+ * Average of local  clustering coefficient
+ * @return
+ */
+double Network_v7::clusteringCoefficientAvg() {
+    double sm{};
+    for(auto k: _nodes){
+        sm += clusteringCoefficient(k);
+    }
+    return sm / _nodes.size();
+}
+
