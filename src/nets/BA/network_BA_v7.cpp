@@ -5,15 +5,16 @@
 #include <set>
 #include "network_BA_v7.h"
 
-NetworkBA_v7::NetworkBA_v7(uint m0, uint m)
+NetworkBA_v7::NetworkBA_v7(uint m)
         :Network_v7()
 {
-    _m0 = m0;
+    // seed size is 120% of the value of m
+    _m0 = m + int(ceil(0.2*m));
     _m = m;
-    if(_m0 <= _m){
-        _m0 = 2*_m;
-    }
-//    cout << "m0 " << _m0 << " m " << _m << endl;
+//    if(_m0 <= _m){
+//        _m0 = 2*_m;
+//    }
+    cout << "m0=" << _m0 << ", m=" << _m << endl;
     _link_count=0;
     _node_index=0;
     cout << getClassName() << endl;

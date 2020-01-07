@@ -21,7 +21,7 @@ class NetworkBA_v7 : public Network_v7{
      */
     std::vector<uint> _preferentially;
 public:
-    explicit NetworkBA_v7(uint m0=3, uint m=1); // only seeding
+    explicit NetworkBA_v7(uint m=1); // only seeding
     void clear_preferentially(){_preferentially.clear();}
     int get_m0()const { return  _m0;}
     int get_m() const { return  _m;}

@@ -8,7 +8,7 @@
 
 void PerformPercolation::set_network(string name, int m, int N) {
     if(name == "BA"){
-        net = new NetworkBA_v7(m, m);
+        net = new NetworkBA_v7(m);
 
     }
     m_val = m;

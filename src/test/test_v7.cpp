@@ -53,7 +53,7 @@ void test_MDA(int argc, char *argv[]) {
     cout << "m=" << m << ",N="<< N << ",M=" << M << ",En="<<En << endl;
 
 
-    auto* net = new NetworkMDA_v7(m, m);
+    auto* net = new NetworkMDA_v7(m);
     net->setRandomState(0, true);
     net->initialize(N);
     vector<size_t> counts;
@@ -284,7 +284,7 @@ void test_percolation(int argc, char **argv) {
     cout << "m=" << m << ",N="<< N << ",M=" << M << ",En="<<En << endl;
 
 
-    auto* net = new NetworkBA_v7(m, m);
+    auto* net = new NetworkBA_v7(m);
     net->setRandomState(0, true);
     net->initialize(N);
     net->clearAdjacency();
@@ -415,7 +415,7 @@ void test_BA(int argc, char* argv[]) {
     cout << "m=" << m << ",N="<< N << ",M=" << M << ",En="<<En << endl;
 
 
-    auto* net = new NetworkBA_v7(m, m);
+    auto* net = new NetworkBA_v7(m);
     net->setRandomState(0, true);
     net->initialize(N);
     vector<size_t> counts;
@@ -480,8 +480,8 @@ void run_v7_percolation(int argc, char **argv) {
     cout << "m=" << m << ",N="<< N << ",M=" << M << ",En="<<En << endl;
     size_t rebuild_each = 100; // cycle
 
-    auto* net = new NetworkBA_v7(m, m);
-//    auto* net = new NetworkMDA_v7(m, m);
+    auto* net = new NetworkBA_v7(m);
+//    auto* net = new NetworkMDA_v7(m);
     net->setRandomState(0, true);
     net->initialize(N);
     net->clearAdjacency();
@@ -603,7 +603,7 @@ void run_v7_percolation_near_tc(int argc, char **argv) {
     cout << "m=" << m << ",N="<< N << ",M=" << M << ",En="<<En << endl;
 
 
-    auto* net = new NetworkBA_v7(m, m);
+    auto* net = new NetworkBA_v7(m);
     net->setRandomState(0, true);
     net->initialize(N);
     net->clearAdjacency();
@@ -722,7 +722,7 @@ void run_v7_percolation_jump_avg(int argc, char **argv) {
     cout << "m=" << m << ",N="<< N << ",M=" << M << ",En="<<En << endl;
 
 
-    auto* net = new NetworkBA_v7(m, m);
+    auto* net = new NetworkBA_v7(m);
     net->setRandomState(0, true);
     net->initialize(N);
     net->clearAdjacency();
@@ -816,7 +816,7 @@ void run_v7_percolation_jump(int argc, char **argv) {
     size_t rebuild_each = 1; // cycle
 
 //    auto* net = new NetworkBA_v7(m, m);
-    auto* net = new NetworkMDA_v7(m, m);
+    auto* net = new NetworkMDA_v7(m);
     net->setRandomState(0, true);
     net->initialize(N);
     net->clearAdjacency();

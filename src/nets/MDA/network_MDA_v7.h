@@ -24,7 +24,7 @@ class NetworkMDA_v7 : public Network_v7{
     // variable properties
 
 public:
-    explicit NetworkMDA_v7(uint m0=3, uint m=1); // only seeding
+    explicit NetworkMDA_v7(uint m=1); // only seeding
     uint get_m0()const { return  _m0;}
     uint get_m() const { return  _m;}
 

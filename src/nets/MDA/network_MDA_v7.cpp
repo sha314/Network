@@ -6,12 +6,13 @@
 #include <set>
 #include "network_MDA_v7.h"
 
-NetworkMDA_v7::NetworkMDA_v7(uint m0, uint m) {
-    _m0 = m0;
+NetworkMDA_v7::NetworkMDA_v7(uint m) {
+    // seed size is 120% of the value of m
+    _m0 = m + int(ceil(0.2*m));
     _m = m;
-    if(_m0 <= _m){
-        _m0 = 2*_m;
-    }
+//    if(_m0 <= _m){
+//        _m0 = 2*_m;
+//    }
 //    cout << "m0 " << _m0 << " m " << _m << endl;
     _link_count=0;
     _node_index=0;
