@@ -480,8 +480,8 @@ void run_v7_percolation(int argc, char **argv) {
     cout << "m=" << m << ",N="<< N << ",M=" << M << ",En="<<En << endl;
     size_t rebuild_each = 100; // cycle
 
-    auto* net = new NetworkBA_v7(m);
-//    auto* net = new NetworkMDA_v7(m);
+//    auto* net = new NetworkBA_v7(m);
+    auto* net = new NetworkMDA_v7(m);
     net->setRandomState(0, true);
     net->initialize(N);
     net->clearAdjacency();
@@ -543,13 +543,14 @@ void run_v7_percolation(int argc, char **argv) {
        << R"*(,"percolation_class":")*" << percolation.getClassName() << "\""
        << R"*(,"random_seed":)*" << net->getRandomState()
        << R"*(,"m":)*" << m
+       << R"*(,"network_seed":)*" << net->get_m0()
        << R"*(,"N":)*" << N
        << R"*(,"number_of_links":)*" << linkCount
        << R"*(,"number_of_nodes":)*" << nodeCount
        << R"*(,"M":)*" << M
        << R"*(,"ensemble_size":)*" << En
        << R"*(,"En":)*" << En
-       << R"*(,"date":")*" << tm << "\""
+       << R"*(,"datetime":")*" << tm << "\""
        << "}";
 
 

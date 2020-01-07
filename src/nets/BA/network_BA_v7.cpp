@@ -14,7 +14,7 @@ NetworkBA_v7::NetworkBA_v7(uint m)
 //    if(_m0 <= _m){
 //        _m0 = 2*_m;
 //    }
-    cout << "m0=" << _m0 << ", m=" << _m << endl;
+//    cout << "m0=" << _m0 << ", m=" << _m << endl;
     _link_count=0;
     _node_index=0;
     cout << getClassName() << endl;
