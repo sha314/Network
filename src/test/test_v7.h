@@ -18,6 +18,10 @@ void run_v7_percolation(int argc, char **argv);
 void run_v7_percolation_jump(int argc, char **argv);
 void run_v7_percolation_jump_avg(int argc, char **argv);
 
+void run_v7_percolation_old_susceptibility(int argc, char **argv);// 2020.04.02
+void run_v7_percolation_1st_order_check(int argc, char **argv);// 2020.05.13
+void run_v7_percolation_1st_order_check_2(int argc, char **argv);// 2020.05.19
+
 
 void run_v7_percolation_near_tc(int argc, char **argv); // 2019.12.06
 

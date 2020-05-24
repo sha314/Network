@@ -135,7 +135,7 @@ class Network_v7{
  */
 
 protected:
-    size_t N_size;
+    size_t N_size{};
     std::vector<int> _nodes;
     std::vector<std::vector<int>> _adjacency_list;
     /*
@@ -176,6 +176,8 @@ public:
     void clearAdjacency(){_adjacency_list.clear();}
     double clusteringCoefficient(int i);
     double clusteringCoefficientAvg();
+
+    static size_t maxEdges(size_t N){return N*(N-1)/2;}
 };
 
 

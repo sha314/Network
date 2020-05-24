@@ -34,7 +34,7 @@ Also known as the “G(n,p)"
  */
 class NetworkER_v7 : public Network_v7{
     double p_value{};
-
+    size_t edges_{};
 
     int _node_index; // 1 less _N_size
     size_t _link_count{}; // number of links
@@ -54,6 +54,7 @@ public:
     ~NetworkER_v7() override = default;
 
     explicit NetworkER_v7(double p);
+    NetworkER_v7(size_t N_size, size_t edges);
 
     void rebuild() override ;
     void initialize(size_t N) override;

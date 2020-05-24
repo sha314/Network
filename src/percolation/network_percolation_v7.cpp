@@ -21,6 +21,8 @@ NetworkPercolation_v7::NetworkPercolation_v7(Network_v7 *net) {
     }
     max_link_index = _link_count - 1;
 
+    _number_of_clusters = _network_size;
+
 };
 
 
@@ -239,6 +241,10 @@ size_t NetworkPercolation_v7::clusterCount(){
     return sm;
 }
 
+size_t NetworkPercolation_v7::clusterCountFast(){
+    return _number_of_clusters;
+}
+
 
 size_t NetworkPercolation_v7::clusterSizeSum(){
     size_t sm = 0;
@@ -279,6 +285,7 @@ bool NetworkPercolation_v7::placeSelectedLink(uint i) {
     auto root = mergeClusters(root_a, root_b);
     add_entropy(root);
     track_largest_cluster(root);
+    track_cluster_count(root_a, root_b);
     occupied_link_count++;
 // make both cluster point to root cluster. so that search can be faster later
     return true;
@@ -340,7 +347,7 @@ void NetworkPercolation_v7::initialize() {
     _previous_cluster_size=0;
     _max_recursion_depth = 0;
     _findRoot_time=0;
-
+    _number_of_clusters=_network_size;
     _randomized_indices = list_of_link_indices;
     randomize_indices(_randomized_indices);
 //    cout << "max link index " << max_link_index << endl;
@@ -552,6 +559,16 @@ long double NetworkPercolation_v7::jump_entropy() {
 
 long NetworkPercolation_v7::jump_largest_cluster() {
     return delta_P;
+}
+
+void NetworkPercolation_v7::track_cluster_count(int root_a, int root_b) {
+    if (root_a != root_b){
+        // different clusters will be merged
+        if(_number_of_clusters == 0){
+            cerr << "cannot decrease more : line " << __LINE__ << endl;
+        }
+        --_number_of_clusters;
+    }
 }
 
 /*******************************

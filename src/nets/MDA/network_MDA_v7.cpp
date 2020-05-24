@@ -8,7 +8,9 @@
 
 NetworkMDA_v7::NetworkMDA_v7(uint m) {
     // seed size is 120% of the value of m
-    _m0 = m + int(ceil(0.2*m));
+//    _m0 = m + int(ceil(0.2*m));
+    _m0 = m + 1;
+    cout << "Seraj said 51 seed size" << endl;
     _m = m;
 //    if(_m0 <= _m){
 //        _m0 = 2*_m;

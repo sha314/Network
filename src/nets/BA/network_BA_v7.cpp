@@ -9,7 +9,7 @@ NetworkBA_v7::NetworkBA_v7(uint m)
         :Network_v7()
 {
     // seed size is 120% of the value of m
-    _m0 = m + int(ceil(0.2*m));
+    _m0 = int(ceil(1.2*m));
     _m = m;
 //    if(_m0 <= _m){
 //        _m0 = 2*_m;

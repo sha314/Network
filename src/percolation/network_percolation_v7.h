@@ -38,7 +38,7 @@ protected:
      *      the index of a node that is closer to the root node
      */
     std::vector<int> _cluster_info;
-
+    size_t _number_of_clusters{}; //number of clusters;
     std::vector<uint> list_of_link_indices; // from zero to N-1
     std::vector<uint> _randomized_indices;
 
@@ -84,6 +84,7 @@ public:
     int merge_cluster_v2(int root_a, int root_b) ;
 
     size_t clusterCount();
+    size_t clusterCountFast();
     size_t clusterSizeSum();
     int clusterSize(int a);
 
@@ -139,6 +140,7 @@ public:
 
     virtual void summary();
 
+    void track_cluster_count(int a, int root_b);
 };
 
 class NetworkPercolationExplosive_v7: public NetworkPercolation_v7{
