@@ -37,8 +37,10 @@ void test_v7(int argc, char **argv) {
 //    run_v7_percolation_near_tc(argc, argv);
 
 //    run_v7_percolation_old_susceptibility(argc, argv);
-    run_v7_percolation_1st_order_check(argc, argv);
+//    run_v7_percolation_1st_order_check(argc, argv);
 //    run_v7_percolation_1st_order_check_2(argc, argv);
+
+    run_v7_percolation_delta(argc, argv);
 }
 
 void test_MDA(int argc, char *argv[]) {
@@ -503,7 +505,7 @@ void run_v7_percolation_1st_order_check_2(int argc, char **argv){
     size_t linkCount = net->getLinkCount();
     size_t nodeCount = net->getNodeCount();
     cout << nodeCount << ", " << linkCount << ", " << endl;
-    size_t limit = nodeCount * 3;
+//    size_t limit = nodeCount * 3;
 //    double entropy_jump{}, order_jump{};
     vector<long> t1s, t2s;
     long t1=0, t2=0;
@@ -521,7 +523,7 @@ void run_v7_percolation_1st_order_check_2(int argc, char **argv){
 //            cout << "i " << i  << endl;
 
             S_max = percolation.largestClusterSize();
-            double t = percolation.relativeLinkDensity();
+//            double t = percolation.relativeLinkDensity();
 
             long dS = S_max - S0;
 
@@ -654,7 +656,7 @@ void run_v7_percolation_1st_order_check(int argc, char **argv){
     size_t linkCount = net->getLinkCount();
     size_t nodeCount = net->getNodeCount();
     cout << nodeCount << ", " << linkCount << ", " << endl;
-    size_t limit = nodeCount * 3;
+//    size_t limit = nodeCount * 3;
 //    double entropy_jump{}, order_jump{};
     vector<long> t1s, t2s;
     long t1=0, t2=0;
@@ -1313,5 +1315,136 @@ void run_v7_percolation_old_susceptibility(int argc, char **argv) {
     }
     fout.close();
 
+
+}
+
+/**
+ * N : network size
+ * n1 : number of links required for the largest cluster size to be grater than or equal to sqrt(N)
+ * n2 : number of links required for the largest cluster size to be grater than or equal to N/2
+ * delta = (n2 - n1)
+ * @param argc
+ * @param argv
+ */
+void run_v7_percolation_delta(int argc, char **argv) {
+    if(argc < 5 ){
+        cout << "argv[1] == m" << endl;
+        cout << "argv[2] == N" << endl;
+        cout << "argv[3] == M" << endl;
+        cout << "argv[4] == Ensemble" << endl;
+        return;
+    }
+    int m = atoi(argv[1]);
+    int N = atoi(argv[2]);
+    int M = atoi(argv[3]);
+
+    int En = atoi(argv[4]);
+    cout << "m=" << m << ",N="<< N << ",M=" << M << ",En="<<En << endl;
+    size_t rebuild_each = 100; // cycle
+
+    auto* net = new NetworkBA_v7(m);
+//    auto* net = new NetworkMDA_v7(m);
+    net->setRandomState(0, true);
+    net->initialize(N);
+    net->clearAdjacency();
+//
+//      NetworkPercolation_v7 percolation(net);
+//    NetworkPercolationInverted_v7 percolation(net, M);
+    NetworkPercolationExplosive_v7 percolation(net, M);
+
+    percolation.initialize();
+    size_t linkCount = net->getLinkCount();
+    size_t nodeCount = net->getNodeCount();
+    cout << nodeCount << ", " << linkCount << ", " << endl;
+    size_t stage_n1 = sqrt(nodeCount);
+    size_t stage_n2 = nodeCount/2;
+    cout << "stage_n1 " << stage_n1 << " stage_n2 " << stage_n2 << endl;
+//    size_t limit = (stage_n1 > stage_n2) ? stage_n1 : stage_n2;
+    size_t largest{};
+
+    vector<long> n1_values, n2_values;
+    for (int k{1}; k <= En; ++k) {
+        bool stage_n1_flag = true;
+        bool stage_n2_flag = true;
+
+        auto t_start= chrono::_V2::system_clock::now();
+        percolation.reset(k % rebuild_each == 0); // every nn step. reset the network
+        size_t link_counter = 0;
+        while (percolation.occupyLink()) {
+            largest = percolation.largestClusterSize();
+            if(stage_n1_flag && largest >= stage_n1){
+                stage_n1_flag = false;
+                n1_values.emplace_back(link_counter);
+            }
+            if(stage_n2_flag && largest >= stage_n2){
+                stage_n2_flag = false;
+                n2_values.emplace_back(link_counter);
+                if(!stage_n1_flag) {
+                    cout << "breaking at " << link_counter <<endl;
+                    break;
+                }
+            }
+
+//            if(!stage_n1_flag && !stage_n2_flag){
+//                cout << "breaking at " << link_counter <<endl;
+//                break;
+//            }
+            ++link_counter;
+//            if (link_counter >= limit) {
+//                cout << "breaking at " << link_counter <<endl;
+//                break;
+//            }
+        }
+//        entropy_jump += percolation.largestEntropyJump();
+//        order_jump += percolation.largestOrderJump();
+
+        auto t_end= chrono::_V2::system_clock::now();
+        chrono::duration<double> drtion = t_end - t_start;
+        cout << "iteration " << k << " : time elapsed " << drtion.count() << " sec" << endl;
+    }
+
+    auto tm = currentTime();
+//    string signature = percolation.get_signature();
+    string signature = net->get_signature_array()[0] +"_"+ percolation.getClassName()
+                       + "_N_" + to_string(N)
+                       + "_m_" + to_string(m)
+                       + "_M_" + to_string(M);
+    stringstream ss;
+    ss << "{"
+       << R"*("signature":")*" << signature << "\""
+       << R"*(,"network_class":")*" << net->getClassName() << "\""
+       << R"*(,"percolation_class":")*" << percolation.getClassName() << "\""
+       << R"*(,"random_seed":)*" << net->getRandomState()
+       << R"*(,"m":)*" << m
+       << R"*(,"network_seed":)*" << net->get_m0()
+       << R"*(,"N":)*" << N
+       << R"*(,"number_of_links":)*" << linkCount
+       << R"*(,"number_of_nodes":)*" << nodeCount
+       << R"*(,"M":)*" << M
+       << R"*(,"ensemble_size":)*" << En
+       << R"*(,"En":)*" << En
+       << R"*(,"datetime":")*" << tm << "\""
+       << R"*(,"compile_date":")*" << __DATE__ << "\""
+       << R"*(,"compile_time":")*" << __TIME__ << "\""
+       << "}";
+
+
+
+    string filename_delta = signature + "_delta_n_" + tm + ".txt";
+    ofstream fout(filename_delta);
+    fout << '#' << ss.str() << endl;
+    fout << "#  N : network size\n"
+            "# n1 : number of links required for the largest cluster size to be grater than or equal to sqrt(N)\n"
+            "# n2 : number of links required for the largest cluster size to be grater than or equal to N/2\n"
+            "# delta = (n2 - n1)" << endl;
+    fout << "#<n1>\t<n2>" << endl;
+//    fout.precision(12);
+    fout.precision(numeric_limits<double>::digits10 + 1); // maximum precision
+    for(size_t k{}; k < n1_values.size() ; ++k){
+        fout << n1_values[k] << "\t"
+             << n2_values[k]
+             << endl;
+    }
+    fout.close();
 
 }
