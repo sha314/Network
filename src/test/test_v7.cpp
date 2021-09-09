@@ -1437,7 +1437,8 @@ void run_v7_percolation_delta_powder_keg(int argc, char **argv) {
 
 
 
-    string filename_delta = signature + "_delta_n_" + tm + ".txt";
+//    string filename_delta = signature + "_delta_n_" + tm + ".txt";
+    string filename_delta = signature + "_delta_n_powder_keg" + tm + ".txt";
     ofstream fout(filename_delta);
     fout << '#' << ss.str() << endl;
     fout << "#  N : network size\n"
