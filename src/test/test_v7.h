@@ -25,6 +25,6 @@ void run_v7_percolation_1st_order_check_2(int argc, char **argv);// 2020.05.19
 
 void run_v7_percolation_near_tc(int argc, char **argv); // 2019.12.06
 
-void run_v7_percolation_delta(int argc, char **argv); // 2021.08.11
+void run_v7_percolation_delta_powder_keg(int argc, char **argv); // 2021.08.11
 
 #endif //NETWORK_TEST_V7_H

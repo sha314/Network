@@ -40,7 +40,7 @@ void test_v7(int argc, char **argv) {
 //    run_v7_percolation_1st_order_check(argc, argv);
 //    run_v7_percolation_1st_order_check_2(argc, argv);
 
-    run_v7_percolation_delta(argc, argv);
+    run_v7_percolation_delta_powder_keg(argc, argv);
 }
 
 void test_MDA(int argc, char *argv[]) {
@@ -775,6 +775,7 @@ void run_v7_percolation(int argc, char **argv) {
     size_t nodeCount = net->getNodeCount();
     cout << nodeCount << ", " << linkCount << ", " << endl;
     size_t limit = nodeCount * 2;
+    if (limit > linkCount) limit = linkCount;
 //    double entropy_jump{}, order_jump{};
     vector<long double> entropy(linkCount), dHs(linkCount);
     vector<double> order_param(linkCount); // entropy and order parameter
@@ -789,6 +790,10 @@ void run_v7_percolation(int argc, char **argv) {
 //            percolation.viewClusters();
 //            percolation.sumClusters();
             auto H = percolation.entropy();
+            if(isnan(H)){
+                cout << "H is nan " << endl;
+                exit(-1);
+            }
             entropy[i] += H;
             order_param[i] += percolation.largestClusterSize();
             percolation.jump();
@@ -843,6 +848,7 @@ void run_v7_percolation(int argc, char **argv) {
     fout << "# t=relative link density" << endl;
     fout << "#<t>\t<H>\t<P>" << endl;
 //    fout.precision(12);
+    cout << "Writting data to file" << endl;
     fout.precision(numeric_limits<double>::digits10 + 1); // maximum precision
     for(size_t k{}; k < limit ; ++k){
         auto t = (k+1)/double(N);
@@ -1323,10 +1329,11 @@ void run_v7_percolation_old_susceptibility(int argc, char **argv) {
  * n1 : number of links required for the largest cluster size to be grater than or equal to sqrt(N)
  * n2 : number of links required for the largest cluster size to be grater than or equal to N/2
  * delta = (n2 - n1)
+ * power-keg graph
  * @param argc
  * @param argv
  */
-void run_v7_percolation_delta(int argc, char **argv) {
+void run_v7_percolation_delta_powder_keg(int argc, char **argv) {
     if(argc < 5 ){
         cout << "argv[1] == m" << endl;
         cout << "argv[2] == N" << endl;

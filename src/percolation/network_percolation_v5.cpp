@@ -257,7 +257,8 @@ bool NetworkBApercolation_v5::placeSelectedLink(uint i) {// selecting sequential
     subtract_entropy(root_a, root_b);
     mergeClusters(root_a, root_b);
     add_entropy(root_a);
-    track_largest_cluster(root_a);
+//    track_largest_cluster(root_a);
+    track_largest_cluster_v2(root_a);
     occupied_link_count++;
 // make both cluster point to root cluster. so that search can be faster later
     return true;

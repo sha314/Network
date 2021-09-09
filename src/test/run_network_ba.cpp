@@ -20,6 +20,13 @@ using namespace std;
  * @param argv
  */
 void demarcationLine(int argc, char **argv){
+    if(argc < 4 ){
+        cout << "argv[1] == m" << endl;
+        cout << "argv[2] == N" << endl;
+        cout << "argv[3] == M" << endl;
+        cout << "argv[4] == not needed" << endl;
+        return;
+    }
     int m = atoi(argv[1]);
     int N = atoi(argv[2]);
     int M = atoi(argv[3]);
@@ -97,13 +104,20 @@ void demarcationLine(int argc, char **argv){
     fout << "#<t>\t<dP>\t<c>" << endl;
     size_t sz = net.linkCount();
     size_t Norm = net.nodeCount();
+    size_t sum_color_list = 0;
     for(size_t i{}; i < sz; ++i){
         if (dP_list[i] != 0) {
             fout << (i+1)/double(Norm) << '\t' << dP_list[i] << '\t' << color_list[i] << endl;
+            sum_color_list += color_list[i];
         }
+//        sum_color_list += color_list[i];
     }
 
     fout.close();
+    cout << "Color sum " << sum_color_list << endl;
+    if(sum_color_list == 0){
+        cout << "Warning...................... superset. no self cluster jump???" << endl;
+    }
 }
 
 
