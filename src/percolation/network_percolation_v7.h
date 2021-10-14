@@ -150,11 +150,13 @@ class NetworkPercolationExplosive_v7: public NetworkPercolation_v7{
 public:
     ~NetworkPercolationExplosive_v7() override = default;
     NetworkPercolationExplosive_v7(Network_v7* net, int M);
+
+    NetworkPercolationExplosive_v7() = default;
 //    void initialize();
 
     bool occupyLink() override ;
 
-    uint link_for_min_cluster_sum_product(size_t start_at);
+    virtual uint link_for_min_cluster_sum_product(size_t start_at);
 
     virtual std::string get_signature() {
         std::cout << "TODO " << std::endl;
@@ -168,6 +170,8 @@ public:
 
     std::string getClassName() override {return "NetworkPercolationExplosive_v7";}
     double get_tc(int M){return tcs[M];}
+
+    bool cluster_extremizing_condition(long n_nodes, long prod_sum) const;
 };
 
 class NetworkPercolationInverted_v7: public NetworkPercolation_v7{

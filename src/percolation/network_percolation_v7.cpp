@@ -712,7 +712,7 @@ uint NetworkPercolationExplosive_v7::link_for_min_cluster_sum_product(size_t sta
             exit(0);
         }
 #endif
-        if(n_nodes < prod_sum ) { // since we are minimizing cluster sizes
+        if(cluster_extremizing_condition(n_nodes, prod_sum)) { // since we are minimizing cluster sizes
             prod_sum = n_nodes;
             index_randomized_link = r;
         }
@@ -738,6 +738,8 @@ uint NetworkPercolationExplosive_v7::link_for_min_cluster_sum_product(size_t sta
     _randomized_indices[occupied_link_count] = 0;
     return pos;
 }
+
+bool NetworkPercolationExplosive_v7::cluster_extremizing_condition(long n_nodes, long prod_sum) const { return n_nodes < prod_sum; }
 
 
 bool NetworkPercolationExplosive_v7::occupyLink() {
