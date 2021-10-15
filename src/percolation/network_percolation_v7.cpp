@@ -739,7 +739,12 @@ uint NetworkPercolationExplosive_v7::link_for_min_cluster_sum_product(size_t sta
     return pos;
 }
 
-bool NetworkPercolationExplosive_v7::cluster_extremizing_condition(long n_nodes, long prod_sum) const { return n_nodes < prod_sum; }
+bool NetworkPercolationExplosive_v7::cluster_extremizing_condition(long n_nodes, long prod_sum) const {
+#ifdef DEBUG_FLAG
+    cout << "NetworkPercolationExplosive_v7::cluster_extremizing_condition" << endl;
+#endif
+    return n_nodes < prod_sum;
+}
 
 
 bool NetworkPercolationExplosive_v7::occupyLink() {

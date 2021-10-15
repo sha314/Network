@@ -14,7 +14,7 @@
 #include "../nets/ER/network_ER.h"
 #include "../nets/BA/network_BA_v7.h"
 #include "../nets/MDA/network_MDA_v7.h"
-
+#include "../percolation/network_percolation_v7_flipper.h"
 
 
 using namespace std;
@@ -30,7 +30,7 @@ void test_v7(int argc, char **argv) {
 //    test_percolation(argc, argv);
 
 
-//    run_v7_percolation(argc, argv);
+    run_v7_percolation(argc, argv);
 //    run_v7_percolation_jump(argc, argv);
 //    run_v7_percolation_jump_avg(argc, argv);
 
@@ -40,7 +40,7 @@ void test_v7(int argc, char **argv) {
 //    run_v7_percolation_1st_order_check(argc, argv);
 //    run_v7_percolation_1st_order_check_2(argc, argv);
 
-    run_v7_percolation_delta_powder_keg(argc, argv);
+//    run_v7_percolation_delta_powder_keg(argc, argv);
 }
 
 void test_MDA(int argc, char *argv[]) {
@@ -768,7 +768,8 @@ void run_v7_percolation(int argc, char **argv) {
 //
 //      NetworkPercolation_v7 percolation(net);
 //    NetworkPercolationInverted_v7 percolation(net, M);
-    NetworkPercolationExplosive_v7 percolation(net, M);
+//    NetworkPercolationExplosive_v7 percolation(net, M);
+    NetworkPercolationExplosive_v7_Flipper percolation(net, M);
 
     percolation.initialize();
     size_t linkCount = net->getLinkCount();
@@ -1387,7 +1388,7 @@ void run_v7_percolation_delta_powder_keg(int argc, char **argv) {
                 stage_n2_flag = false;
                 n2_values.emplace_back(link_counter);
                 if(!stage_n1_flag) {
-                    cout << "breaking at " << link_counter <<endl;
+                    cout << "breaking at " << link_counter << " here, largest cluster size = " << largest << endl;
                     break;
                 }
             }

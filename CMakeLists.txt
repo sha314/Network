@@ -94,6 +94,6 @@ set(SOURCE_FILES
         src/test/test_v3.cpp
         src/test/test_v3.h
         src/test/test_v5.cpp
-        src/test/test_v5.h)
+        src/test/test_v5.h src/percolation/network_percolation_v7_flipper.h)
 
 add_executable(networks ${SOURCE_FILES})

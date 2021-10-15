@@ -171,7 +171,7 @@ public:
     std::string getClassName() override {return "NetworkPercolationExplosive_v7";}
     double get_tc(int M){return tcs[M];}
 
-    bool cluster_extremizing_condition(long n_nodes, long prod_sum) const;
+    virtual bool cluster_extremizing_condition(long n_nodes, long prod_sum) const;
 };
 
 class NetworkPercolationInverted_v7: public NetworkPercolation_v7{
