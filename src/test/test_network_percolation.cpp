@@ -406,7 +406,7 @@ void network_percolation_explosive_v2(int argc, char** argv){
     size_t k{};
     for(int en{1}; en <= En; ++en) {
         cout << "iteration " << en ;
-        auto t_start = chrono::_V2::system_clock::now();
+        auto t_start = chrono::system_clock::now();
         net.reset(en % 25 == 0); // reset network in every 20 interval
 
         k = 0;
@@ -433,7 +433,7 @@ void network_percolation_explosive_v2(int argc, char** argv){
         entropy_jmp_avg += entropy_jmp;
 
 
-        auto t_end = chrono::_V2::system_clock::now();
+        auto t_end = chrono::system_clock::now();
         chrono::duration<double> drtion = t_end - t_start;
         cout << " : time elapsed " << drtion.count() << " sec";
         cout << endl;
@@ -732,7 +732,7 @@ void test_v5(int argc, char **argv) {
     bool flag=true;
 
     for (int k{0}; k < ensemble_size; ++k) {
-        auto t_start= chrono::_V2::system_clock::now();
+        auto t_start= chrono::system_clock::now();
 //        net.viewListOfLinkIndices();
         net.reset(k%25 == 0); // every 25 step. reset the network
 
@@ -764,7 +764,7 @@ void test_v5(int argc, char **argv) {
         entropy_jump[k] = net.largestEntropyJump();
         order_jump[k] = net.largestOrderJump();
 //        cout << entropy_jump[k] << " at " << entropy_jump_pc[k] << endl;
-        auto t_end= chrono::_V2::system_clock::now();
+        auto t_end= chrono::system_clock::now();
         chrono::duration<double> drtion = t_end - t_start;
         cout << "iteration " << k
          << " : time elapsed " << drtion.count() << " sec"
@@ -842,7 +842,7 @@ void test_v6(int argc, char **argv) {
     bool flag=true;
     double H1,H2;
     for (int k{0}; k < ensemble_size; ++k) {
-        auto t_start= chrono::_V2::system_clock::now();
+        auto t_start= chrono::system_clock::now();
 //        net.viewListOfLinkIndices();
         net.reset(k%25 == 0); // every 25 step. reset the network
 
@@ -878,7 +878,7 @@ void test_v6(int argc, char **argv) {
         entropy_jump[k] = net.largestEntropyJump();
         order_jump[k] = net.largestOrderJump();
 //        cout << entropy_jump[k] << " at " << entropy_jump_pc[k] << endl;
-        auto t_end= chrono::_V2::system_clock::now();
+        auto t_end= chrono::system_clock::now();
         chrono::duration<double> drtion = t_end - t_start;
         cout << "iteration " << k
              << " : time elapsed " << drtion.count() << " sec"
@@ -994,7 +994,7 @@ void test_v3(int argc, char **argv) {
 //    double jump_tc{};
     vector<double> entropy(linkCount), order_param(linkCount); // entropy and order parameter
     for (int k{0}; k < ensemble_size; ++k) {
-        auto t_start= chrono::_V2::system_clock::now();
+        auto t_start= chrono::system_clock::now();
 //        net.viewListOfLinkIndices();
         net.reset(k%25 == 0); // every 25 step. reset the network
 
@@ -1025,7 +1025,7 @@ void test_v3(int argc, char **argv) {
         order_jump[k] = net.largestOrderJump();
 //        cout << "jump tc " << net.jump_tc() << endl;
 //        cout << entropy_jump[k] << " at " << entropy_jump_pc[k] << endl;
-        auto t_end= chrono::_V2::system_clock::now();
+        auto t_end= chrono::system_clock::now();
         chrono::duration<double> drtion = t_end - t_start;
         cout << "iteration " << k << " : time elapsed " << drtion.count() << " sec" << endl;
     }

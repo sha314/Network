@@ -67,10 +67,10 @@ void NetworkBA::add_node_v1() {
         _node_indices[i] = i;
     }
 
-    auto t0 = chrono::_V2::system_clock::now();
+    auto t0 = chrono::system_clock::now();
     select_m_nodes_preferentially_v1(sz);
 
-    auto t1 = chrono::_V2::system_clock::now();
+    auto t1 = chrono::system_clock::now();
     chrono::duration<double> drtion = t1 - t0;
     time_select_m_nodes_preferentially_v3 += drtion.count();
     // adding new node
@@ -130,13 +130,13 @@ void NetworkBA::select_m_nodes_preferentially_v1(uint sz) {
  */
 void NetworkBA::add_node_v2() {
     uint sz = _nodes.size();
-    auto t0 = chrono::_V2::system_clock::now();
+    auto t0 = chrono::system_clock::now();
 
     // set m_links such that there is no repetition
     // selecting m links preferentially
     select_m_nodes_preferentially_v2(sz);
 //    select_m_links_preferentially_v3_omp(sz);
-    auto t1 = chrono::_V2::system_clock::now();
+    auto t1 = chrono::system_clock::now();
     chrono::duration<double> drtion = t1 - t0;
     time_select_m_nodes_preferentially_v3 += drtion.count();
 
@@ -170,13 +170,13 @@ void NetworkBA::add_node_v2() {
  */
 void NetworkBA::add_node_v3() {
     uint sz = _nodes.size();
-    auto t0 = chrono::_V2::system_clock::now();
+    auto t0 = chrono::system_clock::now();
 
     // set m_links such that there is no repetition
     // selecting m links preferentially
     select_m_nodes_preferentially_v3(sz);
 
-    auto t1 = chrono::_V2::system_clock::now();
+    auto t1 = chrono::system_clock::now();
     chrono::duration<double> drtion = t1 - t0;
     time_select_m_nodes_preferentially_v3 += drtion.count();
 
@@ -184,9 +184,9 @@ void NetworkBA::add_node_v3() {
     _nodes.push_back({sz});
 
     // connecting new node with m preferentially selected links
-    t0 = chrono::_V2::system_clock::now();
+    t0 = chrono::system_clock::now();
     connect_with_m_nodes_v3(sz);
-    t1 = chrono::_V2::system_clock::now();
+    t1 = chrono::system_clock::now();
     drtion = t1 - t0;
     time_connect_with_m_nodes_v3 += drtion.count();
 

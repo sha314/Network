@@ -195,7 +195,7 @@ void run_ER_percolation(int argc, char **argv){
     double entropy_jump{}, order_jump{};
     vector<double> entropy(linkCount), order_param(linkCount); // entropy and order parameter
     for (int k{0}; k < ensemble_size; ++k) {
-        auto t_start= chrono::_V2::system_clock::now();
+        auto t_start= chrono::system_clock::now();
 //        net.viewListOfLinkIndices();
         percolation.reset(0); // every 25 step. reset the network
 //        cout << net->getLinkCount() << endl;
@@ -224,7 +224,7 @@ void run_ER_percolation(int argc, char **argv){
         order_jump += percolation.largestOrderJump();
 
 //        cout << entropy_jump[k] << " at " << entropy_jump_pc[k] << endl;
-        auto t_end= chrono::_V2::system_clock::now();
+        auto t_end= chrono::system_clock::now();
         chrono::duration<double> drtion = t_end - t_start;
         cout << "iteration " << k << " : time elapsed " << drtion.count() << " sec" << endl;
     }
@@ -320,7 +320,7 @@ void test_percolation(int argc, char **argv) {
     double entropy_jump{}, order_jump{};
     vector<double> entropy(linkCount), order_param(linkCount); // entropy and order parameter
     for (int k{1}; k <= En; ++k) {
-        auto t_start= chrono::_V2::system_clock::now();
+        auto t_start= chrono::system_clock::now();
 //        net.viewListOfLinkIndices();
         percolation.reset(k % 25 == 0); // every 100 step. reset the network
 //        cout << net->getLinkCount() << endl;
@@ -357,7 +357,7 @@ void test_percolation(int argc, char **argv) {
         order_jump += percolation.largestOrderJump();
 
 //        cout << entropy_jump[k] << " at " << entropy_jump_pc[k] << endl;
-        auto t_end= chrono::_V2::system_clock::now();
+        auto t_end= chrono::system_clock::now();
         chrono::duration<double> drtion = t_end - t_start;
         cout << "iteration " << k << " : time elapsed " << drtion.count() << " sec" << endl;
     }
@@ -512,7 +512,7 @@ void run_v7_percolation_1st_order_check_2(int argc, char **argv){
     long dS_limit = 10, S_max;
     cout << "dS_limit " << dS_limit << endl;
     for (int k{1}; k <= En; ++k) {
-        auto t_start= chrono::_V2::system_clock::now();
+        auto t_start= chrono::system_clock::now();
         percolation.reset(k % rebuild_each == 0); // every nn step. reset the network
         size_t i{};
 
@@ -575,7 +575,7 @@ void run_v7_percolation_1st_order_check_2(int argc, char **argv){
         t1s.push_back(t1);
         t2s.push_back(t2);
 
-        auto t_end= chrono::_V2::system_clock::now();
+        auto t_end= chrono::system_clock::now();
         chrono::duration<double> drtion = t_end - t_start;
         cout << "iteration " << k << " : time elapsed " << drtion.count() << " sec" << endl;
     }
@@ -663,7 +663,7 @@ void run_v7_percolation_1st_order_check(int argc, char **argv){
     long S1=long(sqrt(N)), S2=N/2, S_max;
     cout << "S1 " << S1 << " S2 " << S2 << endl;
     for (int k{1}; k <= En; ++k) {
-        auto t_start= chrono::_V2::system_clock::now();
+        auto t_start= chrono::system_clock::now();
         percolation.reset(k % rebuild_each == 0); // every nn step. reset the network
         size_t i{};
         S1=long(sqrt(N));
@@ -694,7 +694,7 @@ void run_v7_percolation_1st_order_check(int argc, char **argv){
 //        t1s.push_back(t1);
 //        t2s.push_back(t2);
         t2 = t1 = 0;
-        auto t_end= chrono::_V2::system_clock::now();
+        auto t_end= chrono::system_clock::now();
         chrono::duration<double> drtion = t_end - t_start;
         cout << "iteration " << k << " : time elapsed " << drtion.count() << " sec" << endl;
     }
@@ -782,7 +782,7 @@ void run_v7_percolation(int argc, char **argv) {
     vector<double> order_param(linkCount); // entropy and order parameter
     vector<long> dPs(linkCount);
     for (int k{1}; k <= En; ++k) {
-        auto t_start= chrono::_V2::system_clock::now();
+        auto t_start= chrono::system_clock::now();
         percolation.reset(k % rebuild_each == 0); // every nn step. reset the network
         size_t i{};
         while (percolation.occupyLink()) {
@@ -811,7 +811,7 @@ void run_v7_percolation(int argc, char **argv) {
 //        entropy_jump += percolation.largestEntropyJump();
 //        order_jump += percolation.largestOrderJump();
 
-        auto t_end= chrono::_V2::system_clock::now();
+        auto t_end= chrono::system_clock::now();
         chrono::duration<double> drtion = t_end - t_start;
         cout << "iteration " << k << " : time elapsed " << drtion.count() << " sec" << endl;
     }
@@ -922,7 +922,7 @@ void run_v7_percolation_near_tc(int argc, char **argv) {
 //    double tc1 = tc+0.1;
 
     for (int k{1}; k <= En; ++k) {
-        auto t_start= chrono::_V2::system_clock::now();
+        auto t_start= chrono::system_clock::now();
         percolation.reset(k % reset_step == 0); // every 100 step. reset the network
         size_t i{};
         while (percolation.occupyLink()) {
@@ -961,7 +961,7 @@ void run_v7_percolation_near_tc(int argc, char **argv) {
 //        entropy_jump += percolation.largestEntropyJump();
 //        order_jump += percolation.largestOrderJump();
 
-        auto t_end= chrono::_V2::system_clock::now();
+        auto t_end= chrono::system_clock::now();
         chrono::duration<double> drtion = t_end - t_start;
         cout << "iteration " << k << " : time elapsed " << drtion.count() << " sec" << endl;
     }
@@ -1055,7 +1055,7 @@ void run_v7_percolation_jump_avg(int argc, char **argv) {
     double entropy_jump{}, order_jump{};
 
     for (int k{1}; k <= En; ++k) {
-        auto t_start= chrono::_V2::system_clock::now();
+        auto t_start= chrono::system_clock::now();
 //        net.viewListOfLinkIndices();
         percolation.reset(k % 25 == 0); // every 100 step. reset the network
 //        cout << net->getLinkCount() << endl;
@@ -1075,7 +1075,7 @@ void run_v7_percolation_jump_avg(int argc, char **argv) {
         order_jump += percolation.largestOrderJump();
 
 //        cout << entropy_jump[k] << " at " << entropy_jump_pc[k] << endl;
-        auto t_end= chrono::_V2::system_clock::now();
+        auto t_end= chrono::system_clock::now();
         chrono::duration<double> drtion = t_end - t_start;
         cout << "iteration " << k << " : time elapsed " << drtion.count() << " sec" << endl;
     }
@@ -1151,7 +1151,7 @@ void run_v7_percolation_jump(int argc, char **argv) {
     vector<double> entropy_jump, order_jump;
 
     for (int k{1}; k <= En; ++k) {
-        auto t_start= chrono::_V2::system_clock::now();
+        auto t_start= chrono::system_clock::now();
 //        net.viewListOfLinkIndices();
         percolation.reset(k % rebuild_each == 0); // every 100 step. reset the network
 //        cout << net->getLinkCount() << endl;
@@ -1171,7 +1171,7 @@ void run_v7_percolation_jump(int argc, char **argv) {
         order_jump.emplace_back(percolation.largestOrderJump());
 
 //        cout << entropy_jump[k] << " at " << entropy_jump_pc[k] << endl;
-        auto t_end= chrono::_V2::system_clock::now();
+        auto t_end= chrono::system_clock::now();
         chrono::duration<double> drtion = t_end - t_start;
         cout << "iteration " << k << " : time elapsed " << drtion.count() << " sec" << endl;
     }
@@ -1250,7 +1250,7 @@ void run_v7_percolation_old_susceptibility(int argc, char **argv) {
     vector<double> susceptibility(linkCount); // entropy and order parameter
 
     for (int k{1}; k <= En; ++k) {
-        auto t_start= chrono::_V2::system_clock::now();
+        auto t_start= chrono::system_clock::now();
         percolation.reset(k % rebuild_each == 0); // every nn step. reset the network
         size_t i{};
         while (percolation.occupyLink()) {
@@ -1273,7 +1273,7 @@ void run_v7_percolation_old_susceptibility(int argc, char **argv) {
 //        entropy_jump += percolation.largestEntropyJump();
 //        order_jump += percolation.largestOrderJump();
 
-        auto t_end= chrono::_V2::system_clock::now();
+        auto t_end= chrono::system_clock::now();
         chrono::duration<double> drtion = t_end - t_start;
         cout << "iteration " << k << " : time elapsed " << drtion.count() << " sec" << endl;
     }
@@ -1375,7 +1375,7 @@ void run_v7_percolation_delta_powder_keg(int argc, char **argv) {
         bool stage_n1_flag = true;
         bool stage_n2_flag = true;
 
-        auto t_start= chrono::_V2::system_clock::now();
+        auto t_start= chrono::system_clock::now();
         percolation.reset(k % rebuild_each == 0); // every nn step. reset the network
         size_t link_counter = 0;
         while (percolation.occupyLink()) {
@@ -1406,7 +1406,7 @@ void run_v7_percolation_delta_powder_keg(int argc, char **argv) {
 //        entropy_jump += percolation.largestEntropyJump();
 //        order_jump += percolation.largestOrderJump();
 
-        auto t_end= chrono::_V2::system_clock::now();
+        auto t_end= chrono::system_clock::now();
         chrono::duration<double> drtion = t_end - t_start;
         cout << "iteration " << k << " : time elapsed " << drtion.count() << " sec" << endl;
     }

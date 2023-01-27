@@ -49,7 +49,7 @@ void PerformPercolation::run(int ensemble_size, int reset_interval) {
 
     entropy.resize(linkCount), order_param.resize(linkCount); // entropy and order parameter
     for (int k{1}; k <= ensemble_size; ++k) {
-        auto t_start= chrono::_V2::system_clock::now();
+        auto t_start= chrono::system_clock::now();
 //        net.viewListOfLinkIndices();
         percolation->reset(k % reset_interval == 0); // every 100 step. reset the network
 //        cout << net->getLinkCount() << endl;
@@ -86,7 +86,7 @@ void PerformPercolation::run(int ensemble_size, int reset_interval) {
         order_jump += percolation->largestOrderJump();
 
 //        cout << entropy_jump[k] << " at " << entropy_jump_pc[k] << endl;
-        auto t_end= chrono::_V2::system_clock::now();
+        auto t_end= chrono::system_clock::now();
         chrono::duration<double> drtion = t_end - t_start;
         cout << "iteration " << k << " : time elapsed " << drtion.count() << " sec" << endl;
     }

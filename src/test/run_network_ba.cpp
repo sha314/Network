@@ -155,7 +155,7 @@ void run_BA_percolation(int argc, char **argv) {
     double entropy_jump{}, order_jump{};
     vector<double> entropy(linkCount), order_param(linkCount); // entropy and order parameter
     for (int k{0}; k < ensemble_size; ++k) {
-        auto t_start= chrono::_V2::system_clock::now();
+        auto t_start= chrono::system_clock::now();
 //        net.viewListOfLinkIndices();
         net.reset(k%25 == 0); // every 25 step. reset the network
 
@@ -181,7 +181,7 @@ void run_BA_percolation(int argc, char **argv) {
         order_jump += net.largestOrderJump();
 
 //        cout << entropy_jump[k] << " at " << entropy_jump_pc[k] << endl;
-        auto t_end= chrono::_V2::system_clock::now();
+        auto t_end= chrono::system_clock::now();
         chrono::duration<double> drtion = t_end - t_start;
         cout << "iteration " << k << " : time elapsed " << drtion.count() << " sec" << endl;
     }
@@ -256,7 +256,7 @@ void run_BA_jump_percolation(int argc, char **argv) {
 
     double entropy_jump{}, order_jump{};
     for (int k{0}; k < ensemble_size; ++k) {
-        auto t_start= chrono::_V2::system_clock::now();
+        auto t_start= chrono::system_clock::now();
         net.reset(k%25 == 0); // every 25 step. reset the network
 
         size_t i{};
@@ -269,7 +269,7 @@ void run_BA_jump_percolation(int argc, char **argv) {
         order_jump += net.largestOrderJump();
 
 //        cout << entropy_jump[k] << " at " << entropy_jump_pc[k] << endl;
-        auto t_end= chrono::_V2::system_clock::now();
+        auto t_end= chrono::system_clock::now();
         chrono::duration<double> drtion = t_end - t_start;
         cout << "iteration " << k << " : time elapsed " << drtion.count() << " sec" << endl;
     }
