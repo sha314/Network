@@ -3,3 +3,5 @@ cmake-build-release/*
 .idea/*
 copy_src_to_server.sh
 
+.vscode/
+build/

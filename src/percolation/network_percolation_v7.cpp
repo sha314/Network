@@ -739,6 +739,81 @@ uint NetworkPercolationExplosive_v7::link_for_min_cluster_sum_product(size_t sta
     return pos;
 }
 
+/**
+ * @brief Find change in entropy if a link is chosen to be occupied. a link connected by root_a and root_b
+ * 
+ * @param root_a 
+ * @param root_b 
+ * @return double 
+ */
+double NetworkPercolationExplosive_v7::entropy_diff_for_i_j(int root_a, int root_b){
+    double mu_a = -_cluster_info[root_a]/double(_network_size);
+    double mu_b = -_cluster_info[root_b]/double(_network_size);
+    if(mu_a < 0 || mu_b < 0){
+        cerr << "one of the root is not a root : line " << __LINE__ << endl;
+    }
+    auto H0 = mu_a*logl(mu_a) + mu_b*log(mu_b);
+    auto H1 = (mu_a + mu_b)*logl(mu_a + mu_b);
+    return abs(H1 - H0);
+}
+
+/**
+ * @brief Find the link out of M links that minimizes entropy.
+ * 
+ * @param start_at 
+ * @return uint 
+ */
+uint NetworkPercolationExplosive_v7::link_for_min_entropy(size_t start_at) {
+    //    auto start = std::chrono::system_clock::now(); // time measurement
+    size_t index_randomized_link{0};
+
+    uint tmp_lnk_index;
+    int id1{-1}, id2{-1}, root1, root2;
+    long prod_sum = LONG_MAX; // so that it is very big before going into the loop
+//    cout << LONG_MAX << " vs " << prod_sum << endl;
+//    cout << ULONG_MAX << " vs " << prod_sum << endl;
+//    size_t limit = start_at + _M_link;
+    size_t r{};
+//    cout << "randomly between ("<< start_at <<"," << _link_count << ")={";
+    std::uniform_int_distribution<size_t> distribution(start_at, max_link_index);
+    for(int i{0}; i < _M_link; ++i){
+//        r = start_at + _random_generator() % (_link_count-start_at);
+        r = distribution(_random_generator);
+        tmp_lnk_index = _randomized_indices[r];
+
+        id1 = _net->getNodeA(tmp_lnk_index);
+        id2 = _net->getNodeB(tmp_lnk_index);
+
+        root1 = findRoot(id1);
+        root2 = findRoot(id2);
+
+        auto delta_H = entropy_diff_for_i_j(root1, root2);
+        
+        if(cluster_extremizing_condition(delta_H, prod_sum)) { // since we are minimizing cluster sizes
+            prod_sum = delta_H;
+            index_randomized_link = r;
+        }
+
+    }
+
+    if(index_randomized_link >= _randomized_indices.size()){
+        cout << "out of bound : line " << __LINE__ << endl;
+    }
+//    cout << "}" << endl;
+#ifdef DEBUG_FLAG
+    cout << "selected _randomized_indices[" << index_randomized_link << "] = "
+         << _randomized_indices[index_randomized_link] << endl;
+#endif
+
+    uint pos = _randomized_indices[index_randomized_link];
+
+// we don't want the chosen link to be in the list of yet-to-be-chosen list
+    _randomized_indices[index_randomized_link] = _randomized_indices[occupied_link_count]; 
+    // does not affect the result. use only when debugging so that we can identify easily
+    _randomized_indices[occupied_link_count] = 0;
+    return pos;
+}
+
 bool NetworkPercolationExplosive_v7::cluster_extremizing_condition(long n_nodes, long prod_sum) const {
 #ifdef DEBUG_FLAG
     cout << "NetworkPercolationExplosive_v7::cluster_extremizing_condition" << endl;
@@ -749,7 +824,8 @@ bool NetworkPercolationExplosive_v7::cluster_extremizing_condition(long n_nodes,
 
 bool NetworkPercolationExplosive_v7::occupyLink() {
     if(occupied_link_count >= _link_count) return false;
-    uint i = link_for_min_cluster_sum_product(occupied_link_count);
+    // uint i = link_for_min_cluster_sum_product(occupied_link_count);
 //    uint i = _randomized_indices[occupied_link_count]; // regular random percolation
+    uint i = link_for_min_entropy(occupied_link_count); // directly minimize entropy
     return NetworkPercolation_v7::placeSelectedLink(i);
 }

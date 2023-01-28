@@ -158,6 +158,9 @@ public:
 
     virtual uint link_for_min_cluster_sum_product(size_t start_at);
 
+    virtual uint link_for_min_entropy(size_t start_at);
+    double entropy_diff_for_i_j(int root_a, int root_b);
+
     virtual std::string get_signature() {
         std::cout << "TODO " << std::endl;
         std::stringstream ss;

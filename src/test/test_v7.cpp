@@ -30,9 +30,9 @@ void test_v7(int argc, char **argv) {
 //    test_percolation(argc, argv);
 
 
-    run_v7_percolation(argc, argv);
+    // run_v7_percolation(argc, argv);
 //    run_v7_percolation_jump(argc, argv);
-//    run_v7_percolation_jump_avg(argc, argv);
+   run_v7_percolation_jump_avg(argc, argv);
 
 //    run_v7_percolation_near_tc(argc, argv);
 
@@ -768,8 +768,8 @@ void run_v7_percolation(int argc, char **argv) {
 //
 //      NetworkPercolation_v7 percolation(net);
 //    NetworkPercolationInverted_v7 percolation(net, M);
-//    NetworkPercolationExplosive_v7 percolation(net, M);
-    NetworkPercolationExplosive_v7_Flipper percolation(net, M);
+   NetworkPercolationExplosive_v7 percolation(net, M);
+    // NetworkPercolationExplosive_v7_Flipper percolation(net, M);
 
     percolation.initialize();
     size_t linkCount = net->getLinkCount();
