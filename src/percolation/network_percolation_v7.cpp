@@ -747,13 +747,17 @@ uint NetworkPercolationExplosive_v7::link_for_min_cluster_sum_product(size_t sta
  * @return double 
  */
 double NetworkPercolationExplosive_v7::entropy_diff_for_i_j(int root_a, int root_b){
+    cout << "root_a " << root_a << " root_b " << root_b << endl;
     double mu_a = -_cluster_info[root_a]/double(_network_size);
     double mu_b = -_cluster_info[root_b]/double(_network_size);
+    cout << "mu_a " << mu_a << " mu_b " << mu_b << endl;
     if(mu_a < 0 || mu_b < 0){
         cerr << "one of the root is not a root : line " << __LINE__ << endl;
     }
-    auto H0 = mu_a*logl(mu_a) + mu_b*log(mu_b);
+    auto H0 = mu_a*logl(mu_a) + mu_b*logl(mu_b);
+    cout << "H0 " << H0 << endl;
     auto H1 = (mu_a + mu_b)*logl(mu_a + mu_b);
+    cout << "H1 " << H1 << endl;
     return abs(H1 - H0);
 }
 
@@ -764,18 +768,21 @@ double NetworkPercolationExplosive_v7::entropy_diff_for_i_j(int root_a, int root
  * @return uint 
  */
 uint NetworkPercolationExplosive_v7::link_for_min_entropy(size_t start_at) {
+    cout << "Entry -> link_for_min_entropy() *******************" << endl;
     //    auto start = std::chrono::system_clock::now(); // time measurement
     size_t index_randomized_link{0};
 
     uint tmp_lnk_index;
     int id1{-1}, id2{-1}, root1, root2;
-    long prod_sum = LONG_MAX; // so that it is very big before going into the loop
+    double prod_sum = 1e15; // so that it is very big before going into the loop
 //    cout << LONG_MAX << " vs " << prod_sum << endl;
 //    cout << ULONG_MAX << " vs " << prod_sum << endl;
+    cout << "Initial prod_sum " << prod_sum << endl;
 //    size_t limit = start_at + _M_link;
     size_t r{};
 //    cout << "randomly between ("<< start_at <<"," << _link_count << ")={";
     std::uniform_int_distribution<size_t> distribution(start_at, max_link_index);
+    cout << "max_link_index " << max_link_index << endl;
     for(int i{0}; i < _M_link; ++i){
 //        r = start_at + _random_generator() % (_link_count-start_at);
         r = distribution(_random_generator);
@@ -787,15 +794,22 @@ uint NetworkPercolationExplosive_v7::link_for_min_entropy(size_t start_at) {
         root1 = findRoot(id1);
         root2 = findRoot(id2);
 
-        auto delta_H = entropy_diff_for_i_j(root1, root2);
-        
-        if(cluster_extremizing_condition(delta_H, prod_sum)) { // since we are minimizing cluster sizes
+        auto delta_H = abs(entropy_diff_for_i_j(root1, root2));
+        cout << "delta H mak=     " <<  delta_H << " for link " << tmp_lnk_index << endl;
+        // if(cluster_extremizing_condition(delta_H, prod_sum)) { // since we are minimizing cluster sizes
+        //     prod_sum = delta_H;
+        //     index_randomized_link = r;
+        // }
+
+        if(delta_H < prod_sum) { // since we are minimizing cluster sizes
+            cout << "found smaller entropy link                      !" << endl;
             prod_sum = delta_H;
             index_randomized_link = r;
         }
 
     }
-
+cout << " chosen index " << index_randomized_link << " link " << _randomized_indices[index_randomized_link] 
+    << " with delta_H = " << prod_sum << endl;
     if(index_randomized_link >= _randomized_indices.size()){
         cout << "out of bound : line " << __LINE__ << endl;
     }

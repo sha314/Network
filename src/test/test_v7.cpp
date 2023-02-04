@@ -1051,7 +1051,8 @@ void run_v7_percolation_jump_avg(int argc, char **argv) {
     size_t linkCount = net->getLinkCount();
     size_t nodeCount = net->getNodeCount();
     cout << nodeCount << ", " << linkCount << ", " << endl;
-    size_t limit = nodeCount * 2;
+    // size_t limit = nodeCount * 2;
+    size_t limit = 10;
     double entropy_jump{}, order_jump{};
 
     for (int k{1}; k <= En; ++k) {
