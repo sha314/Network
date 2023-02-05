@@ -1051,8 +1051,7 @@ void run_v7_percolation_jump_avg(int argc, char **argv) {
     size_t linkCount = net->getLinkCount();
     size_t nodeCount = net->getNodeCount();
     cout << nodeCount << ", " << linkCount << ", " << endl;
-    // size_t limit = nodeCount * 2;
-    size_t limit = 10;
+    size_t limit = nodeCount * 2;
     double entropy_jump{}, order_jump{};
 
     for (int k{1}; k <= En; ++k) {
@@ -1072,10 +1071,12 @@ void run_v7_percolation_jump_avg(int argc, char **argv) {
                 break;
             }
         }
-        entropy_jump += percolation.largestEntropyJump();
-        order_jump += percolation.largestOrderJump();
+        auto dHmax = percolation.largestEntropyJump();
+        auto dPmax = percolation.largestOrderJump();
+        entropy_jump += dHmax;
+        order_jump += dPmax;
 
-//        cout << entropy_jump[k] << " at " << entropy_jump_pc[k] << endl;
+       cout << "dHmax= " << dHmax << " dPmax= " << dPmax << endl;
         auto t_end= chrono::system_clock::now();
         chrono::duration<double> drtion = t_end - t_start;
         cout << "iteration " << k << " : time elapsed " << drtion.count() << " sec" << endl;
