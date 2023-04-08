@@ -8,6 +8,7 @@
 
 #include <chrono>
 #include <fstream>
+#include <iostream>
 #include "../percolation/network_percolation_v7.h"
 #include "../util/time_tracking.h"
 #include "../nets/network.h"
@@ -30,9 +31,9 @@ void test_v7(int argc, char **argv) {
 //    test_percolation(argc, argv);
 
 
-    // run_v7_percolation(argc, argv);
+    run_v7_percolation(argc, argv);
 //    run_v7_percolation_jump(argc, argv);
-   run_v7_percolation_jump_avg(argc, argv);
+//    run_v7_percolation_jump_avg(argc, argv);
 
 //    run_v7_percolation_near_tc(argc, argv);
 
@@ -781,6 +782,7 @@ void run_v7_percolation(int argc, char **argv) {
     vector<long double> entropy(linkCount), dHs(linkCount);
     vector<double> order_param(linkCount); // entropy and order parameter
     vector<long> dPs(linkCount);
+    // double H_prev=0;
     for (int k{1}; k <= En; ++k) {
         auto t_start= chrono::system_clock::now();
         percolation.reset(k % rebuild_each == 0); // every nn step. reset the network
@@ -791,10 +793,15 @@ void run_v7_percolation(int argc, char **argv) {
 //            percolation.viewClusters();
 //            percolation.sumClusters();
             auto H = percolation.entropy();
+            // cout << "t= " << (i+1)/double(N)  <<  " H=  " << H << endl;
             if(isnan(H)){
                 cout << "H is nan " << endl;
                 exit(-1);
             }
+            // if(abs(H_prev-H) == 0){
+            //     cout << "no entropy changed in this step " << endl;
+            // }
+            // H_prev = H;
             entropy[i] += H;
             order_param[i] += percolation.largestClusterSize();
             percolation.jump();

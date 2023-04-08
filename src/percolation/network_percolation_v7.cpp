@@ -767,7 +767,7 @@ double NetworkPercolationExplosive_v7::entropy_diff_for_i_j(int root_a, int root
  * @param start_at 
  * @return uint 
  */
-uint NetworkPercolationExplosive_v7::link_for_min_entropy(size_t start_at) {
+uint NetworkPercolationExplosive_v7::link_by_maximizing_entropy(size_t start_at) {
     // cout << "Entry -> link_for_min_entropy() *******************" << endl;
     //    auto start = std::chrono::system_clock::now(); // time measurement
     size_t index_randomized_link{0};
@@ -783,6 +783,7 @@ uint NetworkPercolationExplosive_v7::link_for_min_entropy(size_t start_at) {
 //    cout << "randomly between ("<< start_at <<"," << _link_count << ")={";
     std::uniform_int_distribution<size_t> distribution(start_at, max_link_index);
     // cout << "max_link_index " << max_link_index << endl;
+    int intra_cluster = -1;
     for(int i{0}; i < _M_link; ++i){
 //        r = start_at + _random_generator() % (_link_count-start_at);
         r = distribution(_random_generator);
@@ -795,12 +796,22 @@ uint NetworkPercolationExplosive_v7::link_for_min_entropy(size_t start_at) {
         root2 = findRoot(id2);
 
         auto delta_H = abs(entropy_diff_for_i_j(root1, root2));
-        // cout << "delta H mak=     " <<  delta_H << " for link " << tmp_lnk_index << endl;
+        // cout << "delta H max =     " <<  delta_H << " for link " << r << endl;
         // if(cluster_extremizing_condition(delta_H, prod_sum)) { // since we are minimizing cluster sizes
         //     prod_sum = delta_H;
         //     index_randomized_link = r;
         // }
 
+        // if(root1 == root2){
+        // /*
+        // This block is for forcing to select or not select the intra cluster link
+        // */
+        //     delta_H = 1e100;  // this way we make sure it does NOT get selected
+        //     // delta_H = 0;  // this way we make sure it DOES get selected
+        //     // break;
+        //     intra_cluster = r;
+        //     // cout << "Intra cluster link found " << intra_cluster << " it will not get selected" << endl;
+        // }
         if(delta_H < prod_sum) { // since we are minimizing cluster sizes
             // cout << "found smaller entropy link                      !" << endl;
             prod_sum = delta_H;
@@ -808,6 +819,9 @@ uint NetworkPercolationExplosive_v7::link_for_min_entropy(size_t start_at) {
         }
 
     }
+    // if(intra_cluster != -1){
+    //     cout << index_randomized_link << " vs " << intra_cluster << endl;;
+    // }
 // cout << " chosen index " << index_randomized_link << " link " << _randomized_indices[index_randomized_link] 
 //     << " with delta_H = " << prod_sum << endl;
     if(index_randomized_link >= _randomized_indices.size()){
@@ -840,6 +854,6 @@ bool NetworkPercolationExplosive_v7::occupyLink() {
     if(occupied_link_count >= _link_count) return false;
     // uint i = link_for_min_cluster_sum_product(occupied_link_count);
 //    uint i = _randomized_indices[occupied_link_count]; // regular random percolation
-    uint i = link_for_min_entropy(occupied_link_count); // directly minimize entropy
+    uint i = link_by_maximizing_entropy(occupied_link_count); // directly minimize entropy
     return NetworkPercolation_v7::placeSelectedLink(i);
 }
