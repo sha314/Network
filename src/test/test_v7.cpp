@@ -782,6 +782,9 @@ void run_v7_percolation(int argc, char **argv) {
     vector<long double> entropy(linkCount), dHs(linkCount);
     vector<double> order_param(linkCount); // entropy and order parameter
     vector<long> dPs(linkCount);
+
+    // for Binder cumulant using order parameter
+    vector<double> order_param_pow2(linkCount), order_param_pow4(linkCount); // entropy and order parameter
     // double H_prev=0;
     for (int k{1}; k <= En; ++k) {
         auto t_start= chrono::system_clock::now();
@@ -803,7 +806,10 @@ void run_v7_percolation(int argc, char **argv) {
             // }
             // H_prev = H;
             entropy[i] += H;
-            order_param[i] += percolation.largestClusterSize();
+            auto P_order=percolation.largestClusterSize();
+            order_param[i] += P_order;
+            order_param_pow2[i] += pow(P_order, 2);
+            order_param_pow4[i] += pow(P_order, 4);
             percolation.jump();
 
             dHs[i] += percolation.jump_entropy();
@@ -881,6 +887,25 @@ void run_v7_percolation(int argc, char **argv) {
              << "\t" << dPs[k]/double(En) << endl;
     }
     fout2.close();
+
+
+        //Binder cumulant
+    string filename_binder = signature + "_binder-cumulant-order_" + tm + ".txt";
+    ofstream fout3(filename_binder);
+    fout3 << '#' << ss.str() << endl;
+    fout3 << "# t=relative link density" << endl;
+    fout3 << "#<t>\t<P>\t<P^2>\t<P^4>" << endl;
+//    fout.precision(12);
+    cout << "Writting data to file" << endl;
+    fout3.precision(numeric_limits<double>::digits10 + 1); // maximum precision
+    for(size_t k{}; k < limit ; ++k){
+        auto t = (k+1)/double(N);
+        fout3 << t
+             << "\t" << order_param[k]/(En*double(N))
+             << "\t" << order_param_pow2[k]/pow(N,2)/En
+             << "\t" << order_param_pow4[k]/pow(N,4)/En << endl;
+    }
+    fout3.close();
 
 }
 
