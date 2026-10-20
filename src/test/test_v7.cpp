@@ -42,6 +42,7 @@ void test_v7(int argc, char **argv) {
 //    run_v7_percolation_1st_order_check_2(argc, argv);
 
 //    run_v7_percolation_delta_powder_keg(argc, argv);
+    // run_v7_percolation_at_tc(argc, argv); // 2026.07.14
 }
 
 void test_MDA(int argc, char *argv[]) {
@@ -769,8 +770,10 @@ void run_v7_percolation(int argc, char **argv) {
 //
 //      NetworkPercolation_v7 percolation(net);
 //    NetworkPercolationInverted_v7 percolation(net, M);
-   NetworkPercolationExplosive_v7 percolation(net, M);
+//    NetworkPercolationExplosive_v7 percolation(net, M);
     // NetworkPercolationExplosive_v7_Flipper percolation(net, M);
+    // NetworkPercolationExplosiveProduct_v7 percolation(net, M); // 2026.07.13
+    NetworkPercolationExplosiveMinEntropy_ME2v7 percolation(net, M); // 2026.07.13
 
     percolation.initialize();
     size_t linkCount = net->getLinkCount();
@@ -784,14 +787,14 @@ void run_v7_percolation(int argc, char **argv) {
     vector<long> dPs(linkCount);
 
     // for Binder cumulant using order parameter
-    vector<double> order_param_pow2(linkCount), order_param_pow4(linkCount); // entropy and order parameter
+    vector<long double> order_param_pow2(linkCount), order_param_pow4(linkCount); // entropy and order parameter
     // double H_prev=0;
     for (int k{1}; k <= En; ++k) {
         auto t_start= chrono::system_clock::now();
         percolation.reset(k % rebuild_each == 0); // every nn step. reset the network
         size_t i{};
         while (percolation.occupyLink()) {
-//            cout << "i " << i  << endl;
+        //    cout << "i [" << i  << "]  *****************************************************************" << endl;
 //            auto H = percolation.entropy_v1(); // slow. for debugging purposes
 //            percolation.viewClusters();
 //            percolation.sumClusters();
@@ -906,6 +909,152 @@ void run_v7_percolation(int argc, char **argv) {
              << "\t" << order_param_pow4[k]/pow(N,4)/En << endl;
     }
     fout3.close();
+
+}
+
+/****
+ * Get to tc and then record quantities at tc and move on to next iteration.
+ * Since, for a network, it's hard to get spanning like square lattice, user must provide tc
+ * 
+ */
+void run_v7_percolation_at_tc(int argc, char **argv) {
+
+    if(argc < 6 ){
+        cout << "argv[1] == m" << endl;
+        cout << "argv[2] == N" << endl;
+        cout << "argv[3] == M" << endl;
+        cout << "argv[4] == Ensemble" << endl;
+        cout << "argv[5] == tc" << endl;
+        return;
+    }
+    int m = atoi(argv[1]);
+    int N = atoi(argv[2]);
+    int M = atoi(argv[3]);
+    int En = atoi(argv[4]);
+    float tcConst = std::stof(argv[5]);
+    
+
+    cout << "m=" << m << ",N="<< N << ",M=" << M << ",En="<<En << endl;
+    cout << "Given tc = " << tcConst << endl;
+    size_t rebuild_each = 10; // cycle
+
+    auto* net = new NetworkBA_v7(m);
+//    auto* net = new NetworkMDA_v7(m);
+    net->setRandomState(0, true);
+    net->initialize(N);
+    net->clearAdjacency();
+//
+//      NetworkPercolation_v7 percolation(net);
+//    NetworkPercolationInverted_v7 percolation(net, M);
+//    NetworkPercolationExplosive_v7 percolation(net, M);
+    // NetworkPercolationExplosive_v7_Flipper percolation(net, M);
+    NetworkPercolationExplosiveProduct_v7 percolation(net, M); // 2026.07.13
+
+    percolation.initialize();
+    size_t linkCount = net->getLinkCount();
+    size_t nodeCount = net->getNodeCount();
+    cout << nodeCount << ", " << linkCount << ", " << endl;
+    size_t limit = nodeCount * 2;
+    if (limit > linkCount) limit = linkCount;
+//    double entropy_jump{}, order_jump{};
+    vector<long double> entropy(En);
+    vector<long double> order_param(En); // entropy and order parameter
+
+    
+    // double H_prev=0;
+    for (int k{0}; k < En; ++k) {
+        auto t_start= chrono::system_clock::now();
+        percolation.reset(k % rebuild_each == 0); // every nn step. reset the network
+        size_t i{};
+        while (percolation.occupyLink()) {
+            auto tr = percolation.relativeLinkDensity();
+//            cout << "i " << i  << endl;
+//            auto H = percolation.entropy_v1(); // slow. for debugging purposes
+//            percolation.viewClusters();
+//            percolation.sumClusters();
+            auto H = percolation.entropy();
+            // cout << "t= " << (i+1)/double(N)  <<  " H=  " << H << endl;
+            if(isnan(H)){
+                cout << "H is nan " << endl;
+                exit(-1);
+            }
+            // if(abs(H_prev-H) == 0){
+            //     cout << "no entropy changed in this step " << endl;
+            // }
+            // H_prev = H;
+            
+            percolation.jump();
+
+            if (tr >= tcConst){
+                
+                // Record entropy and order parameter at tc
+                entropy[k] = H;
+                auto P_order=percolation.largestClusterSize();
+                order_param[k] = P_order/double(N);
+
+                cout << "t >= tc, breaking at " << i << " t= " << tr << ", tc= " << tcConst
+                 << ", H= ";
+                 cout << entropy[k] << ", P= " << order_param[k] << endl;
+                
+                
+                break;
+            }
+            ++i;
+            if (i >= limit) {
+                cout << "breaking at " << i <<endl;
+                break;
+            }
+        }
+//        entropy_jump += percolation.largestEntropyJump();
+//        order_jump += percolation.largestOrderJump();
+
+        auto t_end= chrono::system_clock::now();
+        chrono::duration<double> drtion = t_end - t_start;
+        cout << "iteration " << k << " : time elapsed " << drtion.count() << " sec" << endl;
+    }
+
+    auto tm = currentTime();
+//    string signature = percolation.get_signature();
+    string signature = net->get_signature_array()[0] +"_"+ percolation.getClassName()
+                       + "_N_" + to_string(N)
+                       + "_m_" + to_string(m)
+                       + "_M_" + to_string(M);
+    stringstream ss;
+    ss << "{"
+       << R"*("signature":")*" << signature << "\""
+       << R"*(,"network_class":")*" << net->getClassName() << "\""
+       << R"*(,"percolation_class":")*" << percolation.getClassName() << "\""
+       << R"*(,"random_seed":)*" << net->getRandomState()
+       << R"*(,"m":)*" << m
+       << R"*(,"network_seed":)*" << net->get_m0()
+       << R"*(,"N":)*" << N
+       << R"*(,"number_of_links":)*" << linkCount
+       << R"*(,"number_of_nodes":)*" << nodeCount
+       << R"*(,"M":)*" << M
+       << R"*(,"ensemble_size":)*" << En
+       << R"*(,"En":)*" << En
+       << R"*(,"datetime":")*" << tm << "\""
+        << R"*(,"compile_date":")*" << __DATE__ << "\""
+        << R"*(,"compile_time":")*" << __TIME__ << "\""
+        << R"*(,"comment":"Find order parameter and entropy at tc")*" << "}";
+
+
+
+    string filename_entropy_order = signature + "_quantitiy_at_tc_" + tm + ".txt";
+    ofstream fout(filename_entropy_order);
+    fout << '#' << ss.str() << endl;
+    fout << "# t=relative link density" << endl;
+    fout << "#<t>\t<H(tc)>\t<P(tc)>" << endl;
+//    fout.precision(12);
+    cout << "Writting data to file" << endl;
+    fout.precision(numeric_limits<double>::digits10 + 1); // maximum precision
+    for(size_t k{}; k < En ; ++k){
+        fout << k
+             << "\t" << entropy[k]
+             << "\t" << order_param[k]<< endl;
+    }
+    fout.close();
+
 
 }
 

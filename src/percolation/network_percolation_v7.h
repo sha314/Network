@@ -144,6 +144,7 @@ public:
 };
 
 class NetworkPercolationExplosive_v7: public NetworkPercolation_v7{
+protected:
     std::map<int, double> tcs;
 
     int _M_link{2};
@@ -158,7 +159,7 @@ public:
 
     virtual uint link_for_min_cluster_sum_product(size_t start_at);
 
-    virtual uint link_by_maximizing_entropy(size_t start_at);
+    virtual uint link_by_miniimizing_entropy(size_t start_at);
     double entropy_diff_for_i_j(int root_a, int root_b);
 
     virtual std::string get_signature() {
@@ -175,6 +176,65 @@ public:
     double get_tc(int M){return tcs[M];}
 
     virtual bool cluster_extremizing_condition(long n_nodes, long prod_sum) const;
+};
+
+
+
+class NetworkPercolationExplosiveProduct_v7: public NetworkPercolationExplosive_v7{
+public:
+    ~NetworkPercolationExplosiveProduct_v7() override = default;
+    NetworkPercolationExplosiveProduct_v7(Network_v7* net, int M):NetworkPercolationExplosive_v7(net,M){};
+
+    NetworkPercolationExplosiveProduct_v7() = default;
+
+    bool occupyLink() override ;
+    // super class defines both product and sum rule 
+    // here, only product rule part is copied
+    virtual uint link_for_min_cluster_product(size_t start_at); 
+
+
+    virtual std::string get_signature() {
+        std::cout << "TODO " << std::endl;
+        std::stringstream ss;
+        ss << getClassName()
+           //           << "_m0_" << _net->get_m0()
+           //           << "_m_" << get_m()
+           << "_size_" << _network_size << "_product-rule";
+        return ss.str();
+    }
+
+    std::string getClassName() override {return "NetworkPercolationExplosiveProduct_v7";}
+
+};
+
+
+/**
+ * ME1 : Whenever a link connecting intra-cluster nodes are available, choose that one, without exception
+ * ME2 : Increasingly disfavors intra-cluster nodes. Evaluate entropy change and compare for all M links and choose the one with smallest change
+ */
+class NetworkPercolationExplosiveMinEntropy_ME2v7: public NetworkPercolationExplosive_v7{
+public:
+    ~NetworkPercolationExplosiveMinEntropy_ME2v7() override = default;
+    NetworkPercolationExplosiveMinEntropy_ME2v7(Network_v7* net, int M):NetworkPercolationExplosive_v7(net,M){};
+
+    NetworkPercolationExplosiveMinEntropy_ME2v7() = default;
+
+    bool occupyLink() override ;
+
+    uint link_by_miniimizing_entropy(size_t start_at);
+
+    virtual std::string get_signature() {
+        std::cout << "TODO " << std::endl;
+        std::stringstream ss;
+        ss << getClassName()
+           //           << "_m0_" << _net->get_m0()
+           //           << "_m_" << get_m()
+           << "_size_" << _network_size << "_product-rule";
+        return ss.str();
+    }
+
+    std::string getClassName() override {return "NetworkPercolationExplosiveMinEntropy_ME2v7";}
+
 };
 
 class NetworkPercolationInverted_v7: public NetworkPercolation_v7{

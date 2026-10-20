@@ -767,7 +767,7 @@ double NetworkPercolationExplosive_v7::entropy_diff_for_i_j(int root_a, int root
  * @param start_at 
  * @return uint 
  */
-uint NetworkPercolationExplosive_v7::link_by_maximizing_entropy(size_t start_at) {
+uint NetworkPercolationExplosive_v7::link_by_miniimizing_entropy(size_t start_at) {
     // cout << "Entry -> link_for_min_entropy() *******************" << endl;
     //    auto start = std::chrono::system_clock::now(); // time measurement
     size_t index_randomized_link{0};
@@ -852,8 +852,207 @@ bool NetworkPercolationExplosive_v7::cluster_extremizing_condition(long n_nodes,
 
 bool NetworkPercolationExplosive_v7::occupyLink() {
     if(occupied_link_count >= _link_count) return false;
-    // uint i = link_for_min_cluster_sum_product(occupied_link_count);
+    uint i = link_for_min_cluster_sum_product(occupied_link_count);
 //    uint i = _randomized_indices[occupied_link_count]; // regular random percolation
-    uint i = link_by_maximizing_entropy(occupied_link_count); // directly minimize entropy
+    // uint i = link_by_maximizing_entropy(occupied_link_count); // directly minimize entropy
     return NetworkPercolation_v7::placeSelectedLink(i);
 }
+
+
+////////////////////////////////////////////////////////////////////////
+////////
+//////// NetworkPercolationExplosiveProduct_v7
+////////
+////////////////////////////////////////////////////////////////////////
+
+
+bool NetworkPercolationExplosiveProduct_v7::occupyLink() {
+    // cout << "NetworkPercolationExplosiveProduct_v7::occupyLink()" << endl;
+    if(occupied_link_count >= _link_count) return false;
+    uint i = link_for_min_cluster_product(occupied_link_count);
+    return NetworkPercolation_v7::placeSelectedLink(i);
+}
+
+
+
+uint NetworkPercolationExplosiveProduct_v7::link_for_min_cluster_product(size_t start_at) {
+    // cout << "NetworkPercolationExplosiveProduct_v7::link_for_min_cluster_product()" << endl;
+    //    auto start = std::chrono::system_clock::now(); // time measurement
+    size_t index_randomized_link{0};
+
+    uint tmp_lnk_index;
+    int id1{-1}, id2{-1}, root1, root2;
+    long n_nodes=0;
+    long prod_sum = LONG_MAX; // so that it is very big before going into the loop
+//    cout << LONG_MAX << " vs " << prod_sum << endl;
+//    cout << ULONG_MAX << " vs " << prod_sum << endl;
+//    size_t limit = start_at + _M_link;
+    size_t r{};
+//    cout << "randomly between ("<< start_at <<"," << _link_count << ")={";
+    std::uniform_int_distribution<size_t> distribution(start_at, max_link_index);
+    for(int i{0}; i < _M_link; ++i){
+//        r = start_at + _random_generator() % (_link_count-start_at);
+        r = distribution(_random_generator);
+        tmp_lnk_index = _randomized_indices[r];
+
+        id1 = _net->getNodeA(tmp_lnk_index);
+        id2 = _net->getNodeB(tmp_lnk_index);
+
+        root1 = findRoot(id1);
+        root2 = findRoot(id2);
+
+        n_nodes = long(_cluster_info[root1]) * long(_cluster_info[root2]); // product rule. automatically becomes positive
+
+#ifdef UNIT_TEST
+        if(n_nodes < 0){
+            cerr << "product cannot be negative " << endl
+            << "NetworkPercolationExplosive_v7::link_for_min_cluster_sum_product: line "
+            << __LINE__ << endl;
+            cout << "possible solution : cast value from int to long in order to disolve this" << endl;
+            exit(0);
+        }
+#endif
+        if(cluster_extremizing_condition(n_nodes, prod_sum)) { // since we are minimizing cluster sizes
+            prod_sum = n_nodes;
+            index_randomized_link = r;
+        }
+#ifdef DEBUG_FLAG
+        cout << "checking link _randomized_indices[" << r << "]=" << tmp_lnk_index << endl;
+        cout << " out of  id = " << id1 << " and " << id2 << " prod_sum = " << prod_sum << endl;
+#endif
+    }
+
+    if(index_randomized_link >= _randomized_indices.size()){
+        cout << "out of bound : line " << __LINE__ << endl;
+    }
+//    cout << "}" << endl;
+#ifdef DEBUG_FLAG
+    cout << "selected _randomized_indices[" << index_randomized_link << "] = "
+         << _randomized_indices[index_randomized_link] << endl;
+#endif
+
+    uint pos = _randomized_indices[index_randomized_link];
+
+    _randomized_indices[index_randomized_link] = _randomized_indices[occupied_link_count];
+    // does not affect the result. use only when debugging so that we can identify easily
+    _randomized_indices[occupied_link_count] = 0;
+    return pos;
+}
+
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////
+////////
+//////// NetworkPercolationExplosiveMinEntropy_v7
+////////
+////////////////////////////////////////////////////////////////////////
+
+
+bool NetworkPercolationExplosiveMinEntropy_ME2v7::occupyLink() {
+    // cout << "NetworkPercolationExplosiveProduct_v7::occupyLink()" << endl;
+    if(occupied_link_count >= _link_count) return false;
+    uint i = link_by_miniimizing_entropy(occupied_link_count);
+    return NetworkPercolation_v7::placeSelectedLink(i);
+}
+
+
+/**
+ * @brief Find the link out of M links that minimizes entropy.
+ * 
+ * Always occupies an intra-cluster edge whenever available. That makes the
+ * change in entropy 0 and 
+ * 
+ * @param start_at 
+ * @return uint 
+ */
+uint NetworkPercolationExplosiveMinEntropy_ME2v7::link_by_miniimizing_entropy(size_t start_at) {
+    // cout << "Entry -> link_for_min_entropy() *******************" << endl;
+    //    auto start = std::chrono::system_clock::now(); // time measurement
+    size_t index_randomized_link{0};
+
+    uint tmp_lnk_index;
+    int id1{-1}, id2{-1}, root1, root2;
+    double prod_sum = 1e15; // so that it is very big before going into the loop
+//    cout << LONG_MAX << " vs " << prod_sum << endl;
+//    cout << ULONG_MAX << " vs " << prod_sum << endl;
+    // cout << "Initial prod_sum " << prod_sum << endl;
+//    size_t limit = start_at + _M_link;
+    size_t r{};
+//    cout << "randomly between ("<< start_at <<"," << _link_count << ")={";
+    std::uniform_int_distribution<size_t> distribution(start_at, max_link_index);
+    // cout << "max_link_index " << max_link_index << endl;
+    int intra_cluster = -1;
+
+    for(int i{0}; i < _M_link; ++i){
+//        r = start_at + _random_generator() % (_link_count-start_at);
+        r = distribution(_random_generator);
+        tmp_lnk_index = _randomized_indices[r];
+
+        id1 = _net->getNodeA(tmp_lnk_index);
+        id2 = _net->getNodeB(tmp_lnk_index);
+
+        root1 = findRoot(id1);
+        root2 = findRoot(id2);
+
+        auto delta_H = abs(entropy_diff_for_i_j(root1, root2));
+
+        // cout << "delta H max =     " <<  delta_H << " for link " << r 
+        // << "; nodes(roots) " << id1 << "(" << root1 << "), " 
+        // << id2 << "(" << root2 << ")" 
+        // << endl;
+
+
+
+        // if(root1 == root2){ // for ME2 rule, we don't need to check if roots are equal
+        // /*
+        // This block is for forcing to select or not select the intra cluster link
+        // */
+        //     delta_H = 1e100;  // this way we make sure it does NOT get selected
+        //     // delta_H = 0;  // this way we make sure it DOES get selected
+        //     // break;
+        // intra_cluster = r;
+        // cout << "Intra cluster link " << intra_cluster  << " found! with root " << root1
+        //         // << " it will not get selected" 
+        //         << endl;
+        // double mu_a = -_cluster_info[root1]/double(_network_size);
+        // cout << "Theoretical value " << 2*mu_a*logl(2) << endl;
+        // }
+
+
+
+        if(delta_H < prod_sum) { // since we are minimizing cluster sizes
+            // cout << "found smaller entropy link                      !" << endl;
+            prod_sum = delta_H;
+            index_randomized_link = r;
+        }
+
+    }
+    // if(intra_cluster != -1){
+    //     cout << index_randomized_link << " vs " << intra_cluster << endl;;
+    // }
+// cout << " chosen index " << index_randomized_link << " link " << _randomized_indices[index_randomized_link] 
+//     << " with delta_H = " << prod_sum << endl;
+    if(index_randomized_link >= _randomized_indices.size()){
+        cout << "out of bound : line " << __LINE__ << endl;
+    }
+//    cout << "}" << endl;
+#ifdef DEBUG_FLAG
+    cout << "selected _randomized_indices[" << index_randomized_link << "] = "
+         << _randomized_indices[index_randomized_link] << endl;
+#endif
+
+    uint pos = _randomized_indices[index_randomized_link];
+
+// we don't want the chosen link to be in the list of yet-to-be-chosen list
+    _randomized_indices[index_randomized_link] = _randomized_indices[occupied_link_count]; 
+    // does not affect the result. use only when debugging so that we can identify easily
+    _randomized_indices[occupied_link_count] = 0;
+    return pos;
+}
+
+
+
+
