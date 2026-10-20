@@ -183,7 +183,9 @@ public:
 class NetworkPercolationExplosiveProduct_v7: public NetworkPercolationExplosive_v7{
 public:
     ~NetworkPercolationExplosiveProduct_v7() override = default;
-    NetworkPercolationExplosiveProduct_v7(Network_v7* net, int M):NetworkPercolationExplosive_v7(net,M){};
+    NetworkPercolationExplosiveProduct_v7(Network_v7* net, int M):NetworkPercolationExplosive_v7(net,M){
+        std::cout << getClassName() << std::endl;
+    };
 
     NetworkPercolationExplosiveProduct_v7() = default;
 
@@ -215,7 +217,9 @@ public:
 class NetworkPercolationExplosiveMinEntropy_ME2v7: public NetworkPercolationExplosive_v7{
 public:
     ~NetworkPercolationExplosiveMinEntropy_ME2v7() override = default;
-    NetworkPercolationExplosiveMinEntropy_ME2v7(Network_v7* net, int M):NetworkPercolationExplosive_v7(net,M){};
+    NetworkPercolationExplosiveMinEntropy_ME2v7(Network_v7* net, int M):NetworkPercolationExplosive_v7(net,M){
+        std::cout << getClassName() << std::endl;
+    };
 
     NetworkPercolationExplosiveMinEntropy_ME2v7() = default;
 
